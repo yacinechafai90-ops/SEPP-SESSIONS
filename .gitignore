@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.bak
+*.zip
+*.dump
+admin-acces.json
+admin-acces.hash
+publication-acces.json
+publication-etat.json
+session-secret.key
+.env

@@ -1,0 +1,17 @@
+IMPORT DES PRIX PAR SESSION
+
+1. Redemarrez DEMARRER-SITE.cmd pour charger les nouvelles routes.
+2. Ouvrez http://127.0.0.1:5002/admin et connectez-vous comme administrateur.
+3. Dans « Offres par utilisateur », choisissez une session existante ou cliquez sur « + Ajouter une session ».
+4. Pour un import Excel, utilisez un fichier .xlsx avec une feuille dont la premiere ligne contient exactement : reference | prix_offre
+   Exemple :
+   reference          prix_offre
+   VC18M3125XBDZ     25000
+   VS15A60AGX7DZ     49000
+5. Cliquez sur « Importer les prix ». Les references du fichier sont ajoutees ou mises a jour. Les autres restent intactes.
+6. Cochez les brandshops visibles pour ce compte et cliquez sur « Enregistrer les brandshops ». Tous sont visibles par defaut avant le premier enregistrement.
+7. Actualisez le site du compte pour voir les changements.
+
+Les boutons crayon, corbeille et alimentation servent a modifier, supprimer et desactiver/activer.
+Un prix Excel vide conserve le prix general du produit. Limite : 1000 lignes et 2 Mo.
+Les mensualites proviennent toujours des montants de financement generaux du catalogue.

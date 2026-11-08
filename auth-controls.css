@@ -1,0 +1,4 @@
+#deconnexion-form{margin:0;flex-shrink:0}
+#deconnexion-form button{border:1px solid #697389;border-radius:999px;padding:8px 14px;color:white;background:transparent;cursor:pointer;white-space:nowrap}
+#deconnexion-form button:hover,#deconnexion-form button:focus-visible{background:#1428a0;border-color:#879bff}
+@media(max-width:760px){#header .header-row{flex-wrap:wrap;gap:12px}#deconnexion-form{margin-inline-start:auto;margin-block:8px}}

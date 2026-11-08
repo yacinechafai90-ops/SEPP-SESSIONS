@@ -1,0 +1,131 @@
+/* Responsive visual refinement, layered over the existing catalogue styles. */
+:root{--polish-shadow:0 14px 42px rgba(13,26,72,.075)}
+html{scroll-behavior:smooth}
+body{overflow-x:hidden}
+:where(a,button,input,select,textarea):focus-visible{outline:3px solid #5272ff;outline-offset:3px}
+.button,.card,.info-card,.shop,.pay-card,.extras-toolbar{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.card:hover,.info-card:hover,.shop:hover{transform:translateY(-3px);box-shadow:var(--polish-shadow)}
+.card,.info-card,.shop,.pay-card{border-color:#e5e8ef}
+.card .media img{transition:transform .35s ease}
+.card:hover .media img{transform:scale(1.035)}
+.hero h1{line-height:1.12;text-wrap:balance}
+.hero p{line-height:1.6}
+.section-title{text-wrap:balance}
+.content{padding-block:clamp(34px,5vw,72px)}
+.grid{align-items:stretch}
+.card{display:flex;flex-direction:column;overflow:hidden}
+.card-body{display:flex;flex-direction:column;flex:1}
+.card-foot{margin-top:auto}
+.shop-grid{align-items:stretch}
+.shop .contact a{overflow-wrap:anywhere}
+.pay-card{height:100%}
+.smart-page section{scroll-margin-top:96px}
+.smart-tabs a{min-width:76px}
+.smart-tabs a:focus-visible span{outline:3px solid #5272ff;outline-offset:3px}
+.smart-expand,.directions,.footer-nav a{transition:color .2s ease,background .2s ease,transform .2s ease}
+.footer-nav a:hover{color:#fff;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:850px){
+  .header-row{min-height:70px}
+  .nav.open{padding:12px 0 4px;border-top:1px solid #2b2e37;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px}
+  .nav.open a{display:flex;align-items:center;min-height:44px;padding:10px 12px;border-radius:10px}
+  .nav.open a.active{background:#1c2235;box-shadow:none}
+  .hero{padding-block:36px 32px}
+  .hero h1{font-size:clamp(30px,5.4vw,46px)}
+  .toolbar{gap:16px}
+  .controls select{min-height:42px}
+  .shop-grid{gap:16px}
+}
+@media(max-width:600px){
+  .wrap{width:calc(100% - 32px)}
+  .header-row{padding-block:12px}
+  .brand img{max-width:100px}
+  .language,.menu-toggle{min-height:42px}
+  .nav.open{grid-template-columns:1fr 1fr}
+  .nav.open a{font-size:13px}
+  .hero{padding-block:32px 28px}
+  .hero h1{font-size:clamp(30px,8.2vw,38px);letter-spacing:-.045em}
+  .hero p{font-size:14px;line-height:1.55;max-width:38ch}
+  .eyebrow{font-size:10px;letter-spacing:.14em}
+  .content{padding-block:32px 48px}
+  .section-title{font-size:clamp(23px,6.2vw,29px);line-height:1.22}
+  .grid{grid-template-columns:1fr;gap:16px}
+  .card{border-radius:20px}
+  .media{height:215px;padding:20px}
+  .text-only{min-height:215px}
+  .card-body{padding:18px}
+  .card h2{font-size:16px;line-height:1.4;min-height:0;margin:12px 0 18px}
+  .tag-row .pill{font-size:10px;padding:6px 9px}
+  .price-inline{gap:8px;margin-bottom:16px}
+  .price-inline .price{font-size:24px}
+  .price-inline .old-price{font-size:12px}
+  .card-foot{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}
+  .warranty-tag{font-size:10px;padding:6px 9px}
+  .bottom-tags .stock{font-size:10px;padding:7px 9px}
+  .extras-card-actions{margin:0 18px 12px}
+  .extras-card-actions button{min-height:42px;font-size:11px}
+  .card .button{min-height:44px;justify-content:center}
+  .tabs,.subcategories{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin;padding-bottom:8px;margin-inline:-16px;padding-inline:16px}
+  .tabs button,.subcategories button{flex:0 0 auto;min-height:38px;white-space:nowrap}
+  .subcategories{margin-top:5px}
+  .subcat-label{flex:0 0 auto;align-self:center}
+  .search input{height:48px;font-size:14px}
+  .toolbar{margin-block:22px 18px}
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .controls select{width:100%;min-width:0;max-width:none;font-size:12px}
+  .extras-toolbar{padding:16px;border-radius:16px;margin-bottom:18px}
+  .extras-toolbar-actions button{min-height:42px}
+  .detail-photo{min-height:300px}
+  .detail h1{font-size:clamp(27px,7.4vw,34px);line-height:1.17}
+  .detail .price{font-size:32px}
+  .detail .specs-panel{margin-top:12px}
+  .simulator{padding:20px;border-radius:18px}
+  .sim-tabs{gap:8px}
+  .sim-tab{min-height:42px}
+  .smartthings-banner{padding:20px;border-radius:18px;margin-bottom:20px;gap:12px}
+  .smartthings-banner h2{font-size:21px}
+  .smartthings-banner p{font-size:13px;line-height:1.6}
+  .payment-picker{padding:19px;margin-bottom:20px}
+  .payment-picker select{min-height:46px}
+  .pay-cards{gap:12px}
+  .pay-card{padding:20px}
+  .shop-filter{gap:8px;margin-bottom:20px}
+  .shop-filter select{min-height:42px}
+  .shop{padding:22px}
+  .shop .address{font-size:13px}
+  .shop a.directions{min-height:44px}
+  .warranty-content{padding-block:36px 48px}
+  .warranty-standard{margin-bottom:32px}
+  .service-card{align-items:stretch}
+  .service-card>a{min-height:78px}
+  .smart-page{padding:35px 0 50px}
+  .smart-page h1{font-size:clamp(27px,7vw,34px);line-height:1.25}
+  .smart-page h2{font-size:clamp(22px,6vw,28px);line-height:1.25}
+  .smart-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:28px auto 34px}
+  .smart-tabs a{min-width:0;font-size:10px;line-height:1.25;gap:8px;overflow-wrap:anywhere}
+  .smart-tabs a span{width:42px;height:42px}
+  .smart-page section>p{line-height:1.6}
+  .smart-art{border-radius:14px}
+  .smart-grid{gap:32px}
+  .tv-home-caption{gap:12px;padding-block:22px 30px}
+  .tv-home-caption h1{font-size:clamp(25px,7vw,32px)!important;line-height:1.25}
+  .hero-actions .button{min-height:44px;display:inline-flex;align-items:center;font-size:11px}
+  .footer-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}
+  .footer-nav a{min-height:35px;display:flex;align-items:center}
+}
+@media(max-width:380px){.hero-actions{display:grid;grid-template-columns:1fr 1fr}.hero-actions .button{padding-inline:9px;font-size:10px}.smart-tabs a{font-size:9px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button,.card,.info-card,.shop,.pay-card,.extras-toolbar,.card .media img,.smart-expand,.directions,.footer-nav a{transition:none!important}.card:hover,.info-card:hover,.shop:hover,.card:hover .media img{transform:none!important}}
+
+/* Fiche produit : bloc « Facilités de paiement » — mensualité mise en avant */
+.sim-hero{display:block;padding:0;overflow:hidden;border:0;border-radius:20px;box-shadow:0 14px 34px rgba(20,40,160,.18)}
+.sim-hero .sim-monthly{background:linear-gradient(135deg,#1428a0 0%,#2634e8 100%);color:#fff;padding:28px 30px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.sim-hero .sim-monthly>span{width:auto;color:#cfd6ff;font-size:12px;letter-spacing:.6px;text-transform:uppercase;font-weight:700}
+.sim-monthly-line{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sim-hero .sim-monthly strong{font:800 clamp(36px,6vw,52px)/1.05 CatalogueBody,Arial,sans-serif;color:#fff;letter-spacing:-.5px}
+.sim-hero .sim-monthly em{font-style:normal;font-weight:700;font-size:17px;color:#dfe5ff}
+.sim-hero .sim-monthly small{color:#fff;background:rgba(255,255,255,.18);align-self:flex-start;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700}
+@media(max-width:700px){
+  .sim-hero .sim-monthly{padding:22px}
+}
+
+/* 3 formules a mensualites : 6, 12 et 18 mois */
+.sim-tabs{grid-template-columns:repeat(3,1fr)!important}

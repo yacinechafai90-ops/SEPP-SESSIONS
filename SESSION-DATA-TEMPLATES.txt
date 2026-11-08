@@ -1,0 +1,15 @@
+SESSION DATA AND EXCEL UPLOADS
+
+A new session receives the baseline from these files in the parent database practice folder:
+- items.csv: 64 products and their prices, availability and payment amounts
+- Brandshops.csv: 16 shops
+- Specs.csv: the product technical details
+- Discount.csv: the 6, 12 and 18 month discount percentages
+
+To update one session, open /admin, select the session and choose a tab. Upload an .xlsx or .csv file in that tab. The first sheet or CSV header must have the same column names in the same order as the matching CSV file, including the full items layout for Products. Row values may change. Existing rows missing from the upload remain unchanged. Invalid files make no changes.
+
+Products use REFERENCE as their key. Brandshops use ID. Specs use REFERENCE. Discounts have one row. Brandshop phone numbers should be formatted as text in Excel to preserve leading zeroes. Excel formulas are not accepted. Maximum 2,000 rows and 4 MB.
+
+Uploaded changes belong to the selected session. Original CSV files and the shared PostgreSQL catalogue are not overwritten.
+
+After changing Python files, close the local server and restart DEMARRER-SITE.cmd, then refresh /admin.

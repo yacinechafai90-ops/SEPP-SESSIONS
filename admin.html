@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Administration du catalogue</title>
+<style>
+  :root { --bleu:#1428a0; --gris:#f3f5f9; --bord:#dfe3ec; --texte:#101726; --rouge:#b3261e; --vert:#1b7f3b; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.45 Arial,Helvetica,sans-serif; color:var(--texte); background:var(--gris); }
+  header { background:var(--bleu); color:#fff; padding:16px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  header h1 { margin:0; font-size:20px; }
+  header a { color:#fff; text-decoration:none; border:1px solid #ffffff88; border-radius:8px; padding:7px 14px; }
+  header a:hover { background:#ffffff22; }
+  main { max-width:1280px; margin:0 auto; padding:22px 28px 60px; }
+  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .tabs button { border:1px solid var(--bord); background:#fff; border-radius:999px; padding:9px 18px; font:inherit; cursor:pointer; }
+  .tabs button.actif { background:var(--bleu); border-color:var(--bleu); color:#fff; }
+  .barre { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+  .barre input[type=search] { flex:1; min-width:220px; max-width:420px; padding:9px 12px; border:1px solid var(--bord); border-radius:8px; font:inherit; }
+  .compte { color:#5b6475; }
+  .bouton { border:0; border-radius:8px; padding:9px 16px; font:inherit; cursor:pointer; background:var(--bleu); color:#fff; }
+  .bouton.sec { background:#fff; color:var(--bleu); border:1px solid var(--bleu); }
+  .bouton.danger { background:#fff; color:var(--rouge); border:1px solid var(--rouge); }
+  .bouton:hover { filter:brightness(.93); }
+  .tableau { background:#fff; border:1px solid var(--bord); border-radius:10px; overflow:auto; }
+  .tableau { scrollbar-width:none; }
+  .tableau::-webkit-scrollbar { display:none; }
+  #defil-bas { position:sticky; bottom:0; z-index:5; display:none; overflow-x:auto; overflow-y:hidden; height:18px;
+               margin-top:4px; background:#f4f5f9cc; border-radius:9px; }
+  #defil-bas div { height:1px; }
+  table { border-collapse:collapse; width:100%; }
+  th { text-align:left; background:#eaeefb; color:var(--bleu); font-size:12.5px; text-transform:uppercase; letter-spacing:.3px; padding:10px 12px; position:sticky; top:0; white-space:nowrap; }
+  td { padding:9px 12px; border-top:1px solid var(--bord); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  td.actions { white-space:nowrap; text-align:right; max-width:none; }
+  tr:hover td { background:#f8f9fd; }
+  .vide { padding:28px; text-align:center; color:#5b6475; }
+  #bandeau { margin-bottom:14px; border-radius:8px; padding:11px 14px; display:none; }
+  #bandeau.ok { display:block; background:#e6f4ea; border:1px solid #b7dfc2; color:var(--vert); }
+  #bandeau.err { display:block; background:#fdecea; border:1px solid #f4b9b4; color:var(--rouge); }
+  dialog { border:0; border-radius:14px; padding:0; width:min(680px,94vw); box-shadow:0 20px 60px #0004; }
+  dialog::backdrop { background:#0007; }
+  form { display:flex; flex-direction:column; max-height:90vh; }
+  .dlg-tete { padding:16px 22px; border-bottom:1px solid var(--bord); font-size:18px; font-weight:bold; color:var(--bleu); }
+  .dlg-corps { padding:16px 22px; overflow:auto; display:grid; gap:12px; }
+  .dlg-corps label { display:grid; gap:4px; font-weight:bold; font-size:13px; }
+  .dlg-corps label.cache { display:none; }
+  .dlg-corps input, .dlg-corps textarea { font:inherit; font-weight:normal; padding:9px 11px; border:1px solid var(--bord); border-radius:8px; width:100%; }
+  .dlg-corps input[readonly] { background:var(--gris); color:#5b6475; }
+  .dlg-corps .etoile { color:var(--rouge); }
+  .dlg-pied { padding:14px 22px; border-top:1px solid var(--bord); display:flex; gap:10px; justify-content:flex-end; align-items:center; }
+  #dlg-erreur { color:var(--rouge); margin-right:auto; font-size:14px; }
+  .barre select { padding:9px 12px; border:1px solid var(--bord); border-radius:8px; font:inherit; background:#fff; }
+  .dlg-corps select { font:inherit; font-weight:normal; padding:9px 11px; border:1px solid var(--bord); border-radius:8px; width:100%; background:#fff; }
+  .dlg-info { font-size:13px; color:#5b6475; background:var(--gris); border-radius:8px; padding:8px 12px; }
+  .badge { display:inline-block; border-radius:999px; padding:2px 10px; font-size:12.5px; font-weight:bold; }
+  .badge.actif { background:#e6f4ea; color:var(--vert); }
+  .badge.inactif { background:#fff4d6; color:#8a5a00; }
+  .badge.supprime { background:#fdecea; color:var(--rouge); }
+  tr.ligne-supprime td { color:#8a91a1; text-decoration:line-through; }
+  tr.ligne-supprime td.actions, tr.ligne-supprime td.cellule-statut { text-decoration:none; }
+  tr.ligne-inactif td { color:#6b7280; }
+  #dlg-confirm { width:min(460px,92vw); }
+  #dlg-confirm .dlg-corps { gap:8px; }
+  #dlg-confirm .dlg-tete { color:var(--rouge); }
+  #conf-detail { color:#5b6475; }
+  .bouton.danger-plein { background:var(--rouge); color:#fff; border:0; }
+  .deux { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  [hidden] { display:none !important; }
+  .bouton-pub { font:inherit; cursor:pointer; background:#fff; color:var(--bleu); border:0; border-radius:8px; padding:8px 14px; font-weight:bold; margin-right:8px; position:relative; }
+  .bouton-pub:hover { filter:brightness(.93); }
+  .bouton-pub .point { position:absolute; top:-5px; right:-5px; width:12px; height:12px; border-radius:50%; background:#e8590c; border:2px solid #fff; }
+  .pub-barre { height:10px; background:#e6e9f2; border-radius:999px; overflow:hidden; margin:14px 0 8px; }
+  .pub-barre div { height:100%; width:0; background:var(--bleu); transition:width .4s; }
+  .pub-info { color:#5b6475; font-size:13px; line-height:1.5; }
+  .pub-ok { color:var(--vert); font-weight:bold; }
+  .pub-err { color:var(--rouge); font-weight:bold; }
+  .pub-lien { color:var(--bleu); font-weight:bold; word-break:break-all; }
+  .lien-bouton { background:none; border:0; color:var(--bleu); text-decoration:underline; cursor:pointer; font:inherit; padding:0; }
+  .champ-photo { display:grid; gap:4px; font-weight:bold; font-size:13px; }
+  .photo-ligne { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-weight:normal; }
+  #photo-nom { font-weight:normal; color:var(--texte-doux, #555); font-size:12px; word-break:break-all; }
+  #photo-apercu { max-height:150px; max-width:100%; object-fit:contain; border:1px solid var(--bord); border-radius:8px; background:#fff; padding:6px; margin-top:6px; justify-self:start; }
+  .dlg-corps select:disabled { background:var(--gris); color:#8a91a1; }
+</style>
+<link rel="stylesheet" href="admin-offres.css">
+</head>
+<body>
+<header>
+  <h1>Administration du catalogue</h1>
+  <span>
+    <button type="button" id="publier" class="bouton-pub">Publier le site<i class="point" hidden></i></button>
+    <a href="/">← Retour au site</a>
+    <a href="/admin/logout">Se déconnecter</a>
+  </span>
+</header>
+<main>
+  <div id="bandeau" role="status"></div>
+  <nav class="tabs" id="onglets"></nav>
+  <div class="barre">
+    <input type="search" id="recherche" placeholder="Rechercher…" aria-label="Rechercher">
+    <select id="filtre-statut" aria-label="Filtrer par statut">
+      <option value="defaut">Actifs et inactifs</option>
+      <option value="actif">Actifs seulement</option>
+      <option value="inactif">Inactifs seulement</option>
+      <option value="supprimé">Supprimés</option>
+      <option value="tous">Tous</option>
+    </select>
+    <span class="compte" id="compte"></span>
+    <button class="bouton" id="ajouter" type="button">+ Ajouter</button>
+  </div>
+  <section id="offres-utilisateurs" aria-labelledby="offres-titre">
+    <h2 id="offres-titre">Offres par utilisateur</h2>
+    <div class="session-actions"><button type="button" class="bouton" id="session-add">+ Ajouter une session</button><button type="button" class="icon-action" id="session-edit" title="Modifier la session" aria-label="Modifier la session">✎</button><button type="button" class="icon-action" id="session-toggle" title="Désactiver ou activer la session" aria-label="Désactiver ou activer la session">⏻</button><button type="button" class="icon-action danger" id="session-delete" title="Supprimer la session" aria-label="Supprimer la session">🗑</button></div>
+    <p>Choisissez un compte et un produit. Un prix vide conserve le prix général du produit.</p>
+    <form id="form-offre">
+      <label>Utilisateur<select id="offre-utilisateur" required><option value="">Choisir un utilisateur</option></select></label>
+      <label>Produit<select id="offre-produit" required><option value="">Choisir un produit</option></select></label>
+      <label>Prix spécifique (DA)<input id="offre-prix" type="number" min="0" step="0.01" placeholder="Prix général"></label>
+      <button class="bouton" type="submit">Enregistrer l'offre</button>
+    </form>
+    <div class="session-extra"><form id="form-import"><label>Importer une liste de prix Excel (.xlsx)<input id="offre-excel" type="file" accept=".xlsx" required></label><button type="submit" class="bouton">Importer les prix</button></form><p>Première ligne : <code>reference</code> et <code>prix_offre</code>. Une ligne par produit. Les produits absents du fichier restent inchangés. Prix vide = prix général.</p><div id="session-brandshops"><h3>Brandshops visibles pour cette session</h3><div id="brandshop-list"></div><button type="button" class="bouton sec" id="save-brandshops">Enregistrer les brandshops</button></div></div>
+    <p id="offre-message" role="status" aria-live="polite"></p>
+    <div class="tableau"><table id="table-offres"><thead><tr><th>Produit</th><th>Prix spécifique</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <div class="tableau"><table id="tableau"></table></div>
+
+  <div id="defil-bas" aria-label="Défilement horizontal"><div id="defil-large"></div></div>
+</main>
+
+<dialog id="dlg">
+  <form method="dialog" id="formulaire" autocomplete="off">
+    <div class="dlg-tete" id="dlg-titre"></div>
+    <div class="dlg-corps" id="dlg-corps"></div>
+    <div class="dlg-pied">
+      <span id="dlg-erreur"></span>
+      <button class="bouton sec" type="button" id="annuler">Annuler</button>
+      <button class="bouton" type="submit" id="enregistrer">Enregistrer</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-pub">
+  <div class="dlg-tete">Publier le site</div>
+  <div class="dlg-corps" id="pub-corps"></div>
+  <div class="dlg-pied">
+    <span id="pub-erreur"></span>
+    <button class="bouton sec" type="button" id="pub-fermer">Fermer</button>
+    <button class="bouton" type="button" id="pub-action"></button>
+  </div>
+</dialog>
+
+<dialog id="dlg-confirm">
+  <div class="dlg-tete">Confirmer la suppression</div>
+  <div class="dlg-corps">
+    <div id="conf-message"></div>
+    <div id="conf-detail"></div>
+  </div>
+  <div class="dlg-pied">
+    <button class="bouton sec" type="button" id="conf-non">Annuler</button>
+    <button class="bouton danger-plein" type="button" id="conf-oui">Oui, supprimer</button>
+  </div>
+</dialog>
+
+<datalist id="liste-types"></datalist>
+<datalist id="liste-dispos"></datalist>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const normaliser = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().split(/\s+/).filter(Boolean).join(' ');
+// Nom de colonne sans tirets bas ni espaces : « sub_category » -> « subcategory ».
+const idCol = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+// « type » est l'ancien nom de la colonne « category ».
+const estCategorie = (nom) => ['category', 'type'].includes(idCol(nom));
+const estSousCategorie = (nom) => idCol(nom) === 'subcategory';
+
+let schema = null;
+let table = null;      // table affichée
+let lignes = [];
+let edition = null;    // { cle } si modification, null si ajout
+
+async function api(methode, chemin, corps) {
+  const reponse = await fetch('/admin/api/' + chemin, {
+    method: methode,
+    headers: { 'Content-Type': 'application/json', 'X-Admin': 'oui' },
+    body: corps ? JSON.stringify(corps) : undefined,
+  });
+  if (reponse.status === 401) { location.href = '/admin/login'; throw new Error('Session expirée : reconnectez-vous.'); }
+  let donnees = {};
+  try { donnees = await reponse.json(); } catch (e) {}
+  if (!reponse.ok) throw new Error(donnees.erreur || ('Erreur ' + reponse.status));
+  return donnees;
+}
+
+function bandeau(texte, type) {
+  const b = $('#bandeau');
+  b.textContent = texte || '';
+  b.className = texte ? type : '';
+}
+
+function suites(r, message) {
+  if (r.avertissement) {
+    bandeau('Enregistré, mais le site ne peut plus charger ses données : ' + r.avertissement +
+            ' — corrigez la ligne que vous venez de modifier.', 'err');
+  } else {
+    bandeau(message, 'ok');
+  }
+  majPublication();
+}
+
+async function init() {
+  try {
+    schema = await api('GET', 'schema');
+  } catch (e) {
+    bandeau('Impossible de lire la base : ' + e.message, 'err');
+    return;
+  }
+  $('#liste-dispos').innerHTML = schema.disponibilites.map((t) => `<option value="${esc(t)}">`).join('');
+  $('#onglets').innerHTML = schema.tables.map((t) =>
+    `<button type="button" data-table="${esc(t.nom)}">${esc(t.titre)}</button>`).join('');
+  document.querySelectorAll('[data-table]').forEach((b) => b.onclick = () => ouvrirTable(b.dataset.table));
+  if (schema.tables.length) await ouvrirTable(schema.tables[0].nom);
+  majPublication();
+}
+
+async function ouvrirTable(nom) {
+  table = schema.tables.find((t) => t.nom === nom);
+  document.querySelectorAll('[data-table]').forEach((b) => b.classList.toggle('actif', b.dataset.table === nom));
+  if (!schema.migre && (nom === 'items' || nom === 'specs')) {
+    bandeau('La base n\'a pas encore les colonnes Catégorie / Sous-catégorie : exécutez ' +
+            'items_refonte.sql puis specs_refonte.sql dans pgAdmin. Ajout et modification désactivés.', 'err');
+  }
+  $('#ajouter').style.display = table.mode === 'crud' ? '' : 'none';
+  $('#filtre-statut').style.display = table.statut ? '' : 'none';
+  $('#filtre-statut').value = 'defaut';
+  $('#recherche').value = '';
+  await recharger();
+}
+
+async function recharger() {
+  $('#tableau').innerHTML = '<tr><td class="vide">Chargement…</td></tr>';
+  try {
+    lignes = (await api('GET', 't/' + table.nom)).lignes;
+  } catch (e) {
+    $('#tableau').innerHTML = '';
+    bandeau(e.message, 'err');
+    return;
+  }
+  afficher();
+}
+
+function libelle(nomColonne) {
+  return table.colonnes.find((c) => c.nom === nomColonne)?.etiquette || nomColonne;
+}
+
+function statutDe(ligne) {
+  return table.statut ? (ligne[table.statut] || 'actif') : 'actif';
+}
+
+function classeStatut(s) { return s === 'supprimé' ? 'supprime' : s; }
+
+function formaterDate(valeur) {
+  if (!valeur) return '';
+  const d = new Date(valeur);
+  if (isNaN(d)) return String(valeur);
+  return d.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+function estDate(nomColonne) {
+  return table.colonnes.find((c) => c.nom === nomColonne)?.systeme === true;
+}
+
+function cellule(ligne, c) {
+  if (c === table.statut) {
+    const s = statutDe(ligne);
+    return `<td class="cellule-statut"><span class="badge ${classeStatut(s)}">${esc(s)}</span></td>`;
+  }
+  const texte = estDate(c) ? formaterDate(ligne[c]) : (ligne[c] ?? '');
+  return `<td title="${esc(texte)}">${esc(texte)}</td>`;
+}
+
+// Colonnes qui existent en base et dans le formulaire, mais pas dans la liste.
+const COLONNES_CACHEES_LISTE = { items: ['prix_showroom', 'prix_b2b_cash_plus_timbre'] };
+function colonnesListe() {
+  const cachees = (COLONNES_CACHEES_LISTE[table.nom] || []).map(idCol);
+  return table.liste.filter((c) => !cachees.includes(idCol(c)));
+}
+
+function afficher() {
+  const q = normaliser($('#recherche').value);
+  const filtre = $('#filtre-statut').value;
+  const visibles = lignes.filter((l) => {
+    const s = statutDe(l);
+    const okStatut = !table.statut || filtre === 'tous' ||
+      (filtre === 'defaut' ? s !== 'supprimé' : s === filtre);
+    return okStatut && (!q || colonnesListe().some((c) => normaliser(l[c]).includes(q)));
+  });
+  $('#compte').textContent = visibles.length + ' ligne' + (visibles.length > 1 ? 's' : '');
+  if (!visibles.length) {
+    $('#tableau').innerHTML = '<tr><td class="vide">Aucune ligne.</td></tr>';
+    return;
+  }
+  const entete = colonnesListe().map((c) => `<th>${esc(libelle(c))}</th>`).join('') + '<th></th>';
+  const corps = visibles.map((l) => {
+    const index = lignes.indexOf(l);
+    const s = statutDe(l);
+    const cellules = colonnesListe().map((c) => cellule(l, c)).join('');
+    let boutons = `<button class="bouton sec" type="button" data-modifier="${index}" title="Modifier" aria-label="Modifier">✎</button>`;
+    if (table.statut) {
+      if (s === 'actif') boutons += ` <button class="bouton sec" type="button" data-statut="inactif" data-i="${index}" title="Désactiver" aria-label="Désactiver">⏻</button>`;
+      if (s === 'inactif') boutons += ` <button class="bouton sec" type="button" data-statut="actif" data-i="${index}" title="Activer" aria-label="Activer">⏻</button>`;
+      if (table.mode === 'crud') {
+        boutons += s === 'supprimé'
+          ? ` <button class="bouton sec" type="button" data-restaurer="${index}">Restaurer</button>`
+          : ` <button class="bouton danger" type="button" data-supprimer="${index}" title="Supprimer" aria-label="Supprimer">🗑</button>`;
+      }
+    }
+    return `<tr class="ligne-${classeStatut(s)}">${cellules}<td class="actions">${boutons}</td></tr>`;
+  }).join('');
+  $('#tableau').innerHTML = `<thead><tr>${entete}</tr></thead><tbody>${corps}</tbody>`;
+  majDefilement();
+  document.querySelectorAll('[data-modifier]').forEach((b) => b.onclick = () => ouvrirFormulaire(lignes[Number(b.dataset.modifier)]));
+  document.querySelectorAll('[data-supprimer]').forEach((b) => b.onclick = () => supprimer(lignes[Number(b.dataset.supprimer)]));
+  document.querySelectorAll('[data-restaurer]').forEach((b) => b.onclick = () => restaurer(lignes[Number(b.dataset.restaurer)]));
+  document.querySelectorAll('[data-statut]').forEach((b) => b.onclick = () => changerStatut(lignes[Number(b.dataset.i)], b.dataset.statut));
+}
+
+/* ---------- Formulaire ---------- */
+
+const COLONNES_FIXES_SPECS = ['type', 'category', 'subcategory', 'reference', 'designation', 'statut'];
+
+function estSpecs() { return table.nom === 'specs'; }
+function colonneSpecs(nomColonne) { return estSpecs() && !COLONNES_FIXES_SPECS.includes(idCol(nomColonne)); }
+
+function etiquettesSpecs(valeurType) {
+  const categorie = schema.categories[normaliser(valeurType)];
+  return (categorie && schema.etiquettes_specs[categorie]) || null;
+}
+
+let contexte = {};   // données annexes du formulaire ouvert (images, produits)
+
+function colonneItems(logique) {
+  const items = schema.tables.find((t) => t.nom === 'items');
+  const test = logique === 'category' ? estCategorie : (nom) => idCol(nom) === idCol(logique);
+  return items?.colonnes.find((c) => test(c.nom))?.nom;
+}
+
+function optionsHtml(valeurs, choisie) {
+  return valeurs.map((v) => `<option value="${esc(v)}"${v === choisie ? ' selected' : ''}>${esc(v)}</option>`).join('');
+}
+
+/* --- Catégorie, puis Sous-catégorie restreinte à cette catégorie --- */
+function champCategorie(c) {
+  return `<label data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span><span class="etoile"> *</span>
+    <select data-col="${esc(c.nom)}" id="sel-cat" aria-label="Catégorie"></select></label>`;
+}
+
+function champSousCategorie(c) {
+  return `<label data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span><span class="etoile"> *</span>
+    <select data-col="${esc(c.nom)}" id="sel-sous" aria-label="Sous-catégorie"></select></label>`;
+}
+
+function brancherClassement(categorieActuelle, sousActuelle) {
+  const selCat = $('#sel-cat'), selSous = $('#sel-sous');
+  const categories = schema.categories_ordre.slice();
+  if (categorieActuelle && !categories.includes(categorieActuelle)) categories.unshift(categorieActuelle);
+  selCat.innerHTML = '<option value="">Choisir une catégorie…</option>' + optionsHtml(categories, categorieActuelle);
+  selCat.value = categorieActuelle || '';
+
+  function remplirSous(categorie, souhaitee) {
+    const sous = (schema.sous_categories[categorie] || []).slice();
+    if (souhaitee && categorie === categorieActuelle && !sous.includes(souhaitee)) sous.unshift(souhaitee);
+    selSous.innerHTML = '<option value="">' + (categorie ? 'Choisir une sous-catégorie…' : 'Choisissez d\'abord une catégorie') +
+      '</option>' + optionsHtml(sous, souhaitee);
+    selSous.disabled = !categorie;
+    selSous.value = sous.includes(souhaitee) ? souhaitee : (sous.length === 1 ? sous[0] : '');
+  }
+  remplirSous(categorieActuelle, sousActuelle);
+  selCat.onchange = () => remplirSous(selCat.value, '');
+}
+
+/* --- Photo : liste des images du dossier assets --- */
+const estPhoto = (nom) => String(nom).toLowerCase().replace(/[^a-z0-9]/g, '') === 'productphotos';
+
+const PHOTO_MAX = 5 * 1024 * 1024;
+let photoEnAttente = null;   // { col, fichier } : photo choisie, envoyée à l'enregistrement
+
+function champPhoto(c) {
+  return `<div class="champ-photo" data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span>
+    <input type="hidden" data-col="${esc(c.nom)}" id="photo-valeur">
+    <div class="photo-ligne">
+      <button type="button" class="bouton sec" id="photo-choisir">Choisir une photo sur mon ordinateur…</button>
+      <button type="button" class="bouton sec" id="photo-retirer">Retirer</button>
+      <span id="photo-nom"></span>
+    </div>
+    <input type="file" id="photo-fichier" accept="image/png,image/jpeg,image/webp" hidden>
+    <img id="photo-apercu" alt="" hidden></div>`;
+}
+
+function brancherPhoto(valeur, colonne) {
+  const garde = String(valeur || '').startsWith('assets/') ? String(valeur) : '';
+  let apercuTemporaire = null;
+  photoEnAttente = null;
+  $('#photo-valeur').value = garde;
+
+  function afficherPhoto() {
+    const img = $('#photo-apercu');
+    if (photoEnAttente) {
+      if (apercuTemporaire) URL.revokeObjectURL(apercuTemporaire);
+      apercuTemporaire = URL.createObjectURL(photoEnAttente.fichier);
+      img.src = apercuTemporaire;
+      $('#photo-nom').textContent = photoEnAttente.fichier.name + ' → sera copiée dans assets';
+    } else if ($('#photo-valeur').value) {
+      img.src = '/' + $('#photo-valeur').value.split('/').map(encodeURIComponent).join('/');
+      $('#photo-nom').textContent = $('#photo-valeur').value;
+    } else {
+      $('#photo-nom').textContent = '(aucune — photo automatique selon la référence)';
+    }
+    img.hidden = !(photoEnAttente || $('#photo-valeur').value);
+    $('#photo-retirer').hidden = !(photoEnAttente || $('#photo-valeur').value);
+  }
+
+  $('#photo-choisir').onclick = () => $('#photo-fichier').click();
+  $('#photo-fichier').onchange = () => {
+    const f = $('#photo-fichier').files[0];
+    if (!f) return;
+    $('#dlg-erreur').textContent = '';
+    if (!/\.(png|jpe?g|webp)$/i.test(f.name)) {
+      $('#dlg-erreur').textContent = 'Photo : formats acceptés : PNG, JPG ou WEBP.';
+    } else if (f.size > PHOTO_MAX) {
+      $('#dlg-erreur').textContent = 'Photo : 5 Mo maximum.';
+    } else {
+      photoEnAttente = { col: colonne, fichier: f };
+      afficherPhoto();
+    }
+    $('#photo-fichier').value = '';
+  };
+  $('#photo-retirer').onclick = () => {
+    photoEnAttente = null;
+    $('#photo-valeur').value = '';
+    afficherPhoto();
+  };
+  afficherPhoto();
+}
+
+async function envoyerPhoto(fichier) {
+  const donnees = new FormData();
+  donnees.append('photo', fichier);
+  const reponse = await fetch('/admin/api/photo', { method: 'POST', headers: { 'X-Admin': 'oui' }, body: donnees });
+  if (reponse.status === 401) { location.href = '/admin/login'; throw new Error('Session expirée : reconnectez-vous.'); }
+  let r = {};
+  try { r = await reponse.json(); } catch (e) {}
+  if (!reponse.ok) throw new Error(r.erreur || ('Erreur ' + reponse.status));
+  return r.chemin;
+}
+
+/* --- Fiche technique : la référence se choisit parmi les produits --- */
+function champReferenceSpecs(c, ligne) {
+  if (ligne) {
+    return `<label data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span>
+      <input data-col="${esc(c.nom)}" value="${esc(ligne[c.nom])}" readonly></label>`;
+  }
+  const utilisees = new Set(lignes.map((l) => l[table.cle]));
+  const cleP = colonneItems('reference'), desP = colonneItems('designation');
+  const libres = contexte.produits.filter((p) => !utilisees.has(p[cleP]));
+  return `<label data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span><span class="etoile"> *</span>
+    <select data-col="${esc(c.nom)}" id="sel-ref">
+      <option value="">${libres.length ? 'Choisir un produit…' : 'Tous les produits ont déjà une fiche'}</option>
+      ${libres.map((p) => `<option value="${esc(p[cleP])}">${esc(p[cleP])} — ${esc(p[desP])}</option>`).join('')}
+    </select></label>`;
+}
+
+function brancherReferenceSpecs() {
+  const sel = $('#sel-ref');
+  if (!sel) return;
+  const cleP = colonneItems('reference'), catP = colonneItems('category');
+  const sousP = colonneItems('subcategory'), desP = colonneItems('designation');
+  const champ = (test) => [...document.querySelectorAll('#dlg-corps [data-col]')]
+    .find((e) => test(e.dataset.col));
+  sel.onchange = () => {
+    const p = contexte.produits.find((x) => x[cleP] === sel.value);
+    champ(estCategorie).value = p ? p[catP] : '';
+    const sous = champ(estSousCategorie);
+    if (sous) sous.value = p && sousP ? (p[sousP] ?? '') : '';
+    champ((n) => idCol(n) === 'designation').value = p ? p[desP] : '';
+    adapterSpecs();
+  };
+}
+
+function champHtml(c, ligne) {
+  const valeur = ligne ? (ligne[c.nom] ?? '') : '';
+  const n = normaliser(c.nom);
+  const obligatoire = table.obligatoires.includes(c.nom);
+  const etoile = obligatoire ? '<span class="etoile"> *</span>' : '';
+  if (table.nom === 'items' && estCategorie(c.nom)) return champCategorie(c);
+  if (table.nom === 'items' && estSousCategorie(c.nom)) return champSousCategorie(c);
+  if (table.nom === 'items' && estPhoto(c.nom)) return champPhoto(c);
+  if (estSpecs() && c.nom === table.cle) return champReferenceSpecs(c, ligne);
+  if (estSpecs() && (estCategorie(c.nom) || estSousCategorie(c.nom) || n === 'designation')) {
+    return `<label data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span>
+      <input data-col="${esc(c.nom)}" value="${esc(valeur)}" readonly placeholder="(repris du produit)"></label>`;
+  }
+  let attributs = '';
+  if (c.nom === table.cle && ligne) attributs += ' readonly';
+  if (n === 'disponibilite') attributs += ' list="liste-dispos"';
+  const long = colonneSpecs(c.nom) || n === 'adresse';
+  const champ = long
+    ? `<textarea rows="2" name="${esc(c.nom)}" data-col="${esc(c.nom)}"${attributs}>${esc(valeur)}</textarea>`
+    : `<input name="${esc(c.nom)}" data-col="${esc(c.nom)}" value="${esc(valeur)}"${attributs}>`;
+  return `<label data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span>${etoile}${champ}</label>`;
+}
+
+async function ouvrirFormulaire(ligne) {
+  if (!schema.migre && (table.nom === 'items' || table.nom === 'specs')) {
+    bandeau('Exécutez d\'abord items_refonte.sql puis specs_refonte.sql dans pgAdmin (colonnes Catégorie / Sous-catégorie).', 'err');
+    return;
+  }
+  edition = ligne ? { cle: ligne[table.cle] } : null;
+  $('#dlg-titre').textContent = (ligne ? 'Modifier — ' : 'Ajouter — ') + table.titre;
+  $('#dlg-erreur').textContent = '';
+  contexte = {};
+  try {
+    if (estSpecs() && !ligne) {
+      contexte.produits = (await api('GET', 't/items')).lignes.filter((p) => (p.statut || 'actif') !== 'supprimé');
+    }
+  } catch (e) {
+    bandeau(e.message, 'err');
+    return;
+  }
+
+  const infoDates = ligne
+    ? `<div class="dlg-info">${table.colonnes.filter((c) => c.systeme).map((c) =>
+        esc(c.etiquette) + ' : ' + esc(formaterDate(ligne[c.nom]))).join(' &nbsp;·&nbsp; ')}</div>`
+    : '';
+
+  // L'identifiant et le statut sont gérés automatiquement : absents du formulaire.
+  // La sous-catégorie se place juste après la catégorie (elle est la dernière colonne en base).
+  const champs = table.colonnes.filter((c) => !c.systeme && !c.masque);
+  const sousCol = champs.find((c) => estSousCategorie(c.nom));
+  if (sousCol) {
+    champs.splice(champs.indexOf(sousCol), 1);
+    champs.splice(champs.findIndex((c) => estCategorie(c.nom)) + 1, 0, sousCol);
+  }
+  $('#dlg-corps').innerHTML = infoDates + champs.map((c) => champHtml(c, ligne)).join('');
+
+  if (table.nom === 'items') {
+    const catCol = table.colonnes.find((c) => estCategorie(c.nom));
+    const photoCol = table.colonnes.find((c) => estPhoto(c.nom));
+    if (catCol) brancherClassement(ligne ? (ligne[catCol.nom] || '') : '', ligne && sousCol ? (ligne[sousCol.nom] || '') : '');
+    if (photoCol) brancherPhoto(ligne ? ligne[photoCol.nom] : '', photoCol.nom);
+  }
+  if (estSpecs()) {
+    brancherReferenceSpecs();
+    adapterSpecs();
+  }
+  $('#dlg').showModal();
+}
+
+/* Fiches techniques : les libellés des champs dépendent du type. */
+function adapterSpecs() {
+  const typeInput = [...document.querySelectorAll('[data-col]')].find((e) => estCategorie(e.dataset.col));
+  const etiquettes = etiquettesSpecs(typeInput.value);
+  const autres = [...document.querySelectorAll('#dlg-corps label')].filter((l) => colonneSpecs(l.dataset.champ));
+  autres.forEach((label, i) => {
+    const champ = label.querySelector('[data-col]');
+    const generique = table.colonnes.find((c) => c.nom === label.dataset.champ).etiquette;
+    if (etiquettes) {
+      const nom = etiquettes[i];
+      label.querySelector('.lib').textContent = nom || generique;
+      label.classList.toggle('cache', !nom && !champ.value.trim());
+    } else {
+      label.querySelector('.lib').textContent = generique;
+      label.classList.remove('cache');
+    }
+  });
+}
+
+async function enregistrer(evenement) {
+  evenement.preventDefault();
+  const valeurs = {};
+  document.querySelectorAll('#dlg-corps [data-col]').forEach((e) => { valeurs[e.dataset.col] = e.value; });
+  $('#enregistrer').disabled = true;
+  $('#dlg-erreur').textContent = '';
+  try {
+    // Photo choisie sur l'ordinateur : copiée dans assets/ juste avant l'enregistrement.
+    if (photoEnAttente && table.nom === 'items') {
+      valeurs[photoEnAttente.col] = await envoyerPhoto(photoEnAttente.fichier);
+      photoEnAttente = null;
+    }
+    const r = edition
+      ? await api('PUT', 't/' + table.nom, { cle: edition.cle, valeurs })
+      : await api('POST', 't/' + table.nom, { valeurs });
+    $('#dlg').close();
+    suites(r, edition ? 'Modification enregistrée dans PostgreSQL.' : 'Ligne ajoutée dans PostgreSQL.');
+    await recharger();
+  } catch (e) {
+    $('#dlg-erreur').textContent = e.message;
+  } finally {
+    $('#enregistrer').disabled = false;
+  }
+}
+
+/* Fenêtre « Êtes-vous sûr ? » */
+function confirmer(message, detail) {
+  return new Promise((resolve) => {
+    $('#conf-message').textContent = message;
+    $('#conf-detail').textContent = detail;
+    const fin = (reponse) => {
+      $('#dlg-confirm').close();
+      $('#conf-oui').onclick = $('#conf-non').onclick = null;
+      resolve(reponse);
+    };
+    $('#conf-oui').onclick = () => fin(true);
+    $('#conf-non').onclick = () => fin(false);
+    $('#dlg-confirm').oncancel = () => resolve(false);
+    $('#dlg-confirm').showModal();
+  });
+}
+
+async function supprimer(ligne) {
+  const cle = ligne[table.cle];
+  const ok = await confirmer(
+    'Êtes-vous sûr de vouloir supprimer « ' + cle + ' » ?',
+    'Elle disparaîtra du site web mais restera dans la base de données ' +
+    '(statut « supprimé »). Vous pourrez la restaurer.'
+  );
+  if (!ok) return;
+  try {
+    const r = await api('DELETE', 't/' + table.nom, { cle });
+    suites(r, 'Supprimé du site. La ligne reste dans la base (statut « supprimé »).');
+    await recharger();
+  } catch (e) {
+    bandeau(e.message, 'err');
+  }
+}
+
+async function changerStatut(ligne, nouveau) {
+  const cle = table.cle ? ligne[table.cle] : null;
+  try {
+    const r = await api('POST', 't/' + table.nom + '/statut', { cle, statut: nouveau });
+    suites(r, nouveau === 'actif'
+      ? 'Actif : visible sur le site.'
+      : 'Inactif : masqué du site (la ligne reste dans la base).');
+    await recharger();
+  } catch (e) {
+    bandeau(e.message, 'err');
+  }
+}
+
+async function restaurer(ligne) {
+  const cle = ligne[table.cle];
+  try {
+    const r = await api('POST', 't/' + table.nom + '/statut', { cle, statut: 'actif' });
+    suites(r, '« ' + cle + ' » est de nouveau actif et visible sur le site.');
+    await recharger();
+  } catch (e) {
+    bandeau(e.message, 'err');
+  }
+}
+
+/* Barre de défilement horizontale toujours visible en bas de l'écran. */
+const zoneTableau = document.querySelector('.tableau'), barreBas = $('#defil-bas');
+function majDefilement() {
+  const large = zoneTableau.scrollWidth > zoneTableau.clientWidth + 1;
+  barreBas.style.display = large ? 'block' : 'none';
+  $('#defil-large').style.width = zoneTableau.scrollWidth + 'px';
+  barreBas.scrollLeft = zoneTableau.scrollLeft;
+}
+barreBas.onscroll = () => { if (zoneTableau.scrollLeft !== barreBas.scrollLeft) zoneTableau.scrollLeft = barreBas.scrollLeft; };
+zoneTableau.onscroll = () => { if (barreBas.scrollLeft !== zoneTableau.scrollLeft) barreBas.scrollLeft = zoneTableau.scrollLeft; };
+window.addEventListener('resize', majDefilement);
+if (window.ResizeObserver) new ResizeObserver(majDefilement).observe($('#tableau'));
+
+/* ---------- Publication sur Vercel ---------- */
+let pub = null;
+let sondagePub = null;
+
+async function majPublication() {
+  try { pub = await api('GET', 'publication'); } catch (e) { return; }
+  const point = $('#publier .point');
+  point.hidden = !(pub.configure && pub.a_publier);
+  $('#publier').title = !pub.configure ? 'Connecter Vercel pour publier'
+    : pub.a_publier ? 'Des modifications ne sont pas encore publiées' : 'Le site public est à jour';
+}
+
+function quand(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' });
+}
+
+function pubVue(mode, donnees = {}) {
+  const corps = $('#pub-corps'), action = $('#pub-action'), erreur = $('#pub-erreur');
+  erreur.textContent = '';
+  action.hidden = false;
+  action.disabled = false;
+  $('#pub-fermer').disabled = false;
+  if (mode === 'config') {
+    corps.innerHTML = `
+      <p class="pub-info">Pour publier, il faut une clé d'accès Vercel (créée sur
+        <b>vercel.com/account/tokens</b>). Elle reste sur cet ordinateur, elle n'est jamais publiée.</p>
+      <label><span class="lib">Clé d'accès Vercel</span>
+        <input type="password" id="pub-cle" autocomplete="off" placeholder="${pub?.configure ? 'laisser vide pour garder la clé actuelle' : 'Collez la clé ici'}"></label>
+      <label><span class="lib">Nom du projet Vercel</span>
+        <input id="pub-projet" value="${esc(pub?.projet || 'sepp-crud')}"></label>
+      <label><span class="lib">Équipe (facultatif)</span>
+        <input id="pub-equipe" value="${esc(pub?.equipe || '')}" placeholder="nom de l'équipe dans l'adresse vercel.com/NOM/projet (sinon vide)"></label>`;
+    action.textContent = 'Enregistrer';
+    action.onclick = pubEnregistrerConfig;
+  } else if (mode === 'accueil') {
+    const derniere = pub.derniere?.date
+      ? `Dernière publication : <b>${esc(quand(pub.derniere.date))}</b><br><a class="pub-lien" href="${esc(pub.derniere.url)}" target="_blank" rel="noopener">${esc(pub.derniere.url)}</a>`
+      : 'Le site n\'a encore jamais été publié depuis cet outil.';
+    const etat = pub.probleme
+      ? `<span class="pub-err">Impossible de lire la base : ${esc(pub.probleme)}</span>`
+      : pub.a_publier
+        ? '<span class="pub-err" style="color:#e8590c">Des modifications ne sont pas encore publiées.</span>'
+        : '<span class="pub-ok">Le site public est à jour.</span>';
+    corps.innerHTML = `<p class="pub-info">${derniere}</p><p>${etat}</p>
+      <p class="pub-info">Seules les lignes au statut « actif » sont publiées. L'administration et
+        le mot de passe ne sont jamais envoyés. La mise en ligne prend environ une minute.</p>
+      <p class="pub-info"><button type="button" class="lien-bouton" id="pub-changer">Changer la clé ou le projet</button></p>`;
+    $('#pub-changer').onclick = () => pubVue('config');
+    action.textContent = 'Publier maintenant';
+    action.onclick = pubLancer;
+    action.disabled = !!pub.probleme;
+  } else if (mode === 'progression') {
+    corps.innerHTML = `<div class="pub-barre"><div id="pub-barre"></div></div><div id="pub-message" class="pub-info"></div>`;
+    action.hidden = true;
+    $('#pub-fermer').disabled = true;
+  } else if (mode === 'fin') {
+    corps.innerHTML = donnees.ok
+      ? `<p class="pub-ok">Site publié.</p><p class="pub-info">Il peut falloir quelques secondes avant que tous les visiteurs voient la nouvelle version (rechargez avec Ctrl + F5).</p>
+         <p><a class="pub-lien" href="${esc(donnees.url)}" target="_blank" rel="noopener">${esc(donnees.url)}</a></p>`
+      : `<p class="pub-err">La publication a échoué.</p><p class="pub-info">${esc(donnees.erreur)}</p>`;
+    action.textContent = donnees.ok ? 'Terminé' : 'Réessayer';
+    action.onclick = donnees.ok ? () => $('#dlg-pub').close() : pubLancer;
+  }
+}
+
+async function ouvrirPublication() {
+  await majPublication();
+  if (!pub) { bandeau('Impossible de lire l\'état de la publication.', 'err'); return; }
+  pubVue(pub.configure ? 'accueil' : 'config');
+  if (pub.en_cours) { pubVue('progression'); suivrePublication(); }
+  $('#dlg-pub').showModal();
+}
+
+async function pubEnregistrerConfig() {
+  $('#pub-action').disabled = true;
+  $('#pub-erreur').textContent = '';
+  try {
+    await api('POST', 'publication/config', {
+      token: $('#pub-cle').value, projet: $('#pub-projet').value.trim(), team: $('#pub-equipe').value.trim(),
+    });
+    await majPublication();
+    pubVue('accueil');
+  } catch (e) {
+    $('#pub-erreur').textContent = e.message;
+    $('#pub-action').disabled = false;
+  }
+}
+
+async function pubLancer() {
+  try {
+    await api('POST', 'publication/lancer');
+  } catch (e) {
+    $('#pub-erreur').textContent = e.message;
+    return;
+  }
+  pubVue('progression');
+  suivrePublication();
+}
+
+function suivrePublication() {
+  clearInterval(sondagePub);
+  const verifier = async () => {
+    let p;
+    try { p = await api('GET', 'publication/progression'); } catch (e) { return; }
+    if (p.etat === 'en_cours') {
+      if ($('#pub-barre')) {
+        $('#pub-barre').style.width = p.pourcent + '%';
+        $('#pub-message').textContent = p.message;
+      }
+      return;
+    }
+    clearInterval(sondagePub);
+    await majPublication();
+    if (p.etat === 'ok') pubVue('fin', { ok: true, url: p.url });
+    else if (p.etat === 'erreur') pubVue('fin', { ok: false, erreur: p.erreur });
+  };
+  sondagePub = setInterval(verifier, 1200);
+  verifier();
+}
+
+$('#publier').onclick = ouvrirPublication;
+$('#pub-fermer').onclick = () => $('#dlg-pub').close();
+
+$('#ajouter').onclick = () => ouvrirFormulaire(null);
+$('#annuler').onclick = () => $('#dlg').close();
+$('#formulaire').onsubmit = enregistrer;
+$('#recherche').oninput = afficher;
+$('#filtre-statut').onchange = afficher;
+init();
+</script>
+<dialog id="session-dialog"><form id="session-form" method="dialog"><div class="dlg-tete" id="session-dialog-title">Ajouter une session</div><div class="dlg-corps"><label>Identifiant<input id="session-identifiant" required minlength="3" maxlength="80" autocomplete="off"></label><label>Mot de passe<input id="session-password" type="password" minlength="12" autocomplete="new-password"></label><p id="session-password-help" class="dlg-info">12 caractères minimum.</p><p id="session-error" role="alert"></p></div><div class="dlg-pied"><button class="bouton sec" type="button" id="session-cancel">Annuler</button><button class="bouton" type="submit">Enregistrer</button></div></form></dialog>
+<script src="admin-offres.js"></script>
+</body>
+</html>

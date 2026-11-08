@@ -1,0 +1,32 @@
+LANCEMENT LOCAL DU CATALOGUE
+
+1. Demarrer PostgreSQL (service postgresql-x64-18).
+2. Double-cliquer sur DEMARRER-SITE.cmd.
+3. Saisir le mot de passe PostgreSQL de postgres dans le terminal.
+   Aucun caractere ne s'affiche pendant la saisie : c'est normal.
+4. Le navigateur ouvre http://127.0.0.1:5002/ apres connexion.
+5. Garder le terminal ouvert. Ctrl+C arrete le serveur.
+
+Configuration actuelle dans server.py :
+- PostgreSQL : ::1, port 5432, utilisateur postgres.
+- Nom recherche de la base : Trial Database.
+- Site : 127.0.0.1, port 5002 (accessible sur ce PC).
+
+Le serveur lit public.items pour les references, noms,
+types, prix showroom, prix B2B et facilites de paiement.
+Actualiser la page pour recuperer les changements de ces champs.
+Les magasins, disponibilites, images et fiches techniques utilisent
+encore les fichiers locaux du site. Les tables brandshops, database_catalogue,
+discount et specs ne sont pas encore branchees au site.
+Aucune table n'est modifiee par le serveur.
+
+Le mot de passe est demande a chaque lancement et n'est pas enregistre.
+Ne pas ouvrir index.html directement et ne pas utiliser Live Server :
+le site doit passer par server.py pour lire PostgreSQL.
+
+En cas d'erreur :
+- password authentication failed : verifier le mot de passe.
+- connection refused : verifier que PostgreSQL est demarre et le port correct.
+- base introuvable : verifier NOM_RECHERCHE dans server.py.
+- colonne introuvable : verifier les colonnes de public.items.
+- port deja utilise : fermer l'ancienne fenetre du serveur.

@@ -1,0 +1,19 @@
+#offres-utilisateurs{margin-top:28px;padding:20px;background:#fff;border:1px solid var(--bord);border-radius:12px}
+#offres-utilisateurs h2{margin:0 0 8px;color:var(--bleu)}
+#offres-utilisateurs p{color:#5b6475}
+#form-offre{display:flex;flex-direction:row;align-items:end;gap:12px;flex-wrap:wrap;max-height:none;margin:20px 0}
+#form-offre label{display:grid;gap:5px;flex:1;min-width:180px;font-weight:bold}
+#form-offre select,#form-offre input{font:inherit;padding:9px 11px;border:1px solid var(--bord);border-radius:8px;width:100%}
+#form-offre button{min-height:42px}
+#table-offres{width:100%}
+#table-offres td:last-child{text-align:right}
+#offre-message.erreur{color:var(--rouge)}
+#offre-message.ok{color:var(--vert)}
+.session-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.icon-action{border:1px solid var(--bord);border-radius:8px;background:#fff;color:var(--bleu);padding:7px 11px;font-size:18px;cursor:pointer}
+.icon-action.danger{color:var(--rouge)}
+.session-extra{border-top:1px solid var(--bord);padding:16px 0;margin-top:14px}
+#form-import{display:flex;flex-direction:row;align-items:end;gap:12px;flex-wrap:wrap;max-height:none}
+#form-import label{display:grid;gap:5px;font-weight:bold}
+#brandshop-list{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#brandshop-list label{display:flex;gap:6px;align-items:center;border:1px solid var(--bord);padding:7px 10px;border-radius:8px}

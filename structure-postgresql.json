@@ -1,0 +1,717 @@
+[
+  {
+    "database": "Trial Database",
+    "columns": [
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "id",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "nom_du_showroom",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "ville",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "adresse",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "responsable_local",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "mobile",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "email",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "database_catalogue",
+        "column_name": "6_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "database_catalogue",
+        "column_name": "12_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "database_catalogue",
+        "column_name": "18_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "discount",
+        "column_name": "6_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "discount",
+        "column_name": "12_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "discount",
+        "column_name": "18_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "type",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "reference",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "designation",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "product_photos",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "prix_showroom",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "prix_b2b_cash",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "timbre",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "prix_b2b_cash_plus_timbre",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "facilite_6_mois",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "facilite_12_mois",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "facilite_18_mois",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "disponibilite",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "type",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "reference",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "designation",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "vacuum_type",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "max_power_consumption",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "suction_power",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "dust_capacity",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "filtration_/_technology",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "color_/_finish",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "key_features",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "column1",
+        "data_type": "text",
+        "is_nullable": "YES"
+      }
+    ],
+    "constraints": []
+  },
+  {
+    "database": "catalogue samsung ",
+    "columns": [
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "id",
+        "data_type": "integer",
+        "is_nullable": "NO"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "name",
+        "data_type": "character varying",
+        "is_nullable": "NO"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "reference",
+        "data_type": "character varying",
+        "is_nullable": "NO"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "category",
+        "data_type": "character varying",
+        "is_nullable": "NO"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "price_showroom",
+        "data_type": "numeric",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "price_discounted",
+        "data_type": "numeric",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "warranty_duration",
+        "data_type": "character varying",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "availability",
+        "data_type": "character varying",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "image_url",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "specs",
+        "data_type": "jsonb",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "price_cash",
+        "data_type": "numeric",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "price_6m",
+        "data_type": "numeric",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "price_12m",
+        "data_type": "numeric",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "products",
+        "column_name": "price_18m",
+        "data_type": "numeric",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "Type",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "REFERENCE ",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "DESIGNATION",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "PRIX SHOWROOM",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "PRIX B2B CASH",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "TIMBRE",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "PRIX B2B CASH + TIMBRE",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "FACILITE 6 MOIS",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "FACILITE 12 MOIS",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "FACILITE 18 MOIS",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "Disponibilité",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "produits",
+        "column_name": "id",
+        "data_type": "integer",
+        "is_nullable": "NO"
+      }
+    ],
+    "constraints": [
+      {
+        "table_name": "produits",
+        "conname": "produits_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "products",
+        "conname": "products_pkey",
+        "definition": "PRIMARY KEY (id)"
+      }
+    ]
+  },
+  {
+    "database": "postgres",
+    "columns": [
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "id",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "nom_du_showroom",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "ville",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "adresse",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "responsable_local",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "mobile",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "brandshops",
+        "column_name": "email",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "database_catalogue",
+        "column_name": "6_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "database_catalogue",
+        "column_name": "12_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "database_catalogue",
+        "column_name": "18_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "discount",
+        "column_name": "6_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "discount",
+        "column_name": "12_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "discount",
+        "column_name": "18_months",
+        "data_type": "bigint",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "type",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "reference",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "designation",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "product_photos",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "prix_showroom",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "prix_b2b_cash",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "timbre",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "prix_b2b_cash_plus_timbre",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "facilite_6_mois",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "facilite_12_mois",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "facilite_18_mois",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "items",
+        "column_name": "disponibilite",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "type",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "reference",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "designation",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "vacuum_type",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "max_power_consumption",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "suction_power",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "dust_capacity",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "filtration_/_technology",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "color_/_finish",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "key_features",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "specs",
+        "column_name": "column1",
+        "data_type": "text",
+        "is_nullable": "YES"
+      }
+    ],
+    "constraints": []
+  }
+]

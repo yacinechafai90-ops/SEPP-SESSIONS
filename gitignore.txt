@@ -1,0 +1,11 @@
+# Environnement et données sensibles
+.env
+*.env
+*.dump
+admin-acces.json
+publication-acces.json
+
+# Python et caches
+__pycache__/
+*.pyc
+venv/

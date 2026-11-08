@@ -1,0 +1,1524 @@
+[
+  {
+    "id": "VC18M3125XBDZ",
+    "reference": "VC18M3125XBDZ",
+    "name": "Canister 1800 W Blue Cosmo",
+    "type": "Aspirateur",
+    "category": "Aspirateurs",
+    "marketPrice": 29000,
+    "offerPrice": 26300,
+    "financing": {
+      "12": 34800,
+      "18": 37700,
+      "3/6": 31900
+    },
+    "availability": "Disponible",
+    "image": "assets/VC18M3125XBDZ.png",
+    "box": {
+      "x": 253,
+      "y": 116,
+      "w": 210,
+      "h": 313,
+      "iw": 713,
+      "ih": 463
+    }
+  },
+  {
+    "id": "VC18M3125XPDZ",
+    "reference": "VC18M3125XPDZ",
+    "name": "Canister 1800 W Merlot Purple",
+    "type": "Aspirateur",
+    "category": "Aspirateurs",
+    "marketPrice": 29000,
+    "offerPrice": 26300,
+    "financing": {
+      "12": 34800,
+      "18": 37700,
+      "3/6": 31900
+    },
+    "availability": "Disponible",
+    "image": "assets/VC18M3125XPDZ.png",
+    "box": {
+      "x": 256,
+      "y": 118,
+      "w": 210,
+      "h": 313,
+      "iw": 718,
+      "ih": 465
+    }
+  },
+  {
+    "id": "VS15A60AGX7DZ",
+    "reference": "VS15A60AGX7DZ",
+    "name": "Jet Stick 410 W Teal Gold",
+    "type": "Aspirateur",
+    "category": "Aspirateurs",
+    "marketPrice": 57500,
+    "offerPrice": 51800,
+    "financing": {
+      "12": 69000,
+      "18": 74800,
+      "3/6": 63300
+    },
+    "availability": "Disponible",
+    "image": "assets/VS15A60AGX7DZ.png",
+    "box": {
+      "x": 301,
+      "y": 118,
+      "w": 117,
+      "h": 313,
+      "iw": 717,
+      "ih": 465
+    }
+  },
+  {
+    "id": "AR18DXFAAWK2DZ",
+    "reference": "AR18DXFAAWK2DZ",
+    "name": "18 Kbtu Wind Free",
+    "type": "Climatiseur",
+    "category": "Climatiseurs",
+    "marketPrice": 174000,
+    "offerPrice": 158100,
+    "financing": {
+      "12": 208800,
+      "18": 226200,
+      "3/6": 191400
+    },
+    "availability": "Quantité très limitée",
+    "image": null,
+    "box": null
+  },
+  {
+    "id": "AR18DXFZAWK2DZ",
+    "reference": "AR18DXFZAWK2DZ",
+    "name": "18 Kbtu Wind",
+    "type": "Climatiseur",
+    "category": "Climatiseurs",
+    "marketPrice": 153500,
+    "offerPrice": 139700,
+    "financing": {
+      "12": 184200,
+      "18": 199600,
+      "3/6": 168900
+    },
+    "availability": "Quantité limitée",
+    "image": null,
+    "box": null
+  },
+  {
+    "id": "AR50F12C1QH2DZ",
+    "reference": "AR50F12C1QH2DZ",
+    "name": "12 Kbtu Wind",
+    "type": "Climatiseur",
+    "category": "Climatiseurs",
+    "marketPrice": 99500,
+    "offerPrice": 89800,
+    "financing": {
+      "12": 119400,
+      "18": 129400,
+      "3/6": 109500
+    },
+    "availability": "Disponible",
+    "image": "assets/AR50F12C1QH2DZ.jpg",
+    "box": {
+      "x": 191,
+      "y": 751,
+      "w": 4113,
+      "h": 1502,
+      "iw": 4500,
+      "ih": 3000
+    }
+  },
+  {
+    "id": "AR50F18C1QH2DZ",
+    "reference": "AR50F18C1QH2DZ",
+    "name": "18 Kbtu Wind",
+    "type": "Climatiseur",
+    "category": "Climatiseurs",
+    "marketPrice": 146000,
+    "offerPrice": 132600,
+    "financing": {
+      "12": 175200,
+      "18": 189800,
+      "3/6": 160600
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/AR50F18C1QH2DZ.jpg",
+    "box": {
+      "x": 193,
+      "y": 919,
+      "w": 4115,
+      "h": 1164,
+      "iw": 4500,
+      "ih": 3000
+    }
+  },
+  {
+    "id": "AR50F24C1QH2DZ",
+    "reference": "AR50F24C1QH2DZ",
+    "name": "24 Kbtu Wind",
+    "type": "Climatiseur",
+    "category": "Climatiseurs",
+    "marketPrice": 181500,
+    "offerPrice": 165200,
+    "financing": {
+      "12": 217800,
+      "18": 236000,
+      "3/6": 199700
+    },
+    "availability": "Disponible",
+    "image": "assets/AR50F24C1QH2DZ.jpg",
+    "box": {
+      "x": 193,
+      "y": 919,
+      "w": 4115,
+      "h": 1164,
+      "iw": 4500,
+      "ih": 3000
+    }
+  },
+  {
+    "id": "AR60F12C1TW2DZ",
+    "reference": "AR60F12C1TW2DZ",
+    "name": "12 Kbtu Windfree",
+    "type": "Climatiseur",
+    "category": "Climatiseurs",
+    "marketPrice": 130000,
+    "offerPrice": 117800,
+    "financing": {
+      "12": 156000,
+      "18": 169000,
+      "3/6": 143000
+    },
+    "availability": "Disponible",
+    "image": "assets/AR60F12C1TW2DZ.jpg",
+    "box": {
+      "x": 193,
+      "y": 748,
+      "w": 4114,
+      "h": 1508,
+      "iw": 4500,
+      "ih": 3000
+    }
+  },
+  {
+    "id": "AR60F18C1TW2DZ",
+    "reference": "AR60F18C1TW2DZ",
+    "name": "18 Kbtu Windfree",
+    "type": "Climatiseur",
+    "category": "Climatiseurs",
+    "marketPrice": 177000,
+    "offerPrice": 160700,
+    "financing": {
+      "12": 212400,
+      "18": 230100,
+      "3/6": 194700
+    },
+    "availability": "Disponible",
+    "image": "assets/AR60F18C1TW2DZ.jpg",
+    "box": {
+      "x": 193,
+      "y": 916,
+      "w": 4114,
+      "h": 1169,
+      "iw": 4500,
+      "ih": 3000
+    }
+  },
+  {
+    "id": "UA32N5000AS",
+    "reference": "UA32N5000AS",
+    "name": "32'' Serie 5",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 27000,
+    "offerPrice": 24700,
+    "financing": {
+      "12": 32400,
+      "18": 35100,
+      "3/6": 29700
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA32N5000AS.png",
+    "box": {
+      "x": 205,
+      "y": 132,
+      "w": 306,
+      "h": 287,
+      "iw": 715,
+      "ih": 470
+    }
+  },
+  {
+    "id": "UA43T5300AU",
+    "reference": "UA43T5300AU",
+    "name": "43'' S5 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 54000,
+    "offerPrice": 49200,
+    "financing": {
+      "12": 64800,
+      "18": 70200,
+      "3/6": 59400
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/UA43T5300AU.png",
+    "box": {
+      "x": 201,
+      "y": 131,
+      "w": 314,
+      "h": 284,
+      "iw": 715,
+      "ih": 466
+    }
+  },
+  {
+    "id": "UA43F6000FU",
+    "reference": "UA43F6000FU",
+    "name": "43'' S6 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 51000,
+    "offerPrice": 46200,
+    "financing": {
+      "12": 61200,
+      "18": 66300,
+      "3/6": 56100
+    },
+    "availability": "Disponible",
+    "image": "assets/UA43F6000FU.png",
+    "box": {
+      "x": 201,
+      "y": 135,
+      "w": 314,
+      "h": 280,
+      "iw": 713,
+      "ih": 465
+    }
+  },
+  {
+    "id": "UA43N5000AS",
+    "reference": "UA43N5000AS",
+    "name": "43\" Hd S5 No Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 41000,
+    "offerPrice": 39100,
+    "financing": {
+      "12": 49200,
+      "18": 53300,
+      "3/6": 45100
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA43N5000AS.png",
+    "box": {
+      "x": 204,
+      "y": 130,
+      "w": 308,
+      "h": 288,
+      "iw": 715,
+      "ih": 465
+    }
+  },
+  {
+    "id": "UA43DU7000U",
+    "reference": "UA43DU7000U",
+    "name": "43\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 60000,
+    "offerPrice": 53800,
+    "financing": {
+      "12": 72000,
+      "18": 78000,
+      "3/6": 66000
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/UA43DU7000U.png",
+    "box": {
+      "x": 203,
+      "y": 118,
+      "w": 312,
+      "h": 314,
+      "iw": 716,
+      "ih": 470
+    }
+  },
+  {
+    "id": "UA43U8000FU",
+    "reference": "UA43U8000FU",
+    "name": "43\" S8 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 60000,
+    "offerPrice": 53800,
+    "financing": {
+      "12": 72000,
+      "18": 78000,
+      "3/6": 66000
+    },
+    "availability": "Disponible",
+    "image": "assets/UA43U8000FU.png",
+    "box": {
+      "x": 212,
+      "y": 117,
+      "w": 291,
+      "h": 314,
+      "iw": 713,
+      "ih": 465
+    }
+  },
+  {
+    "id": "UA50AU7000U",
+    "reference": "UA50AU7000U",
+    "name": "50\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 82000,
+    "offerPrice": 76600,
+    "financing": {
+      "12": 98400,
+      "18": 106600,
+      "3/6": 90200
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA50AU7000U.png",
+    "box": {
+      "x": 200,
+      "y": 128,
+      "w": 314,
+      "h": 289,
+      "iw": 712,
+      "ih": 462
+    }
+  },
+  {
+    "id": "UA50CU7000U",
+    "reference": "UA50CU7000U",
+    "name": "50\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 79500,
+    "offerPrice": 72100,
+    "financing": {
+      "12": 95400,
+      "18": 103400,
+      "3/6": 87500
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA50CU7000U.png",
+    "box": {
+      "x": 201,
+      "y": 129,
+      "w": 314,
+      "h": 289,
+      "iw": 715,
+      "ih": 465
+    }
+  },
+  {
+    "id": "UA50DU7000U",
+    "reference": "UA50DU7000U",
+    "name": "50\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 83000,
+    "offerPrice": 74600,
+    "financing": {
+      "12": 99600,
+      "18": 107900,
+      "3/6": 91300
+    },
+    "availability": "Disponible",
+    "image": "assets/UA50DU7000U.png",
+    "box": {
+      "x": 202,
+      "y": 116,
+      "w": 312,
+      "h": 313,
+      "iw": 716,
+      "ih": 463
+    }
+  },
+  {
+    "id": "UA55AU7000U",
+    "reference": "UA55AU7000U",
+    "name": "55\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 119000,
+    "offerPrice": 108100,
+    "financing": {
+      "12": 142800,
+      "18": 154700,
+      "3/6": 130900
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA55AU7000U.png",
+    "box": {
+      "x": 200,
+      "y": 130,
+      "w": 314,
+      "h": 289,
+      "iw": 715,
+      "ih": 468
+    }
+  },
+  {
+    "id": "UA55CU7000U",
+    "reference": "UA55CU7000U",
+    "name": "55\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 119000,
+    "offerPrice": 108100,
+    "financing": {
+      "12": 142800,
+      "18": 154700,
+      "3/6": 130900
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA55CU7000U.png",
+    "box": {
+      "x": 202,
+      "y": 129,
+      "w": 314,
+      "h": 289,
+      "iw": 717,
+      "ih": 470
+    }
+  },
+  {
+    "id": "UA55CU8000U",
+    "reference": "UA55CU8000U",
+    "name": "55\" S8 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 129000,
+    "offerPrice": 122900,
+    "financing": {
+      "12": 154800,
+      "18": 167700,
+      "3/6": 141900
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA55CU8000U.png",
+    "box": {
+      "x": 201,
+      "y": 128,
+      "w": 314,
+      "h": 290,
+      "iw": 715,
+      "ih": 462
+    }
+  },
+  {
+    "id": "UA55U8000FU",
+    "reference": "UA55U8000FU",
+    "name": "55\" S8 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 109500,
+    "offerPrice": 99000,
+    "financing": {
+      "12": 131400,
+      "18": 142400,
+      "3/6": 120500
+    },
+    "availability": "Disponible",
+    "image": "assets/UA55U8000FU.png",
+    "box": {
+      "x": 212,
+      "y": 116,
+      "w": 291,
+      "h": 313,
+      "iw": 716,
+      "ih": 463
+    }
+  },
+  {
+    "id": "UA58CU7000U",
+    "reference": "UA58CU7000U",
+    "name": "58\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 125000,
+    "offerPrice": 119900,
+    "financing": {
+      "12": 150000,
+      "18": 162500,
+      "3/6": 137500
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA58CU7000U.png",
+    "box": {
+      "x": 200,
+      "y": 127,
+      "w": 314,
+      "h": 289,
+      "iw": 712,
+      "ih": 464
+    }
+  },
+  {
+    "id": "UA58U8000FU",
+    "reference": "UA58U8000FU",
+    "name": "58\" S8 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 129500,
+    "offerPrice": 117300,
+    "financing": {
+      "12": 155400,
+      "18": 168400,
+      "3/6": 142500
+    },
+    "availability": "Disponible",
+    "image": "assets/UA58U8000FU.png",
+    "box": {
+      "x": 213,
+      "y": 118,
+      "w": 291,
+      "h": 314,
+      "iw": 714,
+      "ih": 472
+    }
+  },
+  {
+    "id": "UA60DU7000U",
+    "reference": "UA60DU7000U",
+    "name": "60\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 129500,
+    "offerPrice": 117300,
+    "financing": {
+      "12": 155400,
+      "18": 168400,
+      "3/6": 142500
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/UA60DU7000U.png",
+    "box": {
+      "x": 200,
+      "y": 131,
+      "w": 314,
+      "h": 288,
+      "iw": 712,
+      "ih": 465
+    }
+  },
+  {
+    "id": "UA65CU7000U",
+    "reference": "UA65CU7000U",
+    "name": "65\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 165000,
+    "offerPrice": 159100,
+    "financing": {
+      "12": 198000,
+      "18": 214500,
+      "3/6": 181500
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA65CU7000U.png",
+    "box": {
+      "x": 199,
+      "y": 128,
+      "w": 314,
+      "h": 289,
+      "iw": 711,
+      "ih": 464
+    }
+  },
+  {
+    "id": "UA65U8000FU",
+    "reference": "UA65U8000FU",
+    "name": "65\" S8 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 167000,
+    "offerPrice": 152000,
+    "financing": {
+      "12": 200400,
+      "18": 217100,
+      "3/6": 183700
+    },
+    "availability": "Disponible",
+    "image": "assets/UA65U8000FU.png",
+    "box": {
+      "x": 213,
+      "y": 119,
+      "w": 291,
+      "h": 312,
+      "iw": 716,
+      "ih": 465
+    }
+  },
+  {
+    "id": "UA75DU7000U",
+    "reference": "UA75DU7000U",
+    "name": "75\" S7 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 246500,
+    "offerPrice": 223900,
+    "financing": {
+      "12": 295800,
+      "18": 320500,
+      "3/6": 271200
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/UA75DU7000U.png",
+    "box": {
+      "x": 203,
+      "y": 130,
+      "w": 314,
+      "h": 288,
+      "iw": 717,
+      "ih": 464
+    }
+  },
+  {
+    "id": "UA85DU8000U",
+    "reference": "UA85DU8000U",
+    "name": "85\" S8 Smart",
+    "type": "Crystal LED",
+    "category": "Téléviseurs",
+    "marketPrice": 402000,
+    "offerPrice": 365200,
+    "financing": {
+      "12": 482400,
+      "18": 522600,
+      "3/6": 442200
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/UA85DU8000U.png",
+    "box": {
+      "x": 201,
+      "y": 127,
+      "w": 314,
+      "h": 290,
+      "iw": 712,
+      "ih": 465
+    }
+  },
+  {
+    "id": "MS23DG4504ATDZ",
+    "reference": "MS23DG4504ATDZ",
+    "name": "23L Dark Grey",
+    "type": "Micro-Ondes",
+    "category": "Micro-ondes",
+    "marketPrice": 35000,
+    "offerPrice": 31500,
+    "financing": {
+      "12": 42000,
+      "18": 45500,
+      "3/6": 38500
+    },
+    "availability": "Disponible",
+    "image": "assets/MS23DG4504ATDZ.png",
+    "box": {
+      "x": 200,
+      "y": 190,
+      "w": 314,
+      "h": 169,
+      "iw": 714,
+      "ih": 465
+    }
+  },
+  {
+    "id": "MS32DG4504ATDZ",
+    "reference": "MS32DG4504ATDZ",
+    "name": "32L Dark Grey",
+    "type": "Micro-Ondes",
+    "category": "Micro-ondes",
+    "marketPrice": 44500,
+    "offerPrice": 40100,
+    "financing": {
+      "12": 53400,
+      "18": 57900,
+      "3/6": 49000
+    },
+    "availability": "Disponible",
+    "image": "assets/MS32DG4504ATDZ.png",
+    "box": {
+      "x": 202,
+      "y": 189,
+      "w": 313,
+      "h": 171,
+      "iw": 715,
+      "ih": 464
+    }
+  },
+  {
+    "id": "WA70H4200SW",
+    "reference": "WA70H4200SW",
+    "name": "Top 7 Kg 700 Tr Blanc",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 49500,
+    "offerPrice": 44700,
+    "financing": {
+      "12": 59400,
+      "18": 64400,
+      "3/6": 54500
+    },
+    "availability": "Disponible",
+    "image": "assets/WA70H4200SW.png",
+    "box": {
+      "x": 259,
+      "y": 120,
+      "w": 199,
+      "h": 311,
+      "iw": 716,
+      "ih": 465
+    }
+  },
+  {
+    "id": "WA70H4200SY",
+    "reference": "WA70H4200SY",
+    "name": "Top 7 Kg 700 Tr Gris",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 52000,
+    "offerPrice": 47200,
+    "financing": {
+      "12": 62400,
+      "18": 67600,
+      "3/6": 57200
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/WA70H4200SY.png",
+    "box": {
+      "x": 104,
+      "y": 133,
+      "w": 228,
+      "h": 367,
+      "iw": 437,
+      "ih": 541
+    }
+  },
+  {
+    "id": "WA90T5260BY",
+    "reference": "WA90T5260BY",
+    "name": "Top 9 Kg 700 Tr Gris",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 58500,
+    "offerPrice": 52800,
+    "financing": {
+      "12": 70200,
+      "18": 76100,
+      "3/6": 64400
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/WA90T5260BY.png",
+    "box": {
+      "x": 285,
+      "y": 112,
+      "w": 146,
+      "h": 315,
+      "iw": 715,
+      "ih": 461
+    }
+  },
+  {
+    "id": "WD10T654DBN",
+    "reference": "WD10T654DBN",
+    "name": "Front 10,5 Kg+7 Add Wash Séchante 1400 Tr Inox",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 122000,
+    "offerPrice": 110700,
+    "financing": {
+      "12": 146400,
+      "18": 158600,
+      "3/6": 134200
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/WD10T654DBN.png",
+    "box": {
+      "x": 229,
+      "y": 116,
+      "w": 253,
+      "h": 314,
+      "iw": 711,
+      "ih": 467
+    }
+  },
+  {
+    "id": "WW70T4020CX",
+    "reference": "WW70T4020CX",
+    "name": "Front 7 Kg 1200 Tr Inox",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 63500,
+    "offerPrice": 57300,
+    "financing": {
+      "12": 76200,
+      "18": 82600,
+      "3/6": 69900
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/WW70T4020CX.png",
+    "box": {
+      "x": 231,
+      "y": 115,
+      "w": 251,
+      "h": 312,
+      "iw": 712,
+      "ih": 461
+    }
+  },
+  {
+    "id": "WW70T4020EE",
+    "reference": "WW70T4020EE",
+    "name": "Front 7 Kg 1200 Tr Blanc",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 60500,
+    "offerPrice": 54300,
+    "financing": {
+      "12": 72600,
+      "18": 78700,
+      "3/6": 66600
+    },
+    "availability": "Disponible",
+    "image": "assets/WW70T4020EE.png",
+    "box": {
+      "x": 233,
+      "y": 119,
+      "w": 251,
+      "h": 313,
+      "iw": 713,
+      "ih": 467
+    }
+  },
+  {
+    "id": "WW80T554DAN",
+    "reference": "WW80T554DAN",
+    "name": "Front 8 Kg 1400 Tr Inox Addwash",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 79000,
+    "offerPrice": 71600,
+    "financing": {
+      "12": 94800,
+      "18": 102700,
+      "3/6": 86900
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/WW80T554DAN.png",
+    "box": {
+      "x": 229,
+      "y": 112,
+      "w": 260,
+      "h": 312,
+      "iw": 714,
+      "ih": 458
+    }
+  },
+  {
+    "id": "WW80TA046AX",
+    "reference": "WW80TA046AX",
+    "name": "Front 8 Kg 1400 Tr Inox",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 75000,
+    "offerPrice": 67500,
+    "financing": {
+      "12": 90000,
+      "18": 97500,
+      "3/6": 82500
+    },
+    "availability": "Disponible",
+    "image": "assets/WW80TA046AX.png",
+    "box": {
+      "x": 233,
+      "y": 115,
+      "w": 251,
+      "h": 314,
+      "iw": 716,
+      "ih": 463
+    }
+  },
+  {
+    "id": "WW80TA046TE",
+    "reference": "WW80TA046TE",
+    "name": "Front 8 Kg 1400 Tr Blanc",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 71500,
+    "offerPrice": 64500,
+    "financing": {
+      "12": 85800,
+      "18": 93000,
+      "3/6": 78700
+    },
+    "availability": "Disponible",
+    "image": "assets/WW80TA046TE.png",
+    "box": {
+      "x": 231,
+      "y": 118,
+      "w": 251,
+      "h": 313,
+      "iw": 714,
+      "ih": 467
+    }
+  },
+  {
+    "id": "WW90T554DAN",
+    "reference": "WW90T554DAN",
+    "name": "Front 9 Kg 1400 Tr Inox Addwash",
+    "type": "Lave-Linge",
+    "category": "Lave-linge",
+    "marketPrice": 88500,
+    "offerPrice": 80200,
+    "financing": {
+      "12": 106200,
+      "18": 115100,
+      "3/6": 97400
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/WW90T554DAN.png",
+    "box": {
+      "x": 231,
+      "y": 116,
+      "w": 251,
+      "h": 312,
+      "iw": 712,
+      "ih": 462
+    }
+  },
+  {
+    "id": "QA55QN90DAU",
+    "reference": "QA55QN90DAU",
+    "name": "55'' Neo Qled 4K Serie 9",
+    "type": "Neo Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 459000,
+    "offerPrice": 417200,
+    "financing": {
+      "12": 550800,
+      "18": 596700,
+      "3/6": 504900
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/QA55QN90DAU.png",
+    "box": {
+      "x": 202,
+      "y": 129,
+      "w": 314,
+      "h": 289,
+      "iw": 711,
+      "ih": 467
+    }
+  },
+  {
+    "id": "QA55QN90FAU",
+    "reference": "QA55QN90FAU",
+    "name": "55'' Neo Qled Serie 9",
+    "type": "Neo Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 459000,
+    "offerPrice": 417200,
+    "financing": {
+      "12": 550800,
+      "18": 596700,
+      "3/6": 504900
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/QA55QN90FAU.png",
+    "box": {
+      "x": 202,
+      "y": 127,
+      "w": 313,
+      "h": 288,
+      "iw": 713,
+      "ih": 466
+    }
+  },
+  {
+    "id": "QA65QN90CAU",
+    "reference": "QA65QN90CAU",
+    "name": "65'' Neo Qled 4K Serie 9",
+    "type": "Neo Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 625500,
+    "offerPrice": 568100,
+    "financing": {
+      "12": 750600,
+      "18": 813200,
+      "3/6": 688100
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/QA65QN90CAU.png",
+    "box": {
+      "x": 202,
+      "y": 129,
+      "w": 314,
+      "h": 290,
+      "iw": 716,
+      "ih": 468
+    }
+  },
+  {
+    "id": "QA65QN90DAU",
+    "reference": "QA65QN90DAU",
+    "name": "65'' Neo Qled 4K Serie 9",
+    "type": "Neo Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 648000,
+    "offerPrice": 588500,
+    "financing": {
+      "12": 777600,
+      "18": 842400,
+      "3/6": 712800
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA65QN90DAU.png",
+    "box": {
+      "x": 202,
+      "y": 128,
+      "w": 314,
+      "h": 289,
+      "iw": 711,
+      "ih": 460
+    }
+  },
+  {
+    "id": "QA85QN800DU",
+    "reference": "QA85QN800DU",
+    "name": "85'' Neo Qled 8K Serie 8",
+    "type": "Neo Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 1534000,
+    "offerPrice": 1392800,
+    "financing": {
+      "12": 1840800,
+      "18": 1994200,
+      "3/6": 1687400
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/QA85QN800DU.png",
+    "box": {
+      "x": 200,
+      "y": 130,
+      "w": 315,
+      "h": 282,
+      "iw": 712,
+      "ih": 461
+    }
+  },
+  {
+    "id": "QA55S85FAE",
+    "reference": "QA55S85FAE",
+    "name": "55\" O Serie 8",
+    "type": "O LED",
+    "category": "Téléviseurs",
+    "marketPrice": 367500,
+    "offerPrice": 333500,
+    "financing": {
+      "12": 441000,
+      "18": 477800,
+      "3/6": 404300
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA55S85FAE.png",
+    "box": {
+      "x": 204,
+      "y": 127,
+      "w": 313,
+      "h": 296,
+      "iw": 714,
+      "ih": 469
+    }
+  },
+  {
+    "id": "QA65S85FAE",
+    "reference": "QA65S85FAE",
+    "name": "65\" O Serie 8",
+    "type": "O LED",
+    "category": "Téléviseurs",
+    "marketPrice": 423500,
+    "offerPrice": 384500,
+    "financing": {
+      "12": 508200,
+      "18": 550600,
+      "3/6": 465900
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA65S85FAE.png",
+    "box": {
+      "x": 200,
+      "y": 168,
+      "w": 315,
+      "h": 204,
+      "iw": 713,
+      "ih": 459
+    }
+  },
+  {
+    "id": "QA77S85FAE",
+    "reference": "QA77S85FAE",
+    "name": "77\" O Serie 8",
+    "type": "O LED",
+    "category": "Téléviseurs",
+    "marketPrice": 756000,
+    "offerPrice": 687000,
+    "financing": {
+      "12": 907200,
+      "18": 982800,
+      "3/6": 831600
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA77S85FAE.png",
+    "box": {
+      "x": 201,
+      "y": 126,
+      "w": 313,
+      "h": 296,
+      "iw": 712,
+      "ih": 465
+    }
+  },
+  {
+    "id": "QA55Q7FAAU",
+    "reference": "QA55Q7FAAU",
+    "name": "55'' Qled 4K Serie 7",
+    "type": "Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 163500,
+    "offerPrice": 148400,
+    "financing": {
+      "12": 196200,
+      "18": 212600,
+      "3/6": 179900
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA55Q7FAAU.png",
+    "box": {
+      "x": 201,
+      "y": 119,
+      "w": 314,
+      "h": 308,
+      "iw": 713,
+      "ih": 465
+    }
+  },
+  {
+    "id": "QA55Q80BAU",
+    "reference": "QA55Q80BAU",
+    "name": "55'' Qled 4K Serie 8",
+    "type": "Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 216000,
+    "offerPrice": 196400,
+    "financing": {
+      "12": 259200,
+      "18": 280800,
+      "3/6": 237600
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA55Q80BAU.png",
+    "box": {
+      "x": 201,
+      "y": 132,
+      "w": 314,
+      "h": 281,
+      "iw": 714,
+      "ih": 465
+    }
+  },
+  {
+    "id": "QA55Q80CAU",
+    "reference": "QA55Q80CAU",
+    "name": "55'' Qled 4K Serie 8",
+    "type": "Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 216000,
+    "offerPrice": 196400,
+    "financing": {
+      "12": 259200,
+      "18": 280800,
+      "3/6": 237600
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/QA55Q80CAU.png",
+    "box": {
+      "x": 200,
+      "y": 134,
+      "w": 315,
+      "h": 276,
+      "iw": 712,
+      "ih": 462
+    }
+  },
+  {
+    "id": "QA55Q70DAU",
+    "reference": "QA55Q70DAU",
+    "name": "55'' Qled 4K Serie7",
+    "type": "Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 163500,
+    "offerPrice": 148400,
+    "financing": {
+      "12": 196200,
+      "18": 212600,
+      "3/6": 179900
+    },
+    "availability": "Disponible",
+    "image": "assets/QA55Q70DAU.png",
+    "box": {
+      "x": 203,
+      "y": 136,
+      "w": 314,
+      "h": 279,
+      "iw": 715,
+      "ih": 465
+    }
+  },
+  {
+    "id": "QA65Q70DAU",
+    "reference": "QA65Q70DAU",
+    "name": "65'' Qled 4K Serie 7",
+    "type": "Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 202000,
+    "offerPrice": 183600,
+    "financing": {
+      "12": 242400,
+      "18": 262600,
+      "3/6": 222200
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA65Q70DAU.png",
+    "box": {
+      "x": 201,
+      "y": 134,
+      "w": 314,
+      "h": 279,
+      "iw": 713,
+      "ih": 465
+    }
+  },
+  {
+    "id": "QA65Q7FAAU",
+    "reference": "QA65Q7FAAU",
+    "name": "65'' Qled 4K Serie 7",
+    "type": "Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 202000,
+    "offerPrice": 183600,
+    "financing": {
+      "12": 242400,
+      "18": 262600,
+      "3/6": 222200
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA65Q7FAAU.png",
+    "box": {
+      "x": 200,
+      "y": 130,
+      "w": 314,
+      "h": 288,
+      "iw": 712,
+      "ih": 470
+    }
+  },
+  {
+    "id": "QA75Q7FAAU",
+    "reference": "QA75Q7FAAU",
+    "name": "75'' Qled 4K Serie 7",
+    "type": "Qled",
+    "category": "Téléviseurs",
+    "marketPrice": 331500,
+    "offerPrice": 300900,
+    "financing": {
+      "12": 397800,
+      "18": 431000,
+      "3/6": 364700
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/QA75Q7FAAU.png",
+    "box": {
+      "x": 200,
+      "y": 129,
+      "w": 314,
+      "h": 288,
+      "iw": 714,
+      "ih": 463
+    }
+  },
+  {
+    "id": "RT40K5012S8",
+    "reference": "RT40K5012S8",
+    "name": "2 Portes 400L A+ Inox",
+    "type": "Réfrigérateur",
+    "category": "Réfrigérateurs",
+    "marketPrice": 92000,
+    "offerPrice": 83200,
+    "financing": {
+      "12": 110400,
+      "18": 119600,
+      "3/6": 101200
+    },
+    "availability": "Quantité très limitée",
+    "image": "assets/RT40K5012S8.png",
+    "box": {
+      "x": 280,
+      "y": 114,
+      "w": 151,
+      "h": 318,
+      "iw": 713,
+      "ih": 467
+    }
+  },
+  {
+    "id": "RT49K5012WW",
+    "reference": "RT49K5012WW",
+    "name": "2 Portes 490L A+ Blanc",
+    "type": "Réfrigérateur",
+    "category": "Réfrigérateurs",
+    "marketPrice": 103000,
+    "offerPrice": 92900,
+    "financing": {
+      "12": 123600,
+      "18": 133900,
+      "3/6": 113300
+    },
+    "availability": "Disponible",
+    "image": "assets/RT49K5012WW.png",
+    "box": {
+      "x": 285,
+      "y": 117,
+      "w": 142,
+      "h": 311,
+      "iw": 714,
+      "ih": 466
+    }
+  },
+  {
+    "id": "RT49K5532S8",
+    "reference": "RT49K5532S8",
+    "name": "2 Portes 490L A+ Inox",
+    "type": "Réfrigérateur",
+    "category": "Réfrigérateurs",
+    "marketPrice": 116000,
+    "offerPrice": 105100,
+    "financing": {
+      "12": 139200,
+      "18": 150800,
+      "3/6": 127600
+    },
+    "availability": "Quantité limitée",
+    "image": "assets/RT49K5532S8.png",
+    "box": {
+      "x": 285,
+      "y": 115,
+      "w": 146,
+      "h": 310,
+      "iw": 714,
+      "ih": 459
+    }
+  },
+  {
+    "id": "RT49K5532WWS3",
+    "reference": "RT49K5532WWS3",
+    "name": "2 Portes 490L A+ Blanc",
+    "type": "Réfrigérateur",
+    "category": "Réfrigérateurs",
+    "marketPrice": 106000,
+    "offerPrice": 95900,
+    "financing": {
+      "12": 127200,
+      "18": 137800,
+      "3/6": 116600
+    },
+    "availability": "Disponible",
+    "image": "assets/RT49K5532WWS3.png",
+    "box": {
+      "x": 294,
+      "y": 116,
+      "w": 128,
+      "h": 314,
+      "iw": 715,
+      "ih": 464
+    }
+  },
+  {
+    "id": "RT59K6231B1",
+    "reference": "RT59K6231B1",
+    "name": "2 Portes 590L A+ Noire",
+    "type": "Réfrigérateur",
+    "category": "Réfrigérateurs",
+    "marketPrice": 153500,
+    "offerPrice": 139700,
+    "financing": {
+      "12": 184200,
+      "18": 199600,
+      "3/6": 168900
+    },
+    "availability": "Disponible",
+    "image": "assets/RT59K6231B1.png",
+    "box": {
+      "x": 291,
+      "y": 118,
+      "w": 131,
+      "h": 314,
+      "iw": 714,
+      "ih": 470
+    }
+  },
+  {
+    "id": "RT59K6231S8",
+    "reference": "RT59K6231S8",
+    "name": "2 Portes 590L A+ Inox",
+    "type": "Réfrigérateur",
+    "category": "Réfrigérateurs",
+    "marketPrice": 148000,
+    "offerPrice": 134600,
+    "financing": {
+      "12": 177600,
+      "18": 192400,
+      "3/6": 162800
+    },
+    "availability": "Disponible",
+    "image": "assets/RT59K6231S8.png",
+    "box": {
+      "x": 285,
+      "y": 124,
+      "w": 140,
+      "h": 278,
+      "iw": 705,
+      "ih": 448
+    }
+  },
+  {
+    "id": "RT59K6231WW",
+    "reference": "RT59K6231WW",
+    "name": "2 Portes 590L A+ Blanc",
+    "type": "Réfrigérateur",
+    "category": "Réfrigérateurs",
+    "marketPrice": 143500,
+    "offerPrice": 130100,
+    "financing": {
+      "12": 172200,
+      "18": 186600,
+      "3/6": 157900
+    },
+    "availability": "Disponible",
+    "image": "assets/RT59K6231WW.png",
+    "box": {
+      "x": 285,
+      "y": 117,
+      "w": 147,
+      "h": 312,
+      "iw": 716,
+      "ih": 464
+    }
+  }
+]

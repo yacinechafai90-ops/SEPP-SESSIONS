@@ -1,0 +1,24 @@
+ACCES PAR UTILISATEUR - ETAPES
+
+1. Double-cliquez sur CREER-UTILISATEUR.cmd.
+2. Saisissez le mot de passe PostgreSQL, puis un identifiant et un mot de passe utilisateur (12 caracteres minimum).
+3. Saisissez les references que ce compte pourra voir, separees par des virgules, par exemple VC18M3125XBDZ, VS15A60AGX7DZ.
+4. Fermez l'ancien serveur et relancez DEMARRER-SITE.cmd. Saisissez le mot de passe PostgreSQL.
+5. Ouvrez http://127.0.0.1:5002/connexion et connectez-vous avec le compte cree.
+
+Pour modifier un prix propre a ce compte, dans pgAdmin executez :
+UPDATE public.offres_utilisateur SET prix_offre = 25000
+WHERE utilisateur_id = (SELECT id FROM public.utilisateurs_catalogue WHERE identifiant = 'MON_IDENTIFIANT')
+AND reference = 'MA_REFERENCE';
+
+Pour ajouter une reference :
+INSERT INTO public.offres_utilisateur (utilisateur_id, reference)
+SELECT id, 'MA_REFERENCE' FROM public.utilisateurs_catalogue WHERE identifiant = 'MON_IDENTIFIANT'
+ON CONFLICT DO NOTHING;
+
+Les comptes sont dans utilisateurs_catalogue. Les droits de produits et prix specifiques sont dans offres_utilisateur.
+Les tables existantes items, brandshops, specs, discount et database_catalogue restent liees au catalogue.
+La deconnexion utilise POST /deconnexion.
+
+La connexion fonctionne pour ce serveur Flask local. Un site statique publie sur Vercel n'executera pas server.py :
+il lui faut un backend deploye avec acces PostgreSQL et HTTPS avant de proposer ces comptes sur Internet.
