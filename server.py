@@ -12,19 +12,34 @@ from psycopg.rows import dict_row
 from psycopg import sql
 from flask import Flask, Response, abort, send_from_directory, session
 
-
 app = Flask(__name__, static_folder=None)
 
 DOSSIER = Path(__file__).resolve().parent
-
-HOST_POSTGRES = "::1"
-PORT_POSTGRES = 5432
-UTILISATEUR_POSTGRES = "postgres"
 NOM_RECHERCHE = "Trial Database"
 
-MOT_DE_PASSE = None
-NOM_BASE = "online" if os.environ.get("SEPP_DATABASE_URL") else None
+# --- CONFIGURATION DE LA CONNEXION POSTGRESQL ---
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
+if DATABASE_URL:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row)
+else:
+    # Paramètres locaux forcés en IPv4 (127.0.0.1) pour éviter l'erreur réseau IPv6
+    HOST_POSTGRES = "127.0.0.1"
+    PORT_POSTGRES = 5432
+    UTILISATEUR_POSTGRES = "postgres"
+    NOM_BASE = "Trial Database"
+    MOT_DE_PASSE = os.environ.get("POSTGRES_PASSWORD") or getpass("Mot de passe PostgreSQL : ")
+
+    conn = psycopg.connect(
+        host=HOST_POSTGRES,
+        port=PORT_POSTGRES,
+        user=UTILISATEUR_POSTGRES,
+        dbname=NOM_BASE,
+        password=MOT_DE_PASSE,
+        row_factory=dict_row
+    )
 
 CATEGORIES = {
     "aspirateur": "Aspirateurs",
