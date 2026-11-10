@@ -13,7 +13,7 @@ from werkzeug.security import safe_join
 BUNDLED_SITE_PACKAGES=Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/python/Lib/site-packages'
 if BUNDLED_SITE_PACKAGES.is_dir() and str(BUNDLED_SITE_PACKAGES) not in sys.path:
     sys.path.append(str(BUNDLED_SITE_PACKAGES))
-LOCAL_ROOT=Path(__file__).resolve().parents[2]
+LOCAL_ROOT = Path(__file__).resolve().parent
 ROOT=LOCAL_ROOT if (LOCAL_ROOT/'items.csv').is_file() else Path(__file__).resolve().parent/'session-defaults'
 FILES={'products':'items.csv','brandshops':'Brandshops.csv','specs':'Specs.csv','discounts':'Discount.csv'}
 KEYS={'products':'REFERENCE ','brandshops':'ID','specs':'REFERENCE ','discounts':None}
