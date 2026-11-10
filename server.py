@@ -18,12 +18,16 @@ DOSSIER = Path(__file__).resolve().parent
 NOM_RECHERCHE = "Trial Database"
 
 # --- CONFIGURATION DE LA CONNEXION POSTGRESQL ---
-DATABASE_URL = os.environ.get("DATABASE_URL")
+# Hebergement (Railway) : la plateforme fournit DATABASE_URL.
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("SEPP_DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-if DATABASE_URL:
-    if DATABASE_URL.startswith("postgres://"):
-        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row)
+HEBERGE = bool(DATABASE_URL)
+if HEBERGE:
+    # Mode cloud : administration accessible hors de localhost (derriere un proxy).
+    os.environ.setdefault("SEPP_CLOUD_MODE", "1")
+    NOM_BASE = "railway"
 else:
     # Paramètres locaux forcés en IPv4 (127.0.0.1) pour éviter l'erreur réseau IPv6
     HOST_POSTGRES = "127.0.0.1"
@@ -31,15 +35,6 @@ else:
     UTILISATEUR_POSTGRES = "postgres"
     NOM_BASE = "Trial Database"
     MOT_DE_PASSE = os.environ.get("POSTGRES_PASSWORD") or getpass("Mot de passe PostgreSQL : ")
-
-    conn = psycopg.connect(
-        host=HOST_POSTGRES,
-        port=PORT_POSTGRES,
-        user=UTILISATEUR_POSTGRES,
-        dbname=NOM_BASE,
-        password=MOT_DE_PASSE,
-        row_factory=dict_row
-    )
 
 CATEGORIES = {
     "aspirateur": "Aspirateurs",
@@ -71,14 +66,13 @@ def normaliser(texte):
     return " ".join(texte.lower().split())
 
 
-def ouvrir_connexion(nom_base):
-    online_url=os.environ.get("SEPP_DATABASE_URL")
-    if online_url:
-        return psycopg.connect(online_url, connect_timeout=5, row_factory=dict_row)
+def ouvrir_connexion(nom_base=None):
+    if DATABASE_URL:
+        return psycopg.connect(DATABASE_URL, connect_timeout=5, row_factory=dict_row)
     return psycopg.connect(
         host=HOST_POSTGRES,
         port=PORT_POSTGRES,
-        dbname=nom_base,
+        dbname=nom_base or NOM_BASE,
         user=UTILISATEUR_POSTGRES,
         password=MOT_DE_PASSE,
         connect_timeout=5,
@@ -768,6 +762,21 @@ acces_utilisateurs.installer(app, globals())
 
 import gestion_sessions
 gestion_sessions.installer(app, globals())
+
+
+def preparer_hebergement():
+    """Sur l'hebergement, gunicorn n'execute pas le bloc __main__ : on prepare la base ici."""
+    try:
+        admin.preparer_base(globals())
+        acces_utilisateurs.preparer_base(globals())
+        admin.preparer_acces(globals())
+        print("Base prete sur l'hebergement.", flush=True)
+    except Exception as erreur:
+        print(f"Preparation de la base impossible : {type(erreur).__name__} : {erreur}", flush=True)
+
+
+if HEBERGE:
+    preparer_hebergement()
 
 
 @app.get("/assets/<path:nom>")
