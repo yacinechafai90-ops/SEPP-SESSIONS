@@ -5,8 +5,10 @@ import server
 import acces_utilisateurs
 import session_templates
 
-server.MOT_DE_PASSE = getpass('Mot de passe PostgreSQL : ')
-server.NOM_BASE = server.trouver_base()
+# Sur Railway (DATABASE_URL definie), la base est deja connue : pas de recherche de base.
+if not server.HEBERGE:
+    server.MOT_DE_PASSE = getpass('Mot de passe PostgreSQL : ')
+    server.NOM_BASE = server.trouver_base()
 acces_utilisateurs.preparer_base(vars(server))
 identifiant = input('Identifiant du nouvel utilisateur : ').strip()
 if not identifiant:
