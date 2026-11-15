@@ -515,7 +515,8 @@ home = function () {
   const section = $('#main .hero');
   section.classList.add('tv-home');
 
-  const slides = [
+  // Bannières gérées dans l'administration ; à défaut, celles d'origine.
+  const slidesDefaut = [
     {
       src: 'assets/banners/1.png',
       alt: 'SmartThings : la maison connectée'
@@ -537,6 +538,10 @@ home = function () {
       alt: 'La technologie Samsung au cœur du quotidien'
     }
   ];
+  const bannieresSite = window.CATALOGUE?.bannieres || [];
+  const slides = bannieresSite.length
+    ? bannieresSite.map((b) => ({ src: b.image, alt: b.titre || 'Bannière Samsung' }))
+    : slidesDefaut;
 
   section.innerHTML = `
     <div class="tv-art" aria-label="Bannières Samsung">
@@ -1140,6 +1145,13 @@ function monthlyFor(p, months) {
 }
 
 function simulator(p) {
+  // Seules les formules activées pour ce produit sont proposées.
+  const formulesDispo = [
+    ['6', '6 mois', '6 أشهر'],
+    ['12', '12 mois', '12 شهراً'],
+    ['18', '18 mois', '18 شهراً']
+  ].filter(([id]) => p.formules?.[id] !== false);
+  if (!formulesDispo.length) return '';
   return `
     <section class="simulator finance">
       <h2>${L('Facilités de paiement', 'تسهيلات الدفع')}</h2>
@@ -1150,11 +1162,7 @@ function simulator(p) {
       )}</p>
 
       <div class="sim-tabs" role="tablist">
-        ${[
-          ['6', '6 mois', '6 أشهر'],
-          ['12', '12 mois', '12 شهراً'],
-          ['18', '18 mois', '18 شهراً']
-        ].map(([id, fr, ar], i) => `
+        ${formulesDispo.map(([id, fr, ar], i) => `
           <button type="button"
             class="sim-tab ${i === 0 ? 'active' : ''}"
             data-sim="${id}" role="tab">
@@ -1198,7 +1206,7 @@ function wireSimulator(p) {
     b.onclick = () => choose(b.dataset.sim);
   });
 
-  choose('6');
+  choose(p.formules?.['6'] !== false ? '6' : p.formules?.['12'] !== false ? '12' : '18');
 }
 
 const oldDetail = detail;

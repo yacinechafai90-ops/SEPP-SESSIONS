@@ -497,6 +497,7 @@ function champHtml(c, ligne) {
   if (table.nom === 'items' && estCategorie(c.nom)) return champCategorie(c);
   if (table.nom === 'items' && estSousCategorie(c.nom)) return champSousCategorie(c);
   if (table.nom === 'items' && estPhoto(c.nom)) return champPhoto(c);
+  if (table.nom === 'bannieres_accueil' && c.nom === 'image') return champPhoto(c);
   if (estSpecs() && c.nom === table.cle) return champReferenceSpecs(c, ligne);
   if (estSpecs() && (estCategorie(c.nom) || estSousCategorie(c.nom) || n === 'designation')) {
     return `<label data-champ="${esc(c.nom)}"><span class="lib">${esc(c.etiquette)}</span>
@@ -551,6 +552,9 @@ async function ouvrirFormulaire(ligne) {
     if (catCol) brancherClassement(ligne ? (ligne[catCol.nom] || '') : '', ligne && sousCol ? (ligne[sousCol.nom] || '') : '');
     if (photoCol) brancherPhoto(ligne ? ligne[photoCol.nom] : '', photoCol.nom);
   }
+  if (table.nom === 'bannieres_accueil') {
+    brancherPhoto(ligne ? ligne.image : '', 'image');
+  }
   if (estSpecs()) {
     brancherReferenceSpecs();
     adapterSpecs();
@@ -585,7 +589,7 @@ async function enregistrer(evenement) {
   $('#dlg-erreur').textContent = '';
   try {
     // Photo choisie sur l'ordinateur : copiée dans assets/ juste avant l'enregistrement.
-    if (photoEnAttente && table.nom === 'items') {
+    if (photoEnAttente) {
       valeurs[photoEnAttente.col] = await envoyerPhoto(photoEnAttente.fichier);
       photoEnAttente = null;
     }

@@ -37,8 +37,8 @@
   render = function (scroll = true) {
     const from = currentRoute;
     let to;
-    try { to = decodeURIComponent(location.hash.slice(1) || '/catalogue'); }
-    catch { to = '/catalogue'; }
+    try { to = decodeURIComponent(location.hash.slice(1) || '/'); }
+    catch { to = '/'; }
 
     if (from === '/catalogue' && to.startsWith('/produit/') && !departure) {
       remember(to.slice('/produit/'.length));

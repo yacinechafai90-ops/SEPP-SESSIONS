@@ -208,6 +208,11 @@ def trouver_table(connexion):
     photo = next((c for c in tables[table] if cle_identifiant(c) == "productphotos"), None)
     if photo:
         colonnes["photo"] = photo
+    # Formules de paiement activables produit par produit (absentes = toutes actives).
+    for formule in ("formule_6_mois", "formule_12_mois", "formule_18_mois"):
+        presente = next((c for c in tables[table] if cle_identifiant(c) == cle_identifiant(formule)), None)
+        if presente:
+            colonnes[formule] = presente
     return (table, colonnes), list(tables)
 
 
@@ -352,6 +357,31 @@ def telephone(valeur):
     if len(chiffres) == 9:
         chiffres = "0" + chiffres
     return chiffres
+
+
+TABLE_BANNIERES = "bannieres_accueil"
+
+
+def charger_bannieres(connexion, tables, schema):
+    """Bannieres de la page d'accueil (gerees dans l'administration) : actives seulement, par ordre."""
+    table = chercher_table(tables, TABLE_BANNIERES, schema, obligatoire=False)
+    if table is None:
+        return []
+    par_cle = {cle_identifiant(c): c for c in tables[table]}
+    c_image, c_titre, c_ordre = par_cle.get("image"), par_cle.get("titre"), par_cle.get("ordre")
+    if not c_image:
+        return []
+    lignes = lire_table(
+        connexion, table,
+        sql.Identifier(c_ordre) if c_ordre else None,
+        condition_statut(tables[table]),
+    )
+    bannieres = []
+    for ligne in lignes:
+        image = texte_propre(ligne[c_image])
+        if image:
+            bannieres.append({"image": image, "titre": texte_propre(ligne[c_titre]) if c_titre else ""})
+    return bannieres
 
 
 def condition_statut(colonnes):
@@ -562,6 +592,7 @@ def charger_catalogue():
         boutiques = charger_boutiques(connexion, toutes, table[0])
         specs = charger_specs(connexion, toutes, table[0])
         remises = charger_remises(connexion, toutes, table[0])
+        bannieres = charger_bannieres(connexion, toutes, table[0])
 
     if not lignes:
         raise ValueError(f"La table {table!r} dans {NOM_BASE!r} est vide (ou aucun produit actif).")
@@ -650,6 +681,13 @@ def charger_catalogue():
                 ),
             },
 
+            # Formules activees pour ce produit (interrupteurs de l'administration).
+            "formules": {
+                "6": ligne.get("formule_6_mois") is not False,
+                "12": ligne.get("formule_12_mois") is not False,
+                "18": ligne.get("formule_18_mois") is not False,
+            },
+
             "image": (
                 image_depuis_base(ligne.get("photo"))
                 or ancien.get("image")
@@ -682,6 +720,7 @@ def charger_catalogue():
     catalogue["shops"] = boutiques
     catalogue["specs"] = specs
     catalogue["discount"] = remises
+    catalogue["bannieres"] = bannieres
 
     return catalogue
 

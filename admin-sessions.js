@@ -23,7 +23,7 @@ async function api(path,method='GET',body){
 function icon(kind,label,id){const symbols={edit:'✎',delete:'🗑',toggle:'⏻'};return `<button class="icon ${kind==='delete'?'danger':''}" type="button" data-action="${kind}" data-id="${esc(id)}" title="${label}" aria-label="${label}">${symbols[kind]}</button>`}
 async function users(preferred){const data=await api('sessions');state.users=data.comptes;const current=preferred??$('session-select').value;$('session-select').innerHTML='<option value="">Sélectionner une session</option>'+state.users.map(u=>`<option value="${u.id}">${esc(u.identifiant)}${u.actif?'':' (désactivée)'}</option>`).join('');$('session-select').value=String(current);await details()}
 async function details(){const id=uid();for(const key of ['edit-session','toggle-session','delete-session'])$(key).disabled=!id;$('workspace').hidden=!id;if(!id){state.detail=null;$('session-state').textContent='Sélectionnez une session pour voir ses données.';return}state.detail=await api('sessions/'+id+'/details');$('session-state').textContent=state.detail.user.actif?'Session active':'Session désactivée';$('toggle-session').title=state.detail.user.actif?'Désactiver la session':'Activer la session';render()}
-function render(){if(!state.detail)return;for(const tab of ['products','brandshops','specs','discounts'])$(tab).hidden=tab!==state.tab;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
+function render(){if(!state.detail)return;for(const tab of ['products','brandshops','specs','discounts','banners'])$(tab).hidden=tab!==state.tab;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
  const d=state.detail,names=Object.fromEntries(d.all_products.map(p=>[p.reference,p]));
  const category=$('product-category').value,categories=[...new Set(d.products.map(p=>names[p.reference]?.category||'Autres'))].sort((a,b)=>a.localeCompare(b,'fr'));
  $('product-category').innerHTML='<option value="">Toutes les catégories</option>'+categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
@@ -122,5 +122,53 @@ $('discount-form').onsubmit=async e=>{e.preventDefault();try{
 }catch(error){notice(error.message,true)}};
 $('excel-form').onsubmit=async e=>{e.preventDefault();if(!confirmScope('Importer ce fichier produits'))return;const form=new FormData();form.append('fichier',$('excel-file').files[0]);try{const result=await api('sessions/'+uid()+'/import/products','POST',form);await details();$('excel-file').value='';notice(result.imported+' produits importés ou mis à jour pour '+scopeText()+'.')}catch(error){notice(error.message,true)}};
 for(const kind of ['brandshops','specs','discounts']){const formElement=$('import-'+kind);formElement.onsubmit=async e=>{e.preventDefault();if(!uid())return;const file=formElement.querySelector('input[type=file]').files[0];if(!file||!confirmScope('Importer ce fichier'))return;const body=new FormData();body.append('fichier',file);try{const result=await api('sessions/'+uid()+'/import/'+kind,'POST',body);formElement.reset();await details();notice(result.imported+' ligne(s) importée(s) pour '+scopeText()+'.')}catch(error){notice(error.message,true)}}}
+/* --- Bannieres d'accueil : communes a toutes les sessions (max 10, ordre 1 a 10 sans doublon) --- */
+const BANNIERES='t/bannieres_accueil',BANNIERES_MAX=10,STATUTS_BANNIERE=['actif','inactif','supprimé'];
+state.banners=[];
+const numerosPris=exceptId=>new Set(state.banners.filter(b=>b.statut!=='supprimé'&&String(b.id)!==String(exceptId)).map(b=>Number(b.ordre)));
+function optionsOrdre(exceptId,actuel){
+ const pris=numerosPris(exceptId);let html='';
+ for(let n=1;n<=BANNIERES_MAX;n++){if(pris.has(n)&&n!==Number(actuel))continue;html+=`<option value="${n}"${n===Number(actuel)?' selected':''}>${n}</option>`}
+ return html;
+}
+function renderBanners(){
+ const actives=state.banners.filter(b=>b.statut!=='supprimé');
+ $('banner-count').textContent=actives.length+' / '+BANNIERES_MAX+' photos';
+ $('add-banner').disabled=actives.length>=BANNIERES_MAX;
+ const lignes=[...state.banners].sort((a,b)=>(a.statut==='supprimé')-(b.statut==='supprimé')||Number(a.ordre)-Number(b.ordre));
+ $('banner-rows').innerHTML=lignes.length?lignes.map(b=>{
+  const supprime=b.statut==='supprimé';
+  const statuts=STATUTS_BANNIERE.map(s=>`<option value="${esc(s)}"${s===b.statut?' selected':''}>${esc(s)}</option>`).join('');
+  const src='/'+String(b.image??'').split('/').map(encodeURIComponent).join('/');
+  return `<tr><td><img src="${esc(src)}" alt="${esc(b.titre||'')}" style="width:120px;height:60px;object-fit:cover;border-radius:6px"></td><td>${esc(b.titre||'')}</td><td><select data-banner-ordre="${esc(b.id)}" aria-label="Ordre d'affichage"${supprime?' disabled':''}>${optionsOrdre(b.id,b.ordre)}</select></td><td><select data-banner-statut="${esc(b.id)}" aria-label="Statut">${statuts}</select></td></tr>`;
+ }).join(''):'<tr><td colspan="4" class="muted">Aucune bannière.</td></tr>';
+}
+async function chargerBannieres(){const data=await api(BANNIERES);state.banners=data.lignes;renderBanners()}
+$('banner-rows').onchange=async e=>{
+ const t=e.target,ordre=t.dataset.bannerOrdre!==undefined;
+ const id=ordre?t.dataset.bannerOrdre:t.dataset.bannerStatut;
+ const b=state.banners.find(x=>String(x.id)===String(id));
+ if(!b)return;
+ try{
+  if(ordre){await api(BANNIERES,'PUT',{cle:b.id,valeurs:{image:b.image,titre:b.titre??'',ordre:Number(t.value),statut:b.statut}});notice("Ordre d'affichage enregistré.")}
+  else{await api(BANNIERES+'/statut','POST',{cle:b.id,statut:t.value});notice('Statut de la bannière modifié.')}
+ }catch(error){notice(error.message,true)}
+ await chargerBannieres().catch(error=>notice(error.message,true));
+};
+$('add-banner').onclick=()=>{$('banner-form').reset();$('banner-error').textContent='';$('banner-order').innerHTML=optionsOrdre(null);$('banner-dialog').showModal()};
+$('banner-form').onsubmit=async e=>{
+ e.preventDefault();
+ const fichier=$('banner-file').files[0];
+ if(!fichier){$('banner-error').textContent='Choisissez une photo.';return}
+ try{
+  const donnees=new FormData();donnees.append('photo',fichier);
+  const {chemin}=await api('photo','POST',donnees);
+  await api(BANNIERES,'POST',{valeurs:{image:chemin,titre:$('banner-title').value.trim(),ordre:Number($('banner-order').value),statut:$('banner-status').value}});
+  $('banner-dialog').close();
+  await chargerBannieres();
+  notice('Bannière ajoutée.');
+ }catch(error){$('banner-error').textContent=error.message}
+};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());users().catch(e=>notice(e.message,true));
+chargerBannieres().catch(e=>notice(e.message,true));
 })();

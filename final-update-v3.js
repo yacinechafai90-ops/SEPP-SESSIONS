@@ -14,9 +14,10 @@
       totalLine = `Total comptant : ${cashText}`;
       monthlyLine = '';
     } else {
-      const cardIndex = [6, 12, 18].indexOf(months) + 2;
-      const totalStrong = document.querySelector(`.bucket-payments article:nth-child(${cardIndex}) > strong`);
-      const monthlyStrong = document.querySelector(`.bucket-payments article:nth-child(${cardIndex}) .monthly-amount`);
+      // Carte de la formule choisie (les formules désactivées n'ont pas de carte).
+      const card = document.querySelector(`.bucket-payments article[data-duration="${months}"]`);
+      const totalStrong = card ? card.querySelector(':scope > strong') : null;
+      const monthlyStrong = card ? card.querySelector('.monthly-amount') : null;
       totalLine = `Total ${months} mois : ${totalStrong ? totalStrong.textContent : ''}`;
       monthlyLine = `<div class="monthly">Mensualité (${months} mois) : ${monthlyStrong ? monthlyStrong.textContent : ''}</div>`;
     }

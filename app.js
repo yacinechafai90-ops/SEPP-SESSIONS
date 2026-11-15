@@ -888,10 +888,10 @@ function information(warranty){
 function render(scroll=true){
   try{
     currentRoute=decodeURIComponent(
-      location.hash.slice(1)||'/catalogue'
+      location.hash.slice(1)||'/'
     );
   }catch{
-    currentRoute='/catalogue';
+    currentRoute='/';
   }
 
   document.title='Samsung — '+L(
