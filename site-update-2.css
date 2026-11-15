@@ -10,6 +10,24 @@
 .bucket-payments article.selected{border-color:#1428a0;box-shadow:inset 0 0 0 1px #1428a0}
 @media(max-width:700px){.bucket-payments.four-payments{grid-template-columns:repeat(min(var(--cards,4),2),minmax(0,1fr))}}
 
+/* Cartes de paiement : durée (titre bleu), mensualité (mise en avant, teal), total (discret).
+   La carte choisie prend le dégradé bleu de la bannière « Facilités de paiement ». */
+.bucket-payments article[data-duration]{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:20px 22px;border-radius:18px;background:#fff;border:1px solid #e3e8f4;box-shadow:0 6px 18px rgba(20,40,160,.06);text-align:start;overflow:hidden}
+.bucket-payments article[data-duration] .pay-duree{display:block;font-size:22px;font-weight:800;line-height:1.2;color:#1428a0}
+.bucket-payments article[data-duration] .discount-label{align-self:flex-start;display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#e6f7ef;color:#0a7d3b}
+.bucket-payments article[data-duration] .card-monthly{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin:6px 0 0}
+.bucket-payments article[data-duration] .monthly-amount{font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.01em;color:#0a7d6e}
+.bucket-payments article[data-duration] .card-monthly small{font-size:13px;font-weight:700;color:#0a7d6e}
+.bucket-payments article[data-duration] .pay-label{display:block;font-size:12px;font-weight:700;color:#0a7d6e;margin-top:auto;padding-top:12px;border-top:1px solid #e3e8f4}
+.bucket-payments article[data-duration] > strong:not(.monthly-amount){font-size:14px;font-weight:700;color:#0a7d6e}
+.bucket-payments article[data-duration].selected{background:linear-gradient(135deg,#1428a0 0%,#2a3ddb 100%);border-color:transparent;box-shadow:0 14px 30px rgba(20,40,160,.28)}
+.bucket-payments article[data-duration].selected .pay-duree{color:#fff}
+.bucket-payments article[data-duration].selected .discount-label{background:rgba(255,255,255,.18);color:#fff}
+.bucket-payments article[data-duration].selected .monthly-amount{color:#8ff5dc}
+.bucket-payments article[data-duration].selected .card-monthly small,.bucket-payments article[data-duration].selected .pay-label,.bucket-payments article[data-duration].selected > strong:not(.monthly-amount){color:#dfe7ff}
+.bucket-payments article[data-duration].selected .pay-label{border-top-color:rgba(255,255,255,.25)}
+@media(max-width:700px){.bucket-payments article[data-duration]{padding:16px 16px}.bucket-payments article[data-duration] .pay-duree{font-size:20px}.bucket-payments article[data-duration] .monthly-amount{font-size:24px}}
+
 /* Pied de page : fonction de chaque contact. */
 .footer-role{display:block;font-size:13px;font-weight:700;color:#8fa2ff;margin:2px 0 4px}
 
