@@ -110,6 +110,14 @@ def installer(app, srv):
     def deconnexion_utilisateur():
         session.clear()
         return redirect('/connexion')
+
+    @app.get('/api/moi')
+    def identite_utilisateur():
+        """Identifiant du client connecte, pour l'affichage d'accueil (« Bienvenue, ... »)."""
+        with srv['ouvrir_connexion'](srv['NOM_BASE']) as cn:
+            compte = cn.execute('SELECT identifiant FROM public.utilisateurs_catalogue WHERE id = %s',
+                                (session.get('utilisateur_id'),)).fetchone()
+        return jsonify(identifiant=compte['identifiant'] if compte else '')
     @app.get('/admin/api/offres')
     def api_offres():
         with srv['ouvrir_connexion'](srv['NOM_BASE']) as cn:

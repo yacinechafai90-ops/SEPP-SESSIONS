@@ -1,3 +1,4 @@
+#bienvenue{color:#e4e8ff;font-size:14px;font-weight:600;white-space:nowrap;align-self:center;margin-inline-end:12px;flex-shrink:0}
 #deconnexion-form{margin:0;flex-shrink:0}
 #deconnexion-form button{border:1px solid #697389;border-radius:999px;padding:8px 14px;color:white;background:transparent;cursor:pointer;white-space:nowrap}
 #deconnexion-form button:hover,#deconnexion-form button:focus-visible{background:#1428a0;border-color:#879bff}
