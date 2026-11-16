@@ -77,6 +77,9 @@ def installer(app, srv):
             abort(404)
         if chemin.startswith('/admin') or chemin.startswith('/publication') or chemin == '/connexion':
             return None
+        # Photos (bannieres, produits) : lisibles aussi par l'administrateur connecte.
+        if chemin.startswith('/assets/') and session.get('admin'):
+            return None
         identite = session.get('utilisateur_id')
         if identite:
             with srv['ouvrir_connexion'](srv['NOM_BASE']) as cn:

@@ -138,35 +138,50 @@ function renderBanners(){
  const lignes=[...state.banners].sort((a,b)=>(a.statut==='supprimé')-(b.statut==='supprimé')||Number(a.ordre)-Number(b.ordre));
  $('banner-rows').innerHTML=lignes.length?lignes.map(b=>{
   const supprime=b.statut==='supprimé';
-  const statuts=STATUTS_BANNIERE.map(s=>`<option value="${esc(s)}"${s===b.statut?' selected':''}>${esc(s)}</option>`).join('');
   const src='/'+String(b.image??'').split('/').map(encodeURIComponent).join('/');
-  return `<tr><td><img src="${esc(src)}" alt="${esc(b.titre||'')}" style="width:120px;height:60px;object-fit:cover;border-radius:6px"></td><td>${esc(b.titre||'')}</td><td><select data-banner-ordre="${esc(b.id)}" aria-label="Ordre d'affichage"${supprime?' disabled':''}>${optionsOrdre(b.id,b.ordre)}</select></td><td><select data-banner-statut="${esc(b.id)}" aria-label="Statut">${statuts}</select></td></tr>`;
- }).join(''):'<tr><td colspan="4" class="muted">Aucune bannière.</td></tr>';
+  const badge=`<span class="badge ${b.statut==='actif'?'':'off'}">${esc(b.statut)}</span>`;
+  const bascule=supprime?icon('toggle','Restaurer la bannière (actif)',b.id):icon('toggle',b.statut==='actif'?'Désactiver la bannière':'Activer la bannière',b.id);
+  return `<tr><td><img src="${esc(src)}" alt="${esc(b.titre||'')}" style="width:120px;height:60px;object-fit:cover;border-radius:6px"></td><td>${esc(b.titre||'')}</td><td>${supprime?'—':esc(b.ordre)}</td><td>${badge}</td><td>${icon('edit','Modifier la bannière',b.id)} ${bascule}${supprime?'':' '+icon('delete','Supprimer la bannière',b.id)}</td></tr>`;
+ }).join(''):'<tr><td colspan="5" class="muted">Aucune bannière.</td></tr>';
 }
 async function chargerBannieres(){const data=await api(BANNIERES);state.banners=data.lignes;renderBanners()}
-$('banner-rows').onchange=async e=>{
- const t=e.target,ordre=t.dataset.bannerOrdre!==undefined;
- const id=ordre?t.dataset.bannerOrdre:t.dataset.bannerStatut;
- const b=state.banners.find(x=>String(x.id)===String(id));
+let banniereEdition=null;
+function ouvrirBanniere(id){
+ const b=id==null?null:state.banners.find(x=>String(x.id)===String(id));
+ banniereEdition=b;
+ $('banner-form').reset();$('banner-error').textContent='';
+ $('banner-dialog-title').textContent=b?'Modifier la bannière':'Ajouter une bannière';
+ $('banner-file').required=!b;
+ $('banner-title').value=b?(b.titre??''):'';
+ $('banner-order').innerHTML=optionsOrdre(b?b.id:null,b?b.ordre:null);
+ $('banner-status').closest('label').hidden=!!b;
+ $('banner-dialog').showModal();
+}
+$('banner-rows').onclick=async e=>{
+ const btn=e.target.closest('[data-action]');if(!btn)return;
+ const b=state.banners.find(x=>String(x.id)===String(btn.dataset.id));
  if(!b)return;
  try{
-  if(ordre){await api(BANNIERES,'PUT',{cle:b.id,valeurs:{image:b.image,titre:b.titre??'',ordre:Number(t.value),statut:b.statut}});notice("Ordre d'affichage enregistré.")}
-  else{await api(BANNIERES+'/statut','POST',{cle:b.id,statut:t.value});notice('Statut de la bannière modifié.')}
- }catch(error){notice(error.message,true)}
+  if(btn.dataset.action==='edit')return ouvrirBanniere(b.id);
+  if(btn.dataset.action==='toggle'){const statut=b.statut==='actif'?'inactif':'actif';await api(BANNIERES+'/statut','POST',{cle:b.id,statut});notice(statut==='actif'?'Bannière activée.':'Bannière désactivée.')}
+  if(btn.dataset.action==='delete'){if(!confirm('Supprimer cette bannière de la page d\'accueil ?'))return;await api(BANNIERES+'/statut','POST',{cle:b.id,statut:'supprimé'});notice('Bannière supprimée.')}
+ }catch(error){notice(error.message,true);return}
  await chargerBannieres().catch(error=>notice(error.message,true));
 };
-$('add-banner').onclick=()=>{$('banner-form').reset();$('banner-error').textContent='';$('banner-order').innerHTML=optionsOrdre(null);$('banner-dialog').showModal()};
+$('add-banner').onclick=()=>ouvrirBanniere(null);
 $('banner-form').onsubmit=async e=>{
  e.preventDefault();
- const fichier=$('banner-file').files[0];
- if(!fichier){$('banner-error').textContent='Choisissez une photo.';return}
+ const edition=banniereEdition,fichier=$('banner-file').files[0];
+ if(!edition&&!fichier){$('banner-error').textContent='Choisissez une photo.';return}
  try{
-  const donnees=new FormData();donnees.append('photo',fichier);
-  const {chemin}=await api('photo','POST',donnees);
-  await api(BANNIERES,'POST',{valeurs:{image:chemin,titre:$('banner-title').value.trim(),ordre:Number($('banner-order').value),statut:$('banner-status').value}});
+  let image=edition?edition.image:null;
+  if(fichier){const donnees=new FormData();donnees.append('photo',fichier);({chemin:image}=await api('photo','POST',donnees))}
+  const valeurs={image,titre:$('banner-title').value.trim(),ordre:Number($('banner-order').value),statut:edition?edition.statut:$('banner-status').value};
+  if(edition)await api(BANNIERES,'PUT',{cle:edition.id,valeurs});
+  else await api(BANNIERES,'POST',{valeurs});
   $('banner-dialog').close();
   await chargerBannieres();
-  notice('Bannière ajoutée.');
+  notice(edition?'Bannière modifiée.':'Bannière ajoutée.');
  }catch(error){$('banner-error').textContent=error.message}
 };
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());users().catch(e=>notice(e.message,true));
