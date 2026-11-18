@@ -192,41 +192,67 @@
     `);
   }
 
-  /* Comparatif : un mode de paiement à la fois et les spécifications. */
-  function showComparison() {
+  /* Comparatif : choix des produits par liste déroulante (jusqu'à trois),
+     prix comptant puis mensualité de chaque formule, et spécifications. */
+  const FORMULES_COMPARAISON = [6, 12, 18, 24];
+  // Formule affichée pour chaque produit comparé (choisie par l'onglet de formule).
+  const formuleChoisie = {};
+
+  // Mensualité officielle (monthly-payment-table.js), sinon total de la formule / nombre de mois.
+  function mensualite(p, mois) {
+    const officielle = window.MONTHLY_PAYMENT_TABLE?.[p.reference]?.[FORMULES_COMPARAISON.indexOf(mois)];
+    if (Number.isFinite(Number(officielle)) && Number(officielle) > 0) return Number(officielle);
+    const total = p.financing?.[mois === 6 ? '3/6' : String(mois)];
+    return Number.isFinite(Number(total)) && Number(total) > 0 ? Number(total) / mois : null;
+  }
+
+  function montant(valeur) {
+    return Number.isFinite(Number(valeur)) && Number(valeur) > 0
+      ? money(Math.round(Number(valeur)))
+      : '—';
+  }
+
+  function showComparison(note = '') {
     const items = compared.map(product).filter(Boolean);
 
-    if (!items.length) {
-      openDialog(`
-        <span class="extras-kicker">
-          ${label('Aide au choix', 'المساعدة في الاختيار')}
-        </span>
+    const options = (selection) => [
+      `<option value="">${label('— Aucun produit —', '— لا يوجد منتج —')}</option>`,
+      ...products
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+        .map((p) => `
+          <option value="${esc(p.reference)}"${p.reference === selection ? ' selected' : ''}>
+            ${esc(p.name)} (${esc(p.reference)})
+          </option>
+        `)
+    ].join('');
 
-        <h2>${label('Comparer les produits', 'مقارنة المنتجات')}</h2>
+    const choix = [0, 1, 2].map((i) => `
+      <label class="cmp-choice">
+        <span>${label('Produit', 'المنتج')} ${i + 1}</span>
+        <select data-compare-slot="${i}">${options(compared[i] || '')}</select>
+      </label>
+    `).join('');
 
-        <p class="extras-empty">
-          ${label(
-            'Ajoutez jusqu’à trois produits au comparatif depuis le catalogue.',
-            'أضف حتى ثلاثة منتجات للمقارنة من الكتالوج.'
-          )}
-        </p>
-      `);
+    // Seules les formules disponibles (non désactivées, avec un montant) sont proposées.
+    const formulesDispo = (p) => FORMULES_COMPARAISON.filter((mois) => p.formules?.[String(mois)] !== false && Number.isFinite(mensualite(p, mois)));
+    const formuleAffichee = (p, dispo) => (dispo.includes(formuleChoisie[p.reference]) ? formuleChoisie[p.reference] : dispo[0]);
 
-      return;
-    }
-
-    const modes = [
-      ['cash', label('Comptant', 'نقداً')],
-      ['6', label('6 mois', '6 أشهر')],
-      ['12', label('12 mois', '12 شهراً')],
-      ['18', label('18 mois', '18 شهراً')]
-    ];
-
-    let mode = modes.some(
-      ([id]) => id === showComparison.paymentMode
-    )
-      ? showComparison.paymentMode
-      : 'cash';
+    // Une ligne par produit : onglets des formules disponibles + mensualité mise en avant (pas le total).
+    const ligneFormules = `
+      <tr>
+        <th scope="row">${label('Formule et mensualité', 'الصيغة والقسط الشهري')}</th>
+        ${items.map((p) => {
+          const dispo = formulesDispo(p);
+          if (!dispo.length) return `<td>${label('Aucune formule disponible', 'لا توجد صيغة متاحة')}</td>`;
+          const actuelle = formuleAffichee(p, dispo);
+          const onglets = dispo.length > 1
+            ? `<div class="cmp-offers" role="group" aria-label="${label('Formules disponibles', 'الصيغ المتاحة')}">${dispo.map((mois) => `<button type="button" class="cmp-chip" aria-pressed="${mois === actuelle}" data-cmp-ref="${esc(p.reference)}" data-cmp-mois="${mois}">${mois} ${label('mois', 'شهراً')}</button>`).join('')}</div>`
+            : '';
+          return `<td class="cmp-cell">${onglets}<div class="cmp-monthly"><strong dir="ltr">${montant(mensualite(p, actuelle))}</strong><small>${label('par mois', 'شهرياً')} · ${actuelle} ${label('mois', 'شهراً')}</small></div></td>`;
+        }).join('')}
+      </tr>
+    `;
 
     const specifications = items.map(
       (p) => window.PRODUCT_SPECS?.[p.reference] || {}
@@ -238,128 +264,57 @@
       )
     ];
 
-    function lignesTableau() {
-      const prixLabel = mode === 'cash'
-        ? label('Prix comptant', 'السعر نقداً')
-        : label(
-            'Total ' + mode + ' mois',
-            'الإجمالي لمدة ' + mode + ' شهراً'
-          );
+    const lignesSpecs = criteres.length
+      ? criteres.map((critere) => `
+          <tr>
+            <th scope="row">${esc(critere)}</th>
+            ${specifications.map((specs) => {
+              const valeur = specs[critere];
+              return `<td>${valeur === null || valeur === undefined || valeur === '' ? '—' : esc(valeur)}</td>`;
+            }).join('')}
+          </tr>
+        `).join('')
+      : `
+          <tr>
+            <th scope="row">${label('Caractéristiques', 'المواصفات')}</th>
+            ${items.map(() => `<td>${label('Non renseignées', 'غير متوفرة')}</td>`).join('')}
+          </tr>
+        `;
 
-      const prix = items.map((p) => {
-        const montant = mode === 'cash'
-          ? p.offerPrice
-          : p.financing?.[mode === '6' ? '3/6' : mode];
-
-        return (
-          montant !== null &&
-          montant !== undefined &&
-          Number.isFinite(Number(montant))
-        )
-          ? money(Number(montant))
-          : '—';
-      });
-
-      const lignesSpecs = criteres.length
-        ? criteres.map((critere) => `
-            <tr>
-              <th scope="row">${esc(critere)}</th>
-
-              ${specifications.map((specs) => {
-                const valeur = specs[critere];
-
-                return `
-                  <td>${
-                    valeur === null ||
-                    valeur === undefined ||
-                    valeur === ''
-                      ? '—'
-                      : esc(valeur)
-                  }</td>
-                `;
-              }).join('')}
-            </tr>
-          `).join('')
-        : `
-            <tr>
-              <th scope="row">
-                ${label('Caractéristiques', 'المواصفات')}
-              </th>
-
-              ${items.map(() => `
-                <td>${label('Non renseignées', 'غير متوفرة')}</td>
-              `).join('')}
-            </tr>
-          `;
-
-      return `
-        <tr>
-          <th scope="row">${prixLabel}</th>
-          ${prix.map((valeur) => `<td>${valeur}</td>`).join('')}
-        </tr>
-
-        <tr>
-          <th scope="row">
-            ${label('Disponibilité', 'التوفر')}
-          </th>
-
-          ${items.map((p) => `
-            <td>${esc(p.availability)}</td>
-          `).join('')}
-        </tr>
-
-        <tr>
-          <th colspan="${items.length + 1}">
-            ${label(
-              'Spécifications techniques',
-              'المواصفات التقنية'
-            )}
-          </th>
-        </tr>
-
-        ${lignesSpecs}
-      `;
-    }
-
-    const choixPaiement = `
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0">
-        <label for="extras-comparison-payment"
-          style="font-size:13px;font-weight:700">
-          ${label('Mode de paiement', 'طريقة الدفع')}
-        </label>
-
-        <select id="extras-comparison-payment"
-          style="padding:10px 14px;border:1px solid #d9dfec;border-radius:10px;background:#fff;color:#17204a;font:inherit">
-          ${modes.map(([id, texte]) => `
-            <option value="${id}">${texte}</option>
-          `).join('')}
-        </select>
-      </div>
-    `;
-
-    const table = `
+    const table = items.length ? `
       <div class="extras-table-scroll">
-        <table>
+        <table class="cmp-table">
           <thead>
             <tr>
               <th scope="col">${label('Critère', 'المعيار')}</th>
-
               ${items.map((p) => `
                 <th scope="col">
-                  <a href="#/produit/${esc(p.reference)}">
-                    ${esc(p.name)}
-                  </a>
+                  <a href="#/produit/${esc(p.reference)}">${esc(p.name)}</a>
                   <small>${esc(p.reference)}</small>
                 </th>
               `).join('')}
             </tr>
           </thead>
-
-          <tbody id="extras-comparison-body">
-            ${lignesTableau()}
+          <tbody>
+            ${ligneFormules}
+            <tr>
+              <th scope="row">${label('Disponibilité', 'التوفر')}</th>
+              ${items.map((p) => `<td>${esc(p.availability)}</td>`).join('')}
+            </tr>
+            <tr>
+              <th colspan="${items.length + 1}">${label('Spécifications techniques', 'المواصفات التقنية')}</th>
+            </tr>
+            ${lignesSpecs}
           </tbody>
         </table>
       </div>
+    ` : `
+      <p class="extras-empty">
+        ${label(
+          'Choisissez jusqu’à trois produits dans les listes ci-dessus.',
+          'اختر حتى ثلاثة منتجات من القوائم أعلاه.'
+        )}
+      </p>
     `;
 
     openDialog(`
@@ -371,28 +326,39 @@
 
       <p class="extras-intro">
         ${label(
-          'Prix et disponibilités indiqués dans le catalogue. Confirmez le stock auprès du magasin.',
-          'الأسعار والتوفر حسب الكتالوج. أكد المخزون لدى المتجر.'
+          'Seules les formules proposées sont affichées. Le montant mis en avant est la mensualité à payer. Confirmez le stock auprès du magasin.',
+          'تُعرض الصيغ المتاحة فقط. المبلغ المميز هو القسط الشهري المستحق. أكد المخزون لدى المتجر.'
         )}
       </p>
 
-      ${choixPaiement}
+      <div class="cmp-choices">${choix}</div>
+      ${note ? `<p class="cmp-note" role="status">${esc(note)}</p>` : ''}
       ${table}
     `);
 
-    const select =
-      document.querySelector('#extras-comparison-payment');
+    document.querySelectorAll('[data-cmp-mois]').forEach((bouton) => {
+      bouton.onclick = () => {
+        formuleChoisie[bouton.dataset.cmpRef] = Number(bouton.dataset.cmpMois);
+        showComparison(note);
+      };
+    });
 
-    select.value = mode;
+    document.querySelectorAll('[data-compare-slot]').forEach((select) => {
+      select.onchange = () => {
+        const choisis = [...document.querySelectorAll('[data-compare-slot]')]
+          .map((s) => s.value)
+          .filter(Boolean);
+        const uniques = [...new Set(choisis)].slice(0, 3);
+        const doublon = uniques.length !== choisis.length;
 
-    select.onchange = () => {
-      mode = select.value;
-      showComparison.paymentMode = mode;
-
-      document.querySelector(
-        '#extras-comparison-body'
-      ).innerHTML = lignesTableau();
-    };
+        compared = uniques;
+        save();
+        refreshControls();
+        showComparison(doublon
+          ? label('Un produit ne peut figurer qu’une fois dans le comparatif.', 'لا يمكن أن يظهر المنتج أكثر من مرة في المقارنة.')
+          : '');
+      };
+    });
   }
 
   function addCardControls() {
@@ -490,7 +456,7 @@
 
     document.querySelector(
       '#extras-open-comparison'
-    ).onclick = showComparison;
+    ).onclick = () => showComparison();
 
     refreshControls();
   };

@@ -173,7 +173,7 @@ def installer(app, srv):
     def session_details(uid):
         cat=srv['charger_catalogue']()
         with connexion() as cn:
-            user=cn.execute('SELECT id,identifiant,actif,tous_brandshops FROM public.utilisateurs_catalogue WHERE id=%s',(uid,)).fetchone()
+            user=cn.execute('SELECT id,identifiant,actif,tous_brandshops,formules_autorisees,remise_minimum FROM public.utilisateurs_catalogue WHERE id=%s',(uid,)).fetchone()
             if not user: return jsonify(erreur='Session introuvable.'),404
             products=cn.execute('SELECT reference,prix_offre,actif FROM public.offres_utilisateur WHERE utilisateur_id=%s ORDER BY reference',(uid,)).fetchall()
             shops=cn.execute('SELECT brandshop_id,actif,nom_personnalise,ville_personnalisee,adresse_personnalisee,mobile_personnalise FROM public.brandshops_utilisateur WHERE utilisateur_id=%s',(uid,)).fetchall()
@@ -322,15 +322,43 @@ def installer(app, srv):
     def manual_discount(uid):
         data=request.get_json(silent=True) or {}
         expected,_=session_templates.source('discounts')
-        if not isinstance(data,dict) or data.get('scope','selected') not in ('selected','all') or set(data)-{'scope'}!=set(expected):
+        # 6, 12 et 18 mois obligatoires ; 24 mois accepté en plus (remise de la formule 24 mois).
+        cles=set(data)-{'scope'} if isinstance(data,dict) else set()
+        if not isinstance(data,dict) or data.get('scope','selected') not in ('selected','all') or not set(expected)<=cles or not cles<=set(expected)|{'24 Months'}:
             return jsonify(erreur='Remises ou portée invalides.'),400
-        row={key:data[key] for key in expected}
+        row={key:data[key] for key in cles}
         try: session_templates.validate('discounts',[row])
         except Exception as exc: return jsonify(erreur=str(exc)),400
         with connexion() as cn:
             ids=scope_ids(cn,uid,data.get('scope','selected'))
             if not ids: return jsonify(erreur='Session introuvable.'),404
             for target in ids: session_templates.save_rows(cn,target,'discounts',[row])
+        return jsonify(ok=True,sessions=len(ids))
+
+    @app.put('/admin/api/sessions/<int:uid>/formules')
+    def formules_session(uid):
+        data=request.get_json(silent=True) or {}
+        permises=data.get('formules')
+        if not isinstance(permises,list) or not permises or any(str(m) not in ('cash','6','12','18','24') for m in permises) or data.get('scope','selected') not in ('selected','all'):
+            return jsonify(erreur='Cochez au moins une formule valide.'),400
+        valeur=','.join(m for m in ('cash','6','12','18','24') if m in {str(x) for x in permises})
+        with connexion() as cn:
+            ids=scope_ids(cn,uid,data.get('scope','selected'))
+            if not ids: return jsonify(erreur='Session introuvable.'),404
+            cn.execute('UPDATE public.utilisateurs_catalogue SET formules_autorisees=%s WHERE id = ANY(%s)',(valeur,ids))
+        return jsonify(ok=True,sessions=len(ids))
+
+    @app.put('/admin/api/sessions/<int:uid>/remise-minimum')
+    def remise_minimum_session(uid):
+        data=request.get_json(silent=True) or {}
+        try: valeur=int(str(data.get('valeur')).strip())
+        except (TypeError,ValueError): return jsonify(erreur="Indiquez un nombre entier d'articles."),400
+        if not 1<=valeur<=99: return jsonify(erreur="Le nombre d'articles doit être entre 1 et 99."),400
+        if data.get('scope','selected') not in ('selected','all'): return jsonify(erreur='Portée invalide.'),400
+        with connexion() as cn:
+            ids=scope_ids(cn,uid,data.get('scope','selected'))
+            if not ids: return jsonify(erreur='Session introuvable.'),404
+            cn.execute('UPDATE public.utilisateurs_catalogue SET remise_minimum=%s WHERE id = ANY(%s)',(valeur,ids))
         return jsonify(ok=True,sessions=len(ids))
 
     @app.post('/admin/api/sessions/<int:uid>/import/<kind>')

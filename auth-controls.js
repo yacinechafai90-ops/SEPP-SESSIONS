@@ -1,14 +1,15 @@
 'use strict';
 (function () {
+  // Déconnexion : rangée dans le menu Paramètres.
   function afficherDeconnexion() {
-    const entete = document.querySelector('#header .header-row');
-    if (!entete || entete.querySelector('#deconnexion-form')) return;
+    const cible = document.getElementById('settings-logout');
+    if (!cible || cible.querySelector('#deconnexion-form')) return;
     const formulaire = document.createElement('form');
     formulaire.id = 'deconnexion-form';
     formulaire.method = 'post';
     formulaire.action = '/deconnexion';
     formulaire.innerHTML = '<button type="submit" aria-label="Déconnexion">Déconnexion</button>';
-    entete.appendChild(formulaire);
+    cible.appendChild(formulaire);
   }
   // Identifiant du client connecté (une seule requête, puis mémorisé).
   let identifiant = null;
@@ -19,15 +20,15 @@
       .then((donnees) => { identifiant = donnees.identifiant || ''; return identifiant; })
       .catch(() => '');
   }
+  // Le titre « Offres employés » du bandeau devient « Bienvenue, <nom> ».
   function afficherBienvenue() {
-    const entete = document.querySelector('#header .header-row');
-    if (!entete || entete.querySelector('#bienvenue')) return;
+    const marque = document.querySelector('#header .brand span');
+    if (!marque || marque.classList.contains('welcome')) return;
     lireIdentifiant().then((nom) => {
-      if (!nom || entete.querySelector('#bienvenue')) return;
-      const message = document.createElement('span');
-      message.id = 'bienvenue';
-      message.textContent = document.documentElement.lang === 'ar' ? 'مرحباً، ' + nom : 'Bienvenue, ' + nom;
-      entete.insertBefore(message, entete.querySelector('#deconnexion-form'));
+      const cible = document.querySelector('#header .brand span');
+      if (!nom || !cible || cible.classList.contains('welcome')) return;
+      cible.textContent = document.documentElement.lang === 'ar' ? 'مرحباً، ' + nom : 'Bienvenue, ' + nom;
+      cible.classList.add('welcome');
     });
   }
   function mettreAJour() {

@@ -116,7 +116,7 @@
     <form id="form-offre">
       <label>Utilisateur<select id="offre-utilisateur" required><option value="">Choisir un utilisateur</option></select></label>
       <label>Produit<select id="offre-produit" required><option value="">Choisir un produit</option></select></label>
-      <label>Prix spécifique (DA)<input id="offre-prix" type="number" min="0" step="0.01" placeholder="Prix général"></label>
+      <label>Prix spécifique (DA)<input id="offre-prix" type="text" inputmode="decimal" data-prix placeholder="Prix général, ex. 174 000,00"></label>
       <button class="bouton" type="submit">Enregistrer l'offre</button>
     </form>
     <div class="session-extra"><form id="form-import"><label>Importer une liste de prix Excel (.xlsx)<input id="offre-excel" type="file" accept=".xlsx" required></label><button type="submit" class="bouton">Importer les prix</button></form><p>Première ligne : <code>reference</code> et <code>prix_offre</code>. Une ligne par produit. Les produits absents du fichier restent inchangés. Prix vide = prix général.</p><div id="session-brandshops"><h3>Brandshops visibles pour cette session</h3><div id="brandshop-list"></div><button type="button" class="bouton sec" id="save-brandshops">Enregistrer les brandshops</button></div></div>
@@ -489,6 +489,8 @@ function brancherReferenceSpecs() {
   };
 }
 
+const COLONNES_PRIX_UI = ['prix_showroom', 'prix_b2b_cash_plus_timbre', 'facilite_6_mois', 'facilite_12_mois', 'facilite_18_mois'];
+
 function champHtml(c, ligne) {
   const valeur = ligne ? (ligne[c.nom] ?? '') : '';
   const n = normaliser(c.nom);
@@ -505,6 +507,7 @@ function champHtml(c, ligne) {
   }
   let attributs = '';
   if (c.nom === table.cle && ligne) attributs += ' readonly';
+  if (table.nom === 'items' && COLONNES_PRIX_UI.includes(c.nom)) attributs += ' data-prix inputmode="decimal" placeholder="174 000,00"';
   if (n === 'disponibilite') attributs += ' list="liste-dispos"';
   const long = colonneSpecs(c.nom) || n === 'adresse';
   const champ = long
@@ -803,6 +806,22 @@ $('#pub-fermer').onclick = () => $('#dlg-pub').close();
 
 $('#ajouter').onclick = () => ouvrirFormulaire(null);
 $('#annuler').onclick = () => $('#dlg').close();
+
+/* Saisie des prix : « 174000 » devient « 174 000,00 » en quittant le champ. */
+function formaterPrixSaisie(v) {
+  const brut = String(v ?? '');
+  const t = brut.trim().replace(/\s+/g, '').replace(/(DA|DZD)\.?$/i, '');
+  if (!t) return brut;
+  const m = t.match(/^(\d{1,12})(?:[,.](\d{1,2}))?$/);
+  if (!m || (m[2] !== undefined && m[2] !== '00')) return brut;
+  const entier = m[1].replace(/^0+(?=\d)/, '');
+  return entier.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ',00';
+}
+document.addEventListener('blur', (e) => {
+  const champ = e.target;
+  if (champ && champ.matches && champ.matches('[data-prix]')) champ.value = formaterPrixSaisie(champ.value);
+}, true);
+
 $('#formulaire').onsubmit = enregistrer;
 $('#recherche').oninput = afficher;
 $('#filtre-statut').onchange = afficher;

@@ -23,15 +23,18 @@ const catNames={
 const categories=Object.keys(catNames);
 const cat=c=>lang==='ar'?catNames[c]||c:c;
 
+// Prix affichés sans centimes : « 174 000 DA ».
+// Espace insécable ordinaire (et non l'espace fine étroite fr-FR) : les groupes restent bien visibles.
 const money=n=>new Intl.NumberFormat('fr-FR',{
+  minimumFractionDigits:0,
   maximumFractionDigits:0
-}).format(n)+' '+L('DA','دج');
+}).format(Math.round(Number(n)||0)).replace(/ /g,' ')+' '+L('DA','دج');
 
 const navItems=[
   ['/','Accueil','الرئيسية'],
   ['/comment-ca-marche','Comment ça marche','كيفية الشراء'],
   ['/catalogue','Catalogue','الكتالوج'],
-  ['/paiement','Paiement','الدفع'],
+  ['/paiement','Acheter','شراء'],
   ['/brandshops','BrandShops','المتاجر'],
   ['/garantie','Garantie','الضمان']
 ];
@@ -68,10 +71,22 @@ function chrome(){
         ${links}
       </nav>
 
-      <button class="language" id="language"
-        aria-label="${L('Passer en arabe','التغيير إلى الفرنسية')}">
-        ${lang==='fr'?'FR / العربية':'AR / Français'}
-      </button>
+      <div class="settings" id="settings">
+        <button class="settings-toggle" id="settings-toggle" type="button"
+          aria-expanded="false" aria-controls="settings-menu"
+          aria-haspopup="true">
+          ⚙ ${L('Paramètres','الإعدادات')}
+        </button>
+
+        <div class="settings-menu" id="settings-menu" hidden>
+          <button class="language" id="language"
+            aria-label="${L('Passer en arabe','التغيير إلى الفرنسية')}">
+            ${lang==='fr'?'FR / العربية':'AR / Français'}
+          </button>
+
+          <div class="settings-logout" id="settings-logout"></div>
+        </div>
+      </div>
 
       <button class="menu-toggle" id="menu"
         aria-controls="nav" aria-expanded="false">
@@ -117,7 +132,22 @@ function chrome(){
     const open=$('#nav').classList.toggle('open');
     $('#menu').setAttribute('aria-expanded',String(open));
   };
+
+  $('#settings-toggle').onclick=()=>{
+    const menu=$('#settings-menu'),ouvert=menu.hidden;
+    menu.hidden=!ouvert;
+    $('#settings-toggle').setAttribute('aria-expanded',String(ouvert));
+  };
 }
+
+// Fermer le menu Paramètres au clic extérieur.
+document.addEventListener('click',e=>{
+  const menu=document.getElementById('settings-menu');
+  if(menu&&!menu.hidden&&!e.target.closest('#settings')){
+    menu.hidden=true;
+    document.getElementById('settings-toggle')?.setAttribute('aria-expanded','false');
+  }
+});
 
 function hero(
   title,
@@ -486,7 +516,7 @@ function finance(p){
             <td dir="ltr">${money(p.offerPrice)}</td>
           </tr>
 
-          ${["3/6","12","18"]
+          ${["3/6","12","18","24"].filter((m) => p.financing[m] != null && p.formules?.[m === "3/6" ? "6" : m] !== false)
             .map(m=>[m,p.financing[m]])
             .map(([m,total])=>`
               <tr>
@@ -651,8 +681,8 @@ function home(){
             <span class="number">02</span>
             <h2>${L('Vos facilités de paiement','تسهيلات الدفع')}</h2>
             <p>${L(
-              'Consultez le total des formules 6, 12 et 18 mois.',
-              'اطّلع على إجمالي صيغ 6 و12 و18 شهراً.'
+              'Consultez le total des formules disponibles pour ce produit.',
+              'اطّلع على إجمالي الصيغ المتاحة لهذا المنتج.'
             )}</p>
           </div>
 

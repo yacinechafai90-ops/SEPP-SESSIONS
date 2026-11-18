@@ -1,28 +1,240 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gestion des sessions — Catalogue Samsung</title><link rel="stylesheet" href="/admin/ui/admin-sessions.css"></head><body>
-<header><div><small>Catalogue Samsung</small><h1>Gestion des sessions</h1></div><a href="/admin/logout">Se déconnecter</a></header>
-<main><section class="card"><h2>Sessions</h2><div class="toolbar"><label for="session-select">Choisir une session</label><select id="session-select"><option value="">Sélectionner une session</option></select><button id="add-session" class="primary" type="button">+ Ajouter une session</button><button id="edit-session" class="icon" title="Modifier la session" aria-label="Modifier la session" disabled>✎</button><button id="toggle-session" class="icon" title="Désactiver la session" aria-label="Désactiver la session" disabled>⏻</button><button id="delete-session" class="icon danger" title="Supprimer la session" aria-label="Supprimer la session" disabled>🗑</button></div><p id="session-state" class="muted">Sélectionnez une session pour voir ses données.</p></section>
-<section id="workspace" hidden><fieldset class="scope-choice"><legend>Appliquer les modifications aux données</legend><label><input type="radio" name="change-scope" value="selected" checked> À la session sélectionnée</label><label><input type="radio" name="change-scope" value="all"> À toutes les sessions existantes</label></fieldset><nav class="tabs" aria-label="Données de la session"><button type="button" data-tab="products" class="active">Products</button><button type="button" data-tab="brandshops">Brandshops</button><button type="button" data-tab="specs">Specs</button><button type="button" data-tab="discounts">Discounts</button><button type="button" data-tab="banners">Banners</button></nav>
-<div id="products" class="card panel"><div class="heading"><h2>Produits et prix</h2><button type="button" id="add-product" class="primary">+ Ajouter un produit</button></div><form id="excel-form" class="upload"><label>Mettre à jour les prix par Excel ou CSV (.xlsx, .csv)<input id="excel-file" type="file" accept=".xlsx,.csv" required></label><button class="secondary">Importer</button><span class="muted">Colonnes et ordre identiques à items.csv. Les autres produits restent inchangés.</span></form><div class="product-filters"><label>Rechercher un produit<input id="product-search" type="search" placeholder="Référence, désignation ou type" autocomplete="off"></label><label>Catégorie<select id="product-category"><option value="">Toutes les catégories</option></select></label><span id="product-count" class="muted" aria-live="polite"></span></div><div class="table-wrap"><table><thead><tr><th>Référence</th><th>Produit</th><th>Prix de la session</th><th>État</th><th>Actions</th></tr></thead><tbody id="product-rows"></tbody></table></div></div>
-<div id="brandshops" class="card panel" hidden><div class="heading"><h2>Brandshops</h2><button type="button" id="add-shop" class="primary">+ Ajouter un brandshop</button></div><form id="import-brandshops" class="upload"><label>Mettre à jour les brandshops par Excel ou CSV (.xlsx, .csv)<input type="file" accept=".xlsx,.csv" required></label><button class="secondary">Importer</button><span class="muted">Colonnes et ordre identiques à Brandshops.csv.</span></form><div class="table-wrap"><table><thead><tr><th>Brandshop</th><th>Ville</th><th>Adresse</th><th>Google Maps</th><th>État</th><th>Actions</th></tr></thead><tbody id="shop-rows"></tbody></table></div></div>
-<div id="specs" class="card panel" hidden><div class="heading"><h2>Fiches techniques des produits attribués</h2><button type="button" id="add-spec" class="primary">+ Ajouter une fiche</button></div><form id="import-specs" class="upload"><label>Mettre à jour les fiches techniques par Excel ou CSV (.xlsx, .csv)<input type="file" accept=".xlsx,.csv" required></label><button class="secondary">Importer</button><span class="muted">Colonnes et ordre identiques à Specs.csv.</span></form><div id="spec-content"></div></div>
-<div id="discounts" class="card panel" hidden><h2>Remises</h2><form id="discount-form" class="manual-inline"><label>6 mois (%)<input id="discount-6" required inputmode="decimal"></label><label>12 mois (%)<input id="discount-12" required inputmode="decimal"></label><label>18 mois (%)<input id="discount-18" required inputmode="decimal"></label><button class="primary">Enregistrer les remises</button></form><form id="import-discounts" class="upload"><label>Mettre à jour les remises par Excel ou CSV (.xlsx, .csv)<input type="file" accept=".xlsx,.csv" required></label><button class="secondary">Importer</button><span class="muted">Colonnes et ordre identiques à Discount.csv.</span></form><div id="discount-content"></div></div>
-<section id="banners" class="card panel" hidden><div class="heading"><h2>Bannières de la page d'accueil</h2><button type="button" id="add-banner" class="primary">+ Ajouter une photo</button></div><p class="muted">Ces bannières sont communes à toutes les sessions. Maximum 10 photos ; chaque numéro d'ordre ne sert qu'à une seule bannière. Pour supprimer une photo, mettez son statut sur « supprimé ».</p><p id="banner-count" class="muted" aria-live="polite"></p><div class="table-wrap"><table><thead><tr><th>Photo</th><th>Titre</th><th>Ordre</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="banner-rows"></tbody></table></div></section></section>
-<dialog id="banner-dialog"><form id="banner-form"><h2 id="banner-dialog-title">Ajouter une bannière</h2><div class="product-fields"><label>Photo (PNG, JPG ou WEBP, 5 Mo max)<input id="banner-file" type="file" accept="image/png,image/jpeg,image/webp" required></label><label>Titre (texte alternatif)<input id="banner-title" maxlength="200"></label><label>Ordre d'affichage<select id="banner-order" required></select></label><label>Statut<select id="banner-status"><option value="actif">actif</option><option value="inactif">inactif</option><option value="supprimé">supprimé</option></select></label></div><p id="banner-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close="banner-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
-<p id="notice" role="status" aria-live="polite"></p></main>
-<dialog id="account-dialog"><form id="account-form"><h2 id="account-title">Ajouter une session</h2><label>Identifiant<input id="account-name" required minlength="3" maxlength="80" autocomplete="off"></label><label>Mot de passe <small id="password-help">12 caractères minimum</small><input id="account-password" type="password" minlength="12" autocomplete="new-password"></label><p id="account-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close="account-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
-<dialog id="product-dialog"><form id="product-form"><h2 id="product-title">Ajouter un produit</h2><div class="product-fields">
-<label>Type<input data-item="Type" required></label><label>REFERENCE<input data-item="REFERENCE " required maxlength="120"></label>
-<label>DESIGNATION<input data-item="DESIGNATION" required></label><label>product photos (chemin assets/)<input data-item="product photos" placeholder="assets/photo.jpg"></label>
-<label>Ou sélectionner une photo<input id="product-photo-file" type="file" accept="image/*"></label>
-<label>PRIX SHOWROOM<input data-item="PRIX SHOWROOM" required inputmode="decimal"></label>
-<label>PRIX B2B CASH<input data-item="PRIX B2B CASH" inputmode="decimal"></label>
-<label>TIMBRE<input data-item="TIMBRE" placeholder="2%"></label>
-<label>PRIX B2B CASH + TIMBRE<input data-item="PRIX B2B CASH + TIMBRE" required inputmode="decimal"></label>
-<label>FACILITE 6 MOIS<input data-item="FACILITE 6 MOIS" required inputmode="decimal"></label>
-<label>FACILITE 12 MOIS<input data-item="FACILITE 12 MOIS" required inputmode="decimal"></label>
-<label>FACILITE 18 MOIS<input data-item="FACILITE 18 MOIS" required inputmode="decimal"></label>
-<label>Disponibilité<input data-item="Disponibilité" required></label></div>
-<p id="product-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close="product-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
-<dialog id="shop-dialog"><form id="shop-form"><h2 id="shop-title">Ajouter un brandshop</h2><div class="product-fields"><label>ID<input data-shop="ID" type="number" min="1" required></label><label>Nom du Showroom<input data-shop="Nom du Showroom" required></label><label>Ville<input data-shop="Ville" required></label><label>Adresse<input data-shop="Adresse"></label><label>Responsable local<input data-shop="Responsable local"></label><label>Mobile<input data-shop="Mobile" required></label><label>Email<input data-shop="Email" type="email"></label><label>Lien Google Maps<input data-shop="Google Maps URL" type="url" placeholder="https://maps.app.goo.gl/..."></label></div><p id="shop-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close="shop-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
-<dialog id="spec-dialog"><form id="spec-form"><h2 id="spec-title">Modifier la fiche technique</h2><label>Produit<select id="spec-product" required></select></label><div id="spec-fields"></div><button type="button" id="add-spec-field" class="secondary">+ Ajouter une caractéristique</button><p id="spec-error" role="alert"></p><div class="dialog-actions"><button type="button" data-close="spec-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
-<script defer src="/admin/ui/admin-sessions.js"></script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestion des sessions — Catalogue Samsung</title>
+<link rel="stylesheet" href="/admin/ui/admin-sessions.css">
+</head>
+<body>
+<header class="app-head">
+  <div><small>Catalogue Samsung</small><h1>Gestion des sessions</h1></div>
+  <a class="logout" href="/admin/logout">Se déconnecter</a>
+</header>
+
+<main class="page">
+
+  <!-- Choix de la session -->
+  <section class="card session-bar">
+    <div class="session-picker">
+      <label for="session-select">Session</label>
+      <select id="session-select"><option value="">Sélectionner une session</option></select>
+      <div class="session-actions">
+        <button id="add-session" class="primary" type="button">+ Nouvelle session</button>
+        <button id="edit-session" class="icon" title="Modifier la session" aria-label="Modifier la session" disabled>✎</button>
+        <button id="toggle-session" class="icon" title="Désactiver la session" aria-label="Désactiver la session" disabled>⏻</button>
+        <button id="delete-session" class="icon danger" title="Supprimer la session" aria-label="Supprimer la session" disabled>🗑</button>
+      </div>
+    </div>
+    <p id="session-state" class="muted">Sélectionnez une session pour voir ses données.</p>
+  </section>
+
+  <section id="workspace" hidden>
+
+    <!-- Portée des modifications -->
+    <fieldset class="scope-choice">
+      <legend>Appliquer les modifications</legend>
+      <label><input type="radio" name="change-scope" value="selected" checked> À la session sélectionnée</label>
+      <label><input type="radio" name="change-scope" value="all"> À toutes les sessions existantes</label>
+      <p class="muted">Les bannières d'accueil ne concernent que la session sélectionnée.</p>
+    </fieldset>
+
+    <!-- Onglets -->
+    <nav class="tabs" aria-label="Données de la session">
+      <button type="button" data-tab="products" class="active">Produits</button>
+      <button type="button" data-tab="brandshops">Brandshops</button>
+      <button type="button" data-tab="specs">Fiches techniques</button>
+      <button type="button" data-tab="discounts">Remises</button>
+      <button type="button" data-tab="offers">Offres</button>
+      <button type="button" data-tab="banners">Bannières</button>
+    </nav>
+
+    <!-- Produits et prix -->
+    <div id="products" class="card panel">
+      <div class="heading">
+        <div><h2>Produits et prix</h2><p class="muted">Prix de la session, affichés sur le site pour les produits actifs.</p></div>
+        <button type="button" id="add-product" class="primary">+ Ajouter un produit</button>
+      </div>
+      <details class="tool">
+        <summary>Importer les prix depuis Excel ou CSV</summary>
+        <form id="excel-form" class="upload">
+          <label>Fichier (.xlsx, .csv)<input id="excel-file" type="file" accept=".xlsx,.csv" required></label>
+          <button class="secondary">Importer</button>
+          <span class="muted">Colonnes et ordre identiques à items.csv. Les autres produits restent inchangés.</span>
+        </form>
+      </details>
+      <div class="filters">
+        <label>Rechercher<input id="product-search" type="search" placeholder="Référence, désignation ou type" autocomplete="off"></label>
+        <label>Catégorie<select id="product-category"><option value="">Toutes les catégories</option></select></label>
+        <span id="product-count" class="muted" aria-live="polite"></span>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Référence</th><th>Produit</th><th>Prix de la session</th><th>État</th><th class="actions-col">Actions</th></tr></thead><tbody id="product-rows"></tbody></table></div>
+    </div>
+
+    <!-- Brandshops -->
+    <div id="brandshops" class="card panel" hidden>
+      <div class="heading">
+        <div><h2>Brandshops</h2><p class="muted">Magasins proposés au client pour le retrait de sa commande.</p></div>
+        <button type="button" id="add-shop" class="primary">+ Ajouter un brandshop</button>
+      </div>
+      <details class="tool">
+        <summary>Importer les brandshops depuis Excel ou CSV</summary>
+        <form id="import-brandshops" class="upload">
+          <label>Fichier (.xlsx, .csv)<input type="file" accept=".xlsx,.csv" required></label>
+          <button class="secondary">Importer</button>
+          <span class="muted">Colonnes et ordre identiques à Brandshops.csv.</span>
+        </form>
+      </details>
+      <div class="table-wrap"><table><thead><tr><th>Brandshop</th><th>Ville</th><th>Adresse</th><th>Google Maps</th><th>État</th><th class="actions-col">Actions</th></tr></thead><tbody id="shop-rows"></tbody></table></div>
+    </div>
+
+    <!-- Fiches techniques -->
+    <div id="specs" class="card panel" hidden>
+      <div class="heading">
+        <div><h2>Fiches techniques</h2><p class="muted">Caractéristiques des produits attribués à cette session.</p></div>
+        <button type="button" id="add-spec" class="primary">+ Ajouter une fiche</button>
+      </div>
+      <details class="tool">
+        <summary>Importer les fiches depuis Excel ou CSV</summary>
+        <form id="import-specs" class="upload">
+          <label>Fichier (.xlsx, .csv)<input type="file" accept=".xlsx,.csv" required></label>
+          <button class="secondary">Importer</button>
+          <span class="muted">Colonnes et ordre identiques à Specs.csv.</span>
+        </form>
+      </details>
+      <div id="spec-content" class="spec-grid"></div>
+    </div>
+
+    <!-- Remises -->
+    <div id="discounts" class="card panel" hidden>
+      <div class="heading">
+        <div><h2>Remises</h2><p class="muted">Remise appliquée au panier, en pourcentage, dès que le client atteint le nombre d'articles minimum.</p></div>
+      </div>
+      <form id="remise-min-form" class="form-row">
+        <label class="grow">Nombre d'articles minimum pour activer la remise
+          <input id="remise-min" type="number" min="1" max="99" step="1" inputmode="numeric" required>
+        </label>
+        <button class="secondary">Enregistrer le minimum</button>
+      </form>
+      <form id="discount-form" class="form-row">
+        <label>Remise 6 mois (%)<input id="discount-6" required inputmode="decimal"></label>
+        <label>Remise 12 mois (%)<input id="discount-12" required inputmode="decimal"></label>
+        <label>Remise 18 mois (%)<input id="discount-18" required inputmode="decimal"></label>
+        <label>Remise 24 mois (%)<input id="discount-24" required inputmode="decimal"></label>
+        <button class="primary">Enregistrer les remises</button>
+      </form>
+      <details class="tool">
+        <summary>Importer les remises depuis Excel ou CSV</summary>
+        <form id="import-discounts" class="upload">
+          <label>Fichier (.xlsx, .csv)<input type="file" accept=".xlsx,.csv" required></label>
+          <button class="secondary">Importer</button>
+          <span class="muted">Colonnes et ordre identiques à Discount.csv.</span>
+        </form>
+      </details>
+      <div id="discount-content"></div>
+    </div>
+
+    <!-- Offres de paiement -->
+    <div id="offers" class="card panel" hidden>
+      <div class="heading">
+        <div><h2>Offres de paiement affichées sur le site</h2><p class="muted">Choisissez les offres proposées au client pour cette session. Décochez celles à masquer ; au moins une doit rester cochée.</p></div>
+      </div>
+      <form id="formules-form">
+        <div class="offer-grid" role="group" aria-label="Offres visibles pour cette session">
+          <label class="offer-option"><input type="checkbox" name="formule" value="cash"><span><strong>Comptant</strong><small>Paiement en une fois</small></span></label>
+          <label class="offer-option"><input type="checkbox" name="formule" value="6"><span><strong>6 mois</strong><small>Mensualités sur 6 mois</small></span></label>
+          <label class="offer-option"><input type="checkbox" name="formule" value="12"><span><strong>12 mois</strong><small>Mensualités sur 12 mois</small></span></label>
+          <label class="offer-option"><input type="checkbox" name="formule" value="18"><span><strong>18 mois</strong><small>Mensualités sur 18 mois</small></span></label>
+          <label class="offer-option"><input type="checkbox" name="formule" value="24"><span><strong>24 mois</strong><small>Mensualités sur 24 mois</small></span></label>
+        </div>
+        <div class="form-actions"><button class="primary">Enregistrer les offres</button></div>
+      </form>
+    </div>
+
+    <!-- Bannières : propres à la session -->
+    <section id="banners" class="card panel" hidden>
+      <div class="heading">
+        <div><h2>Bannières de cette session</h2><p class="muted">Photos du diaporama de la page d'accueil, propres à cette session. Maximum 10 photos ; chaque numéro d'ordre ne sert qu'à une seule bannière. Sans bannière propre, le site affiche les bannières communes.</p></div>
+        <button type="button" id="add-banner" class="primary">+ Ajouter une photo</button>
+      </div>
+      <p id="banner-count" class="muted" aria-live="polite"></p>
+      <div class="table-wrap"><table><thead><tr><th>Photo</th><th>Titre</th><th>Ordre</th><th>Statut</th><th class="actions-col">Actions</th></tr></thead><tbody id="banner-rows"></tbody></table></div>
+    </section>
+
+  </section>
+
+  <p id="notice" role="status" aria-live="polite"></p>
+</main>
+
+<!-- Boîtes de dialogue -->
+<dialog id="account-dialog"><form id="account-form" class="dialog-form">
+  <h2 id="account-title">Ajouter une session</h2>
+  <label>Identifiant<input id="account-name" required minlength="3" maxlength="80" autocomplete="off"></label>
+  <label>Mot de passe <small id="password-help">12 caractères minimum</small><input id="account-password" type="password" minlength="12" autocomplete="new-password"></label>
+  <p id="account-error" role="alert"></p>
+  <div class="dialog-actions"><button type="button" data-close="account-dialog">Annuler</button><button class="primary">Enregistrer</button></div>
+</form></dialog>
+
+<dialog id="product-dialog"><form id="product-form" class="dialog-form">
+  <h2 id="product-title">Ajouter un produit</h2>
+  <div class="product-fields">
+    <label>Type<input data-item="Type" required></label>
+    <label>Référence<input data-item="REFERENCE " required maxlength="120"></label>
+    <label>Désignation<input data-item="DESIGNATION" required></label>
+    <label>Photo (chemin assets/)<input data-item="product photos" placeholder="assets/photo.jpg"></label>
+    <label>Ou choisir une photo<input id="product-photo-file" type="file" accept="image/*"></label>
+    <label>Disponibilité<input data-item="Disponibilité" required></label>
+  </div>
+  <h3>Prix</h3>
+  <div class="product-fields">
+    <label>Prix showroom<input data-item="PRIX SHOWROOM" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
+    <label>Prix B2B cash + timbre (affiché)<input data-item="PRIX B2B CASH + TIMBRE" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
+  </div>
+  <h3>Totaux des facilités</h3>
+  <div class="product-fields">
+    <label>Facilité 6 mois<input data-item="FACILITE 6 MOIS" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
+    <label>Facilité 12 mois<input data-item="FACILITE 12 MOIS" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
+    <label>Facilité 18 mois<input data-item="FACILITE 18 MOIS" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
+  </div>
+  <p id="product-error" role="alert"></p>
+  <div class="dialog-actions"><button type="button" data-close="product-dialog">Annuler</button><button class="primary">Enregistrer</button></div>
+</form></dialog>
+
+<dialog id="shop-dialog"><form id="shop-form" class="dialog-form">
+  <h2 id="shop-title">Ajouter un brandshop</h2>
+  <div class="product-fields">
+    <label>ID<input data-shop="ID" type="number" min="1" required></label>
+    <label>Nom du showroom<input data-shop="Nom du Showroom" required></label>
+    <label>Ville<input data-shop="Ville" required></label>
+    <label>Adresse<input data-shop="Adresse"></label>
+    <label>Responsable local<input data-shop="Responsable local"></label>
+    <label>Mobile<input data-shop="Mobile" required></label>
+    <label>E-mail<input data-shop="Email" type="email"></label>
+    <label>Lien Google Maps<input data-shop="Google Maps URL" type="url" placeholder="https://maps.app.goo.gl/..."></label>
+  </div>
+  <p id="shop-error" role="alert"></p>
+  <div class="dialog-actions"><button type="button" data-close="shop-dialog">Annuler</button><button class="primary">Enregistrer</button></div>
+</form></dialog>
+
+<dialog id="spec-dialog"><form id="spec-form" class="dialog-form">
+  <h2 id="spec-title">Modifier la fiche technique</h2>
+  <label>Produit<select id="spec-product" required></select></label>
+  <div id="spec-fields"></div>
+  <button type="button" id="add-spec-field" class="secondary">+ Ajouter une caractéristique</button>
+  <p id="spec-error" role="alert"></p>
+  <div class="dialog-actions"><button type="button" data-close="spec-dialog">Annuler</button><button class="primary">Enregistrer</button></div>
+</form></dialog>
+
+<dialog id="banner-dialog"><form id="banner-form" class="dialog-form">
+  <h2 id="banner-dialog-title">Ajouter une bannière</h2>
+  <label>Photo (PNG, JPG ou WEBP, 5 Mo max)<input id="banner-file" type="file" accept="image/png,image/jpeg,image/webp" required></label>
+  <label>Titre (texte alternatif)<input id="banner-title" maxlength="200"></label>
+  <label>Ordre d'affichage<select id="banner-order" required></select></label>
+  <label>Statut<select id="banner-status"><option value="actif">actif</option><option value="inactif">inactif</option><option value="supprimé">supprimé</option></select></label>
+  <p id="banner-error" role="alert"></p>
+  <div class="dialog-actions"><button type="button" data-close="banner-dialog">Annuler</button><button class="primary">Enregistrer</button></div>
+</form></dialog>
+
+<script defer src="/admin/ui/admin-sessions.js"></script>
+</body>
+</html>

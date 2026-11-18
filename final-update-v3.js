@@ -7,7 +7,7 @@
     const rows = bucketItems.map((item) => `<tr><td>${clean(item.p.reference)}</td><td>${clean(item.p.name)}</td><td>${item.qty}</td><td>${money(item.p.offerPrice)}</td><td>${money(item.p.offerPrice * item.qty)}</td></tr>`).join('');
     const rawDuration = document.querySelector('#bucket-panel')?.dataset.duration || '6';
     const isCash = rawDuration === 'cash';
-    const months = [6, 12, 18].includes(Number(rawDuration)) ? Number(rawDuration) : 6;
+    const months = [6, 12, 18, 24].includes(Number(rawDuration)) ? Number(rawDuration) : 6;
     let totalLine, monthlyLine;
     if (isCash) {
       const cashText = money(bucketItems.reduce((sum, item) => sum + item.p.offerPrice * item.qty, 0));

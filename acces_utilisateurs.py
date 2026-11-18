@@ -1,5 +1,6 @@
 """Acces des visiteurs et offres individuelles du catalogue."""
 from decimal import Decimal, InvalidOperation
+from prix_saisie import formater_prix
 from functools import wraps
 from flask import abort, redirect, request, session, Response, jsonify
 from werkzeug.security import check_password_hash
@@ -15,6 +16,21 @@ def preparer_base(srv):
             actif boolean NOT NULL DEFAULT true
         )''')
         cn.execute('ALTER TABLE public.utilisateurs_catalogue ADD COLUMN IF NOT EXISTS tous_brandshops boolean NOT NULL DEFAULT true')
+        # Formules visibles pour ce compte : « 6,12,18 » ; vide ou NULL = toutes les formules.
+        cn.execute('ALTER TABLE public.utilisateurs_catalogue ADD COLUMN IF NOT EXISTS formules_autorisees text')
+        cn.execute('ALTER TABLE public.utilisateurs_catalogue ADD COLUMN IF NOT EXISTS remise_minimum integer')
+        # Formule 24 mois : colonne de prix ajoutee si absente ; prix = 18 mois + 35 % tant qu'aucun prix n'est saisi.
+        cn.execute('ALTER TABLE public.items ADD COLUMN IF NOT EXISTS facilite_24_mois text')
+        lignes = cn.execute('''SELECT reference, facilite_18_mois FROM public.items
+                               WHERE facilite_24_mois IS NULL AND facilite_18_mois IS NOT NULL''').fetchall()
+        for ligne in lignes:
+            try:
+                prix_18 = srv['montant'](ligne, 'facilite_18_mois')
+            except ValueError:
+                continue
+            prix_24 = round(prix_18 * 1.35 / 100) * 100
+            cn.execute('UPDATE public.items SET facilite_24_mois = %s WHERE reference = %s AND facilite_24_mois IS NULL',
+                       (str(int(prix_24)), ligne['reference']))
         cn.execute('''CREATE TABLE IF NOT EXISTS public.brandshops_utilisateur (
             utilisateur_id bigint NOT NULL REFERENCES public.utilisateurs_catalogue(id) ON DELETE CASCADE,
             brandshop_id bigint NOT NULL,
@@ -42,10 +58,16 @@ def appliquer_offre(srv, catalogue, utilisateur_id):
     with srv['ouvrir_connexion'](srv['NOM_BASE']) as cn:
         lignes = cn.execute('''SELECT reference, prix_offre FROM public.offres_utilisateur
                                WHERE utilisateur_id = %s AND actif = true''', (utilisateur_id,)).fetchall()
-        compte = cn.execute('SELECT tous_brandshops FROM public.utilisateurs_catalogue WHERE id = %s', (utilisateur_id,)).fetchone()
+        compte = cn.execute('SELECT tous_brandshops, formules_autorisees, remise_minimum FROM public.utilisateurs_catalogue WHERE id = %s', (utilisateur_id,)).fetchone()
+        bannieres_compte = cn.execute("SELECT image, titre FROM public.bannieres_accueil WHERE utilisateur_id = %s AND statut = 'actif' ORDER BY ordre", (utilisateur_id,)).fetchall()
         boutiques = cn.execute('SELECT brandshop_id, nom_personnalise, ville_personnalisee, adresse_personnalisee, mobile_personnalise FROM public.brandshops_utilisateur WHERE utilisateur_id = %s AND actif = true', (utilisateur_id,)).fetchall()
         session_data = session_templates.snapshot(cn, utilisateur_id)
     catalogue = session_templates.apply(catalogue, session_data)
+    # Bannieres propres a la session ; sans bannière propre, les bannières communes restent.
+    if bannieres_compte:
+        catalogue['bannieres'] = [{'image': b['image'], 'titre': b['titre'] or ''} for b in bannieres_compte]
+    # Nombre d'articles a partir duquel la remise s'applique (3 par defaut).
+    catalogue['remise_minimum'] = int(compte['remise_minimum']) if compte and compte['remise_minimum'] else 3
     offres = {str(l['reference']).strip(): l['prix_offre'] for l in lignes}
     produits = []
     for produit in catalogue['products']:
@@ -56,6 +78,15 @@ def appliquer_offre(srv, catalogue, utilisateur_id):
         if offres[reference] is not None:
             produit['offerPrice'] = float(offres[reference])
         produits.append(produit)
+    # Formules visibles pour ce compte (absent = toutes).
+    autorisees = None
+    if compte and compte['formules_autorisees'] is not None and compte['formules_autorisees'].strip():
+        autorisees = {m.strip() for m in compte['formules_autorisees'].split(',') if m.strip()}
+    if autorisees is not None:
+        for produit in produits:
+            produit['formules'] = {m: (vrai and m in autorisees) for m, vrai in produit.get('formules', {}).items()}
+            produit['formules']['cash'] = 'cash' in autorisees
+        catalogue['discount'] = {m: r for m, r in catalogue['discount'].items() if m in autorisees}
     catalogue['products'] = produits
     catalogue['specs'] = {r: s for r, s in catalogue['specs'].items() if r in offres}
     if compte and not compte['tous_brandshops']:
@@ -143,11 +174,11 @@ def installer(app, srv):
         reference = str(donnees.get('reference') or '').strip()
         if not reference:
             return jsonify(erreur='Choisissez un produit.'), 400
-        texte = str(donnees.get('prix_offre') or '').strip().replace(' ', '').replace(',', '.')
         try:
-            prix = Decimal(texte) if texte else None
-        except InvalidOperation:
-            return jsonify(erreur='Prix invalide.'), 400
+            texte = formater_prix(donnees.get('prix_offre'))
+            prix = Decimal(texte.replace(' ', '').replace(',', '.')) if texte else None
+        except (ValueError, InvalidOperation):
+            return jsonify(erreur='Prix invalide : format attendu 174 000,00.'), 400
         if prix is not None and (not prix.is_finite() or prix < 0 or prix > 9999999999.99):
             return jsonify(erreur='Prix invalide.'), 400
         if reference not in {p['reference'] for p in srv['charger_catalogue']()['products']}:

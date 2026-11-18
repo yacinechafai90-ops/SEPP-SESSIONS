@@ -1,6 +1,7 @@
 """CSV catalogue templates and isolated data snapshots per user account."""
 import csv
 import io
+from prix_saisie import formater_prix
 import json
 import os
 import sys
@@ -102,9 +103,15 @@ def validate(kind,rows):
     if kind=='products':
         for row in rows:
             for col in ('PRIX SHOWROOM','PRIX B2B CASH + TIMBRE','FACILITE 6 MOIS','FACILITE 12 MOIS','FACILITE 18 MOIS'):
-                parse_number(row[col])
+                try:
+                    row[col] = formater_prix(row[col])
+                except ValueError as erreur:
+                    raise ValueError(f"{col} : {erreur}")
+                if row[col] is None:
+                    raise ValueError(f"{col} : prix obligatoire.")
     if kind=='discounts':
-        for col in ('6 Months','12 Months','18 Months'):
+        for col in ('6 Months','12 Months','18 Months','24 Months'):
+            if col not in rows[0] and col=='24 Months': continue
             value=parse_number(rows[0][col]);
             if value>=100: raise ValueError('Remise invalide.')
 
@@ -220,5 +227,8 @@ def apply(catalogue,data):
             catalogue['specs'][ref]={str(k):str(v).strip() for k,v in row.items()
                                      if k not in ('Type','REFERENCE ','DESIGNATION','Column1') and str(v).strip()}
     rates=data['discounts'].get('rates')
-    if rates: catalogue['discount']={str(m):parse_number(rates[str(m)+' Months']) for m in (6,12,18)}
+    if rates:
+        # Remises propres a la session ; une formule 24 mois absente garde la remise generale.
+        catalogue['discount']={**catalogue.get('discount',{}),**{str(m):parse_number(rates[str(m)+' Months']) for m in (6,12,18)}}
+        if rates.get('24 Months') not in (None,''): catalogue['discount']['24']=parse_number(rates['24 Months'])
     return catalogue

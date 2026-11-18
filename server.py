@@ -209,7 +209,7 @@ def trouver_table(connexion):
     if photo:
         colonnes["photo"] = photo
     # Formules de paiement activables produit par produit (absentes = toutes actives).
-    for formule in ("formule_6_mois", "formule_12_mois", "formule_18_mois"):
+    for formule in ("formule_6_mois", "formule_12_mois", "formule_18_mois", "formule_24_mois", "facilite_24_mois"):
         presente = next((c for c in tables[table] if cle_identifiant(c) == cle_identifiant(formule)), None)
         if presente:
             colonnes[formule] = presente
@@ -371,10 +371,18 @@ def charger_bannieres(connexion, tables, schema):
     c_image, c_titre, c_ordre = par_cle.get("image"), par_cle.get("titre"), par_cle.get("ordre")
     if not c_image:
         return []
+    # Les bannieres propres a une session (utilisateur_id renseigne) ne sont pas communes :
+    # elles ne s'affichent que pour cette session (voir acces_utilisateurs.appliquer_offre).
+    conditions = [condition_statut(tables[table])]
+    c_utilisateur = par_cle.get(cle_identifiant("utilisateur_id"))
+    if c_utilisateur:
+        conditions.append(sql.SQL("{} IS NULL").format(sql.Identifier(c_utilisateur)))
+    conditions = [c for c in conditions if c is not None]
+    condition = sql.SQL(" AND ").join(conditions) if conditions else None
     lignes = lire_table(
         connexion, table,
         sql.Identifier(c_ordre) if c_ordre else None,
-        condition_statut(tables[table]),
+        condition,
     )
     bannieres = []
     for ligne in lignes:
@@ -548,7 +556,10 @@ def charger_remises(connexion, tables, schema):
             f"Remise absente pour {manquants!r} mois dans {table!r}. "
             f"Colonnes presentes : {list(lignes[0])!r}"
         )
-    return {m: remises[m] for m in ("6", "12", "18")}
+    # 24 mois : remise optionnelle (colonne 24_months de la table discount ; 0 si absente).
+    resultat = {m: remises[m] for m in ("6", "12", "18")}
+    resultat["24"] = remises.get("24", 0)
+    return resultat
 
 
 SPECS_SIGNALEES = set()
@@ -686,6 +697,8 @@ def charger_catalogue():
                 "6": ligne.get("formule_6_mois") is not False,
                 "12": ligne.get("formule_12_mois") is not False,
                 "18": ligne.get("formule_18_mois") is not False,
+                # 24 mois : seulement si un prix 24 mois existe pour ce produit.
+                "24": ligne.get("facilite_24_mois") is not None and ligne.get("formule_24_mois") is not False,
             },
 
             "image": (
@@ -694,6 +707,9 @@ def charger_catalogue():
                 or trouver_image(reference)
             ),
         })
+
+        if ligne.get("facilite_24_mois") is not None:
+            produit["financing"]["24"] = montant(ligne, "facilite_24_mois")
 
         # Ces informations ne sont pas dans la table PostgreSQL.
         produit["availability"] = str(ligne.get("availability") or ancien.get("availability") or "À confirmer").strip()
@@ -742,8 +758,9 @@ def accueil():
 @app.get("/monthly-payment-table.js")
 def mensualites_utilisateur():
     catalogue = acces_utilisateurs.appliquer_offre(globals(), charger_catalogue(), session['utilisateur_id'])
-    montants = {p['reference']: [round(p['financing'][cle] / mois / 100) * 100
-                  for cle, mois in [('3/6', 6), ('12', 12), ('18', 18)]]
+    # Ordre : 6, 12, 18, 24 mois (null si la formule 24 mois n'a pas de prix).
+    montants = {p['reference']: [round(p['financing'][cle] / mois / 100) * 100 if cle in p['financing'] else None
+                  for cle, mois in [('3/6', 6), ('12', 12), ('18', 18), ('24', 24)]]
                 for p in catalogue['products']}
     return Response('window.MONTHLY_PAYMENT_TABLE = ' + json.dumps(montants) + ';',
                     mimetype='application/javascript')

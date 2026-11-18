@@ -165,16 +165,18 @@ finance = function (p) {
       <h2>${L('Facilités de paiement', 'تسهيلات الدفع')}</h2>
 
       <div class="pay-cards">
-        ${window.REFERENCE_CONTENT.payments.methods.map((m, i) => {
+        ${window.REFERENCE_CONTENT.payments.methods.filter((m) => m.id === 'cash' ? p.formules?.cash !== false : p.formules?.[m.id] !== false).map((m, i) => {
           const months = m.id === '6'
             ? 6
             : m.id === '12'
               ? 12
               : m.id === '18'
                 ? 18
-                : 0;
+                : m.id === '24'
+                  ? 24
+                  : 0;
 
-          const total = i
+          const total = m.id !== 'cash'
             ? p.financing[m.id === '6' ? '3/6' : m.id]
             : p.offerPrice;
 
@@ -184,7 +186,7 @@ finance = function (p) {
             <article class="pay-card">
               <div class="pay-card-top">
                 <span class="icon-tile">
-                  ${ico(i ? 'calendar' : 'wallet')}
+                  ${ico(m.id !== 'cash' ? 'calendar' : 'wallet')}
                 </span>
 
                 <strong dir="ltr">${money(amount)}</strong>
@@ -571,7 +573,7 @@ home = function () {
       )}</h1>
 
       <div class="hero-actions">
-        <a class="button" href="#/catalogue">
+        <a class="button hero-cta-catalogue" href="#/catalogue">
           ${L('Découvrir le catalogue', 'اكتشاف الكتالوج')} →
         </a>
 
@@ -1137,8 +1139,12 @@ updateGrid = function () {
 
 /* Mensualité d'un produit : tableau officiel si le produit y figure,
    sinon total de la formule / nombre de mois (produits ajoutés depuis l'admin). */
+function formulesDisponibles(p) {
+  return ['6', '12', '18', '24'].filter(id => p.formules?.[id] !== false);
+}
+
 function monthlyFor(p, months) {
-  const index = [6, 12, 18].indexOf(months);
+  const index = [6, 12, 18, 24].indexOf(months);
   const officielle = window.MONTHLY_PAYMENT_TABLE?.[p.reference]?.[index];
   const total = p.financing[months === 6 ? '3/6' : String(months)];
   return officielle ?? Math.round(total / months);
@@ -1149,7 +1155,8 @@ function simulator(p) {
   const formulesDispo = [
     ['6', '6 mois', '6 أشهر'],
     ['12', '12 mois', '12 شهراً'],
-    ['18', '18 mois', '18 شهراً']
+    ['18', '18 mois', '18 شهراً'],
+    ['24', '24 mois', '24 شهراً']
   ].filter(([id]) => p.formules?.[id] !== false);
   if (!formulesDispo.length) return '';
   return `
@@ -1206,7 +1213,7 @@ function wireSimulator(p) {
     b.onclick = () => choose(b.dataset.sim);
   });
 
-  choose(p.formules?.['6'] !== false ? '6' : p.formules?.['12'] !== false ? '12' : '18');
+  choose(formulesDisponibles(p)[0] ?? '6');
 }
 
 const oldDetail = detail;
@@ -1258,7 +1265,7 @@ function bucketTotals() {
     0
   );
 
-  const eligible = count >= 3;
+  const eligible = count >= (Number(window.CATALOGUE?.remise_minimum) || 3);
 
   return {
     cash: total('cash'),
