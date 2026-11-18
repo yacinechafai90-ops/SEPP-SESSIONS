@@ -408,9 +408,12 @@ def installer(app, srv):
         if scope not in ('selected','all'):
             return jsonify(erreur='Portée invalide.'),400
         expected,_=session_templates.source('products')
-        if not isinstance(payload,dict) or set(payload)-{'scope'}!=set(expected):
+        # Colonnes anciennes du CSV, absentes du formulaire : laissees vides si non envoyees.
+        facultatives={'PRIX B2B CASH','TIMBRE'}
+        cles=set(payload)-{'scope'}
+        if not isinstance(payload,dict) or not cles<=set(expected) or not (set(expected)-facultatives)<=cles:
             return jsonify(erreur='Tous les champs de items.csv sont requis.'),400
-        row={key:payload[key] for key in expected}
+        row={key:str(payload.get(key,'')) for key in expected}
         ref=session_templates.record_key('products',row)
         if not ref or len(ref)>120 or (reference is not None and ref!=reference):
             return jsonify(erreur='Référence invalide ou modifiée.'),400
