@@ -200,7 +200,8 @@ def apply(catalogue,data):
         product['category']=updated['category']
         product['name']=str(row['DESIGNATION']).strip() or product['name']
         product['marketPrice']=parse_number(row['PRIX SHOWROOM'])
-        product['financing']={'3/6':parse_number(row['FACILITE 6 MOIS']),'12':parse_number(row['FACILITE 12 MOIS']),'18':parse_number(row['FACILITE 18 MOIS'])}
+        # Mensualités 6/12/18 de la session ; la mensualité 24 mois (non saisie dans la session) est conservée.
+        product['financing']={**product.get('financing',{}),'3/6':parse_number(row['FACILITE 6 MOIS']),'12':parse_number(row['FACILITE 12 MOIS']),'18':parse_number(row['FACILITE 18 MOIS'])}
         product['availability']=str(row['Disponibilité']).strip() or product['availability']
         photo=str(row['product photos']).strip().replace('\\','/')
         if photo.startswith('assets/') and '..' not in Path(photo).parts and (os.environ.get('SEPP_CLOUD_MODE') == '1' or (Path(__file__).resolve().parent/photo).is_file()):

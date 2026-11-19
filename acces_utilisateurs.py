@@ -82,6 +82,8 @@ def appliquer_offre(srv, catalogue, utilisateur_id):
     autorisees = None
     if compte and compte['formules_autorisees'] is not None and compte['formules_autorisees'].strip():
         autorisees = {m.strip() for m in compte['formules_autorisees'].split(',') if m.strip()}
+    # Liste envoyée au site : source unique des formules affichées (None = toutes).
+    catalogue['formules_autorisees'] = None if autorisees is None else [m for m in ('cash', '6', '12', '18', '24') if m in autorisees]
     if autorisees is not None:
         for produit in produits:
             produit['formules'] = {m: (vrai and m in autorisees) for m, vrai in produit.get('formules', {}).items()}

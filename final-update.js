@@ -16,9 +16,15 @@
   const cashAmount = () => bucketItems.reduce((sum, item) => sum + item.p.offerPrice * item.qty, 0);
   // Formules proposees : celles que l'administration n'a pas desactivees pour TOUS les produits du panier.
   // Une formule n'apparait que si l'administration l'a activee ET si le produit a un montant pour cette duree (sinon carte a 0,00).
-  const termsOf = (item) => terms.filter((months) => (item.p.formules || {})[String(months)] !== false && item.p.financing?.[months === 6 ? '3/6' : String(months)] != null);
+  // Source unique : les formules cochées dans l'administration pour cette session (CATALOGUE.formules_autorisees, null = toutes).
+  const formuleAutorisee = (cle) => {
+    const liste = window.CATALOGUE?.formules_autorisees;
+    return !Array.isArray(liste) || liste.includes(String(cle));
+  };
+  // Une durée n'apparait que si l'administration l'a cochée ET si le produit a une mensualité (0 ou vide = pas d'offre).
+  const termsOf = (item) => terms.filter((months) => formuleAutorisee(months) && Number(item.p.financing?.[months === 6 ? '3/6' : String(months)]) > 0);
   const availableTerms = () => terms.filter((months) => bucketItems.every((item) => termsOf(item).includes(months)));
-  const cashAllowed = () => bucketItems.every((item) => (item.p.formules || {}).cash !== false);
+  const cashAllowed = () => formuleAutorisee('cash');
 
   subCategory = function (product) {
     const name = String(product.name || '').toLowerCase();
