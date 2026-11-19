@@ -134,7 +134,8 @@ def installer(app, srv):
                 compte = cn.execute('''SELECT id, mot_de_passe_hash FROM public.utilisateurs_catalogue
                                        WHERE identifiant = %s AND actif = true''', (identifiant,)).fetchone()
             if compte and check_password_hash(compte['mot_de_passe_hash'], mot_de_passe):
-                session.clear()
+                # Ne vide que la connexion client : la session administrateur (même cookie) reste ouverte.
+                session.pop('utilisateur_id', None)
                 session.permanent = True
                 session['utilisateur_id'] = compte['id']
                 return redirect('/')
@@ -144,7 +145,7 @@ def installer(app, srv):
 
     @app.post('/deconnexion')
     def deconnexion_utilisateur():
-        session.clear()
+        session.pop('utilisateur_id', None)
         return redirect('/connexion')
 
     @app.get('/api/moi')

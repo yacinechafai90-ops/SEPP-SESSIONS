@@ -552,7 +552,7 @@ def installer(app, srv):
                 mdp_ok = check_password_hash(_acces["hash"], request.form.get("mot_de_passe", ""))
                 if id_ok and mdp_ok:
                     _echecs.pop(ip, None)
-                    session.clear()
+                    session.pop('admin', None)
                     session.permanent = True
                     session["admin"] = True
                     return redirect("/admin")
@@ -564,7 +564,7 @@ def installer(app, srv):
 
     @app.get("/admin/logout")
     def logout_admin():
-        session.clear()
+        session.pop('admin', None)
         return redirect("/admin/login")
 
     @app.get("/admin/ui/<nom>")
