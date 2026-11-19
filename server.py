@@ -819,6 +819,9 @@ acces_utilisateurs.installer(app, globals())
 import gestion_sessions
 gestion_sessions.installer(app, globals())
 
+import commandes
+commandes.installer(app, globals())
+
 
 def preparer_hebergement():
     """Sur l'hebergement, gunicorn n'execute pas le bloc __main__ : on prepare la base ici."""

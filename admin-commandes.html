@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Samsung — Commandes (bons d'enlèvement)</title>
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/admin/commandes/admin-commandes.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="kicker">Administration</p>
+      <h1>Bons d'enlèvement</h1>
+    </div>
+    <nav>
+      <a href="/admin">Sessions</a>
+      <a class="active" href="/admin/commandes">Commandes</a>
+      <a href="/admin/logout">Déconnexion</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="kpis" aria-label="Indicateurs">
+      <article><span>Bons enregistrés</span><strong id="kpi-total">—</strong></article>
+      <article><span>En attente</span><strong id="kpi-attente">—</strong></article>
+      <article><span>Récupérées</span><strong id="kpi-recuperee">—</strong></article>
+      <article><span>Total comptant (filtré)</span><strong id="kpi-montant">—</strong></article>
+    </section>
+
+    <section class="rappel" id="rappel" hidden>
+      <div>
+        <strong id="rappel-titre">Rappel</strong>
+        <span id="rappel-texte"></span>
+      </div>
+      <button type="button" id="rappel-ok">Compris</button>
+    </section>
+
+    <section class="panneau">
+      <form class="filtres" id="filtres" autocomplete="off">
+        <label>Recherche
+          <input type="search" id="f-recherche" placeholder="Nom, entreprise, ville, téléphone, référence…">
+        </label>
+        <label>Statut
+          <select id="f-statut">
+            <option value="">Tous</option>
+            <option value="attente">En attente</option>
+            <option value="recuperee">Récupérée</option>
+          </select>
+        </label>
+        <label>BrandShop
+          <select id="f-boutique"><option value="">Tous</option></select>
+        </label>
+        <label>Durée
+          <select id="f-duree">
+            <option value="">Toutes</option>
+            <option value="cash">Comptant</option>
+            <option value="6">6 mois</option>
+            <option value="12">12 mois</option>
+            <option value="18">18 mois</option>
+            <option value="24">24 mois</option>
+          </select>
+        </label>
+        <label>Du
+          <input type="date" id="f-du">
+        </label>
+        <label>Au
+          <input type="date" id="f-au">
+        </label>
+        <button type="button" class="secondaire" id="f-reset">Réinitialiser</button>
+      </form>
+
+      <div class="barre">
+        <p id="compte">Chargement…</p>
+        <div class="exports">
+          <button type="button" id="exporter-csv">Exporter CSV</button>
+          <button type="button" id="exporter-xls">Exporter Excel (.xls)</button>
+          <button type="button" class="secondaire" id="actualiser">Actualiser</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Client</th>
+              <th>Entreprise</th>
+              <th>Ville</th>
+              <th>Téléphone</th>
+              <th>BrandShop</th>
+              <th>Durée</th>
+              <th class="num">Comptant</th>
+              <th class="num">Mensualité</th>
+              <th>Produits</th>
+              <th>Session</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody id="corps"></tbody>
+        </table>
+      </div>
+      <p class="vide" id="vide" hidden>Aucune commande ne correspond aux filtres.</p>
+    </section>
+
+    <section class="panneau rappels">
+      <h2>Rappel d'extraction</h2>
+      <p class="aide">Programmez une date à laquelle un rappel s'affichera ici pour exporter le tableau (CSV ou Excel).</p>
+      <form class="rappel-form" id="rappel-form">
+        <input type="date" id="r-date" required>
+        <input type="text" id="r-note" maxlength="120" placeholder="Ex. Envoi hebdomadaire au BrandShop Alger">
+        <button type="submit">Ajouter le rappel</button>
+      </form>
+      <ul class="liste-rappels" id="liste-rappels"></ul>
+    </section>
+  </main>
+
+  <script src="/admin/commandes/admin-commandes.js"></script>
+</body>
+</html>
