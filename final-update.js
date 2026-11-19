@@ -61,6 +61,13 @@
   function renderPayment() {
     const panel = $('#bucket-panel');
     if (!panel) return;
+    // Le panier garde une copie du produit (localStorage) : on le remet à jour avec le catalogue actuel
+    // pour que le paiement affiche les mêmes offres et mensualités que la page catalogue.
+    bucketItems.forEach((item) => {
+      const actuel = products.find((product) => product.reference === item.p.reference);
+      if (actuel) item.p = actuel;
+    });
+    saveBucket();
     const allowed = availableTerms();
     const cashOk = cashAllowed();
     const rawDuration = panel.dataset.duration || '6';
