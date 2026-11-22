@@ -50,14 +50,7 @@ function render(){
  if(!state.detail)return;
  for(const tab of ['products','brandshops','specs','discounts','offers','banners'])$(tab).hidden=tab!==state.tab;
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
- const d=state.detail,names=Object.fromEntries(d.all_products.map(p=>[p.reference,p]));
- const category=$('product-category').value,categories=[...new Set(d.products.map(p=>names[p.reference]?.category||'Autres'))].sort((a,b)=>a.localeCompare(b,'fr'));
- $('product-category').innerHTML='<option value="">Toutes les catégories</option>'+categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
- $('product-category').value=categories.includes(category)?category:'';
- const query=normalize($('product-search').value.trim()),selectedCategory=$('product-category').value;
- const shown=d.products.filter(p=>{const item=names[p.reference]||{};return (!selectedCategory||(item.category||'Autres')===selectedCategory)&&(!query||normalize([p.reference,item.name,item.type,item.category].join(' ')).includes(query))});
- $('product-count').textContent=shown.length+' / '+d.products.length+' produits';
- $('product-rows').innerHTML=shown.length?shown.map(p=>`<tr><td>${esc(p.reference)}</td><td>${esc(names[p.reference]?.name||'Produit retiré du catalogue')}</td><td>${p.prix_offre==null?'Prix général':esc(p.prix_offre)+' DA'}</td><td><span class="badge ${p.actif?'':'off'}">${p.actif?'Actif':'Inactif'}</span></td><td class="actions">${icon('edit','Modifier le produit',p.reference)}${icon('toggle',p.actif?'Désactiver':'Activer',p.reference)}${icon('delete','Retirer le produit',p.reference)}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">Aucun produit correspondant.</td></tr>';
+  const d=state.detail;
  const assigned=Object.fromEntries(d.shops.map(s=>[s.brandshop_id,s]));const visible=d.user.tous_brandshops?d.all_shops:d.all_shops.filter(s=>assigned[s.id]);
  $('shop-rows').innerHTML=visible.length?visible.map(s=>{const a=assigned[s.id]||{},active=d.user.tous_brandshops||a.actif;return `<tr><td>${esc(a.nom_personnalise||s.name)}</td><td>${esc(a.ville_personnalisee||s.city)}</td><td>${esc(a.adresse_personnalisee||s.address)}</td><td>${s.mapsUrl?`<a href="${esc(s.mapsUrl)}" target="_blank" rel="noopener noreferrer">Ouvrir ↗</a>`:'—'}</td><td><span class="badge ${active?'':'off'}">${active?'Actif':'Inactif'}</span></td><td class="actions">${icon('edit','Modifier le brandshop',s.id)}${icon('toggle',active?'Désactiver':'Activer',s.id)}${icon('delete','Retirer le brandshop',s.id)}</td></tr>`}).join(''):'<tr><td colspan="6" class="empty">Aucun brandshop attribué.</td></tr>';
  $('spec-content').innerHTML=Object.keys(d.specs).length?Object.entries(d.specs).map(([ref,values])=>`<article class="spec-card"><div class="heading"><h3>${esc(ref)}</h3>${icon('edit','Modifier la fiche',ref)}</div>${Object.entries(values).map(([k,v])=>`<div><strong>${esc(k)} :</strong> ${esc(v)}</div>`).join('')}</article>`).join(''):'<p class="empty">Aucune fiche technique pour cette session.</p>';
@@ -69,7 +62,6 @@ function render(){
 
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;render()});
 $('session-select').onchange=()=>details().catch(e=>notice(e.message,true));
-$('product-search').oninput=render;$('product-category').onchange=render;
 
 /* --- Sessions : création, modification, activation, suppression --- */
 function accountDialog(edit=false){
@@ -97,47 +89,6 @@ $('delete-session').onclick=async()=>{
  try{await api('sessions/'+uid(),'DELETE');await users('');notice('Session supprimée.')}catch(e){notice(e.message,true)}
 };
 
-/* --- Produits et prix --- */
-let editingProduct=null;
-function productDialog(ref=null){
- editingProduct=ref;
- $('product-title').textContent=ref?'Modifier le produit':'Ajouter un produit';
- const row=ref?state.detail.item_rows?.[ref]||{}:{};
- document.querySelectorAll('#product-form [data-item]').forEach(input=>{input.value=row[input.dataset.item]??''});
- const refInput=document.querySelector('#product-form [data-item="REFERENCE "]');
- refInput.value=ref||'';refInput.readOnly=!!ref;
- $('product-photo-file').value='';
- $('product-error').textContent='';
- $('product-dialog').showModal();
-}
-$('add-product').onclick=()=>productDialog();
-$('product-form').onsubmit=async e=>{
- e.preventDefault();
- try{
-  const row={};document.querySelectorAll('#product-form [data-item]').forEach(input=>{row[input.dataset.item]=input.value});
-  const file=$('product-photo-file').files[0];
-  if(file){const form=new FormData();form.append('photo',file);const result=await api('photo','POST',form);row['product photos']=result.chemin}
-  if(!confirmScope('Enregistrer ce produit'))return;
-  row.scope=scope();
-  await api('sessions/'+uid()+'/products/manual'+(editingProduct?'/'+encodeURIComponent(editingProduct):''),editingProduct?'PUT':'POST',row);
-  $('product-dialog').close();await details();notice('Produit enregistré pour '+scopeText()+'.');
- }catch(error){$('product-error').textContent=error.message;notice(error.message,true)}
-};
-$('product-rows').onclick=async e=>{
- const b=e.target.closest('[data-action]');if(!b)return;
- const ref=b.dataset.id,product=state.detail.products.find(p=>p.reference===ref);
- try{
-  if(b.dataset.action==='edit')return productDialog(ref);
-  if(b.dataset.action==='delete'){
-   if(!confirm('Retirer ce produit de '+scopeText()+' ?'))return;
-   await api('sessions/'+uid()+'/products/'+encodeURIComponent(ref),'DELETE',{});
-  }else{
-   if(!confirmScope(product.actif?'Désactiver ce produit':'Activer ce produit'))return;
-   await api('sessions/'+uid()+'/products/'+encodeURIComponent(ref)+'/statut','POST',{actif:!product.actif});
-  }
-  await details();notice('Produit mis à jour pour '+scopeText()+'.');
- }catch(error){notice(error.message,true)}
-};
 
 /* --- Brandshops --- */
 let editingShop=null;
@@ -240,16 +191,20 @@ function majBarreTableau(){
 }
 function ligneTableau(valeurs){
  const cellules=COLONNES_TABLEAU().map(c=>{
+  if(c==='product photos')return `<td class="photo"><div class="photo-cellule"><input data-col="${esc(c)}" value="${esc(valeurs[c]??'')}" placeholder="assets/photo.jpg"><label class="choisir" title="Choisir une photo sur cet ordinateur">Photo<input type="file" accept="image/*" data-photo hidden></label></div></td>`;
   const lecture=c==='REFERENCE ';
   return `<td><input data-col="${esc(c)}" value="${esc(valeurs[c]??'')}"${lecture?' readonly tabindex="-1" title="Référence : non modifiable"':''}></td>`;
  }).join('');
- return `<tr data-ref="${esc(valeurs['REFERENCE '])}"><th></th>${cellules}</tr>`;
+ const actif=valeurs.actif!==false;
+ return `<tr data-ref="${esc(valeurs['REFERENCE '])}"><th></th>${cellules}<td class="etat"><label class="switch" title="Produit actif sur le site"><input type="checkbox" data-col="actif"${actif?' checked':''}><span></span></label></td></tr>`;
 }
+function valeurCellule(input){return input.type==='checkbox'?String(input.checked):input.value.trim()}
 function rendreTableau(lignes){
  tableauOriginal=new Map();
- $('grille').innerHTML='<thead><tr><th>#</th>'+COLONNES_TABLEAU().map(c=>`<th>${esc(c.trim())}</th>`).join('')+'</tr></thead><tbody></tbody>';
+ $('grille').innerHTML='<thead><tr><th>#</th>'+COLONNES_TABLEAU().map(c=>`<th>${esc(c.trim())}</th>`).join('')+'<th>Actif</th></tr></thead><tbody></tbody>';
  $('grille').tBodies[0].innerHTML=lignes.map(l=>{
   COLONNES_TABLEAU().forEach(c=>tableauOriginal.set(l['REFERENCE ']+'|'+c,String(l[c]??'').trim()));
+  tableauOriginal.set(l['REFERENCE ']+'|actif',String(l.actif!==false));
   return ligneTableau(l);
  }).join('');
  majRangs();
@@ -274,7 +229,7 @@ async function chargerTableau(){
 function lignesModifiees(){
  return [...$('grille').tBodies[0].rows].filter(tr=>tr.querySelector('td.modifie')).map(tr=>{
   const l={};
-  tr.querySelectorAll('input[data-col]').forEach(i=>{l[i.dataset.col]=i.value.trim()});
+  tr.querySelectorAll('input[data-col]').forEach(i=>{l[i.dataset.col]=i.type==='checkbox'?i.checked:i.value.trim()});
   return l;
  });
 }
@@ -300,8 +255,22 @@ $('tableau-recherche').addEventListener('input',()=>{
 $('grille').addEventListener('input',e=>{
  if(!e.target.matches('input[data-col]'))return;
  const tr=e.target.closest('tr'),cle=tr.dataset.ref+'|'+e.target.dataset.col;
- e.target.closest('td').classList.toggle('modifie',e.target.value.trim()!==(tableauOriginal.get(cle)??''));
+ e.target.closest('td').classList.toggle('modifie',valeurCellule(e.target)!==(tableauOriginal.get(cle)??''));
  majBarreTableau();
+});
+$('grille').addEventListener('change',async e=>{
+ if(!e.target.matches('input[data-photo]'))return;
+ const fichier=e.target.files[0];
+ e.target.value='';
+ if(!fichier)return;
+ const cellule=e.target.closest('td').querySelector('input[data-col]');
+ try{
+  const form=new FormData();form.append('photo',fichier);
+  const resultat=await api('photo','POST',form);
+  cellule.value=resultat.chemin;
+  cellule.dispatchEvent(new Event('input',{bubbles:true}));
+  notice('Photo importée : '+resultat.chemin);
+ }catch(error){notice(error.message,true)}
 });
 $('grille').addEventListener('keydown',e=>{
  if(e.key!=='Enter'||!e.target.matches('input[data-col]'))return;

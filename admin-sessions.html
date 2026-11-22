@@ -52,8 +52,7 @@
     <!-- Produits et prix -->
     <div id="products" class="card panel">
       <div class="heading">
-        <div><h2>Produits et prix</h2><p class="muted">Prix de la session, affichés sur le site pour les produits actifs.</p></div>
-        <button type="button" id="add-product" class="primary">+ Ajouter un produit</button>
+        <div><h2>Produits et prix</h2><p class="muted">Prix de la session, affichés sur le site pour les produits actifs. Modifiez les cellules puis validez en une seule fois.</p></div>
       </div>
       <details class="tool">
         <summary>Importer les prix depuis Excel ou CSV</summary>
@@ -70,7 +69,7 @@
           <span class="tableau-compte" id="tableau-info"></span>
           <span class="tableau-modifs" id="tableau-modifs" hidden></span>
           <button type="button" id="tableau-annuler" class="secondary" hidden>Annuler</button>
-          <button type="button" id="tableau-enregistrer" class="primary" hidden>Enregistrer les modifications</button>
+          <button type="button" id="tableau-enregistrer" class="primary" hidden>Valider et enregistrer</button>
         </div>
         <div class="tableau-scroll"><table class="grille" id="grille"></table></div>
         <p class="tableau-aide">Cliquez dans une cellule et modifiez-la. Les cellules modifiées sont surlignées ; Entrée passe à la ligne du dessous. Les références ne se modifient pas.</p>
@@ -93,13 +92,19 @@
         table.grille td.modifie input{background:#fff4e0;color:#7a4300;font-weight:600}
         table.grille tr.masquee{display:none}
         .tableau-aide{color:#5b6478;font-size:12px;margin:10px 2px 0}
+        table.grille td.photo .photo-cellule{display:flex;align-items:center}
+        table.grille td.photo input{min-width:220px}
+        table.grille .choisir{cursor:pointer;background:#1428a0;color:#fff;border-radius:8px;padding:5px 9px;font-size:12px;font-weight:600;margin:0 8px 0 0;white-space:nowrap}
+        table.grille .choisir:hover{background:#0f1f80}
+        table.grille td.etat{text-align:center;padding:0 12px}
+        table.grille .switch{position:relative;display:inline-block;width:38px;height:22px;cursor:pointer}
+        table.grille .switch input{opacity:0;width:0;height:0;position:absolute}
+        table.grille .switch span{position:absolute;inset:0;background:#c9cfdd;border-radius:999px;transition:.2s}
+        table.grille .switch span::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s}
+        table.grille .switch input:checked + span{background:#137a3e}
+        table.grille .switch input:checked + span::after{transform:translateX(16px)}
+        table.grille td.modifie .switch span{box-shadow:0 0 0 2px #f5a524}
       </style>
-      <div class="filters">
-        <label>Rechercher<input id="product-search" type="search" placeholder="Référence, désignation ou type" autocomplete="off"></label>
-        <label>Catégorie<select id="product-category"><option value="">Toutes les catégories</option></select></label>
-        <span id="product-count" class="muted" aria-live="polite"></span>
-      </div>
-      <div class="table-wrap"><table><thead><tr><th>Référence</th><th>Produit</th><th>Prix de la session</th><th>État</th><th class="actions-col">Actions</th></tr></thead><tbody id="product-rows"></tbody></table></div>
     </div>
 
     <!-- Brandshops -->
@@ -206,31 +211,7 @@
   <div class="dialog-actions"><button type="button" data-close="account-dialog">Annuler</button><button class="primary">Enregistrer</button></div>
 </form></dialog>
 
-<dialog id="product-dialog"><form id="product-form" class="dialog-form">
-  <h2 id="product-title">Ajouter un produit</h2>
-  <div class="product-fields">
-    <label>Type<input data-item="Type" required></label>
-    <label>Référence<input data-item="REFERENCE " required maxlength="120"></label>
-    <label>Désignation<input data-item="DESIGNATION" required></label>
-    <label>Photo (chemin assets/)<input data-item="product photos" placeholder="assets/photo.jpg"></label>
-    <label>Ou choisir une photo<input id="product-photo-file" type="file" accept="image/*"></label>
-    <label>Disponibilité<input data-item="Disponibilité" required></label>
-  </div>
-  <h3>Prix</h3>
-  <div class="product-fields">
-    <label>Prix showroom<input data-item="PRIX SHOWROOM" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
-    <label>Prix B2B cash + timbre (affiché)<input data-item="PRIX B2B CASH + TIMBRE" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
-  </div>
-  <h3>Totaux des facilités</h3>
-  <div class="product-fields">
-    <label>Facilité 6 mois<input data-item="FACILITE 6 MOIS" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
-    <label>Facilité 12 mois<input data-item="FACILITE 12 MOIS" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
-    <label>Facilité 18 mois<input data-item="FACILITE 18 MOIS" required data-prix inputmode="decimal" placeholder="174 000,00"></label>
-    <label>Facilité 24 mois (optionnel)<input data-item="FACILITE 24 MOIS" data-prix inputmode="decimal" placeholder="174 000,00"></label>
-  </div>
-  <p id="product-error" role="alert"></p>
-  <div class="dialog-actions"><button type="button" data-close="product-dialog">Annuler</button><button class="primary">Enregistrer</button></div>
-</form></dialog>
+
 
 <dialog id="shop-dialog"><form id="shop-form" class="dialog-form">
   <h2 id="shop-title">Ajouter un brandshop</h2>
