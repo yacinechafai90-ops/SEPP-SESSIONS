@@ -393,6 +393,57 @@ def installer(app, srv):
             return jsonify(erreur='Texte trop volumineux (4 Mo).'),413
         return appliquer_import(uid,kind,scope,texte.encode('utf-8'))
 
+    @app.get('/admin/api/sessions/<int:uid>/tableau')
+    def lire_tableau(uid):
+        # Tableau des produits de la session : valeurs de la session, sinon valeurs par défaut.
+        colonnes, defauts = session_templates.source('products')
+        par_ref = {session_templates.record_key('products', r): r for r in defauts}
+        with connexion() as cn:
+            refs = [r['reference'] for r in cn.execute('SELECT reference FROM public.offres_utilisateur WHERE utilisateur_id=%s ORDER BY reference', (uid,)).fetchall()]
+            if not refs and not cn.execute('SELECT id FROM public.utilisateurs_catalogue WHERE id=%s', (uid,)).fetchone():
+                return jsonify(erreur='Session introuvable.'), 404
+            donnees = session_templates.snapshot(cn, uid)
+        lignes = []
+        for ref in refs:
+            source_ligne = donnees['products'].get(ref) or par_ref.get(ref)
+            if source_ligne:
+                lignes.append({c: str(source_ligne.get(c, '') or '') for c in colonnes + ['FACILITE 24 MOIS']})
+        return jsonify(colonnes=colonnes, lignes=lignes)
+
+    @app.put('/admin/api/sessions/<int:uid>/tableau')
+    def enregistrer_tableau(uid):
+        # Enregistre les lignes éditées : une ligne par référence, les produits absents du tableau ne sont pas supprimés.
+        donnees = request.get_json(silent=True) or {}
+        scope = donnees.get('scope', 'selected')
+        if scope not in ('selected', 'all'):
+            return jsonify(erreur='Portée invalide.'), 400
+        colonnes, _ = session_templates.source('products')
+        lignes = donnees.get('lignes')
+        if not isinstance(lignes, list) or not 1 <= len(lignes) <= 2000:
+            return jsonify(erreur='Tableau vide ou trop long (2 000 lignes maximum).'), 400
+        rows = []
+        for ligne in lignes:
+            if not isinstance(ligne, dict):
+                return jsonify(erreur='Ligne invalide.'), 400
+            row = {c: str(ligne.get(c) or '') for c in colonnes}
+            if str(ligne.get('FACILITE 24 MOIS') or '').strip():
+                try: row['FACILITE 24 MOIS'] = formater_prix(ligne['FACILITE 24 MOIS'])
+                except ValueError as exc: return jsonify(erreur=f'Facilité 24 mois : {exc}'), 400
+            rows.append(row)
+        try:
+            session_templates.validate('products', rows)
+        except ValueError as exc:
+            return jsonify(erreur=str(exc)), 400
+        with connexion() as cn:
+            ids = scope_ids(cn, uid, scope)
+            if not ids: return jsonify(erreur='Session introuvable.'), 404
+            for target in ids:
+                session_templates.save_rows(cn, target, 'products', rows)
+                for row in rows:
+                    cn.execute('INSERT INTO public.offres_utilisateur (utilisateur_id,reference,prix_offre,actif) VALUES (%s,%s,%s,true) ON CONFLICT (utilisateur_id,reference) DO UPDATE SET prix_offre=EXCLUDED.prix_offre,actif=true',
+                               (target, session_templates.record_key('products', row), session_templates.parse_number(row['PRIX B2B CASH + TIMBRE'])))
+        return jsonify(ok=True, lignes=len(rows), sessions=len(ids))
+
     def appliquer_import(uid,kind,scope,contents):
         try:
             rows=session_templates.parse_upload(kind,contents)

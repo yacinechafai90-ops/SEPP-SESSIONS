@@ -73,6 +73,28 @@
           <span class="muted">Même contrôle que le fichier. Les autres produits restent inchangés.</span>
         </form>
       </details>
+      <details class="tool" id="tableau-details">
+        <summary>Tableau éditable (style Excel)</summary>
+        <div class="tableau-barre">
+          <button type="button" id="tableau-charger" class="secondary">Ouvrir le tableau</button>
+          <button type="button" id="tableau-ajouter" class="secondary" hidden>+ Ajouter une ligne</button>
+          <button type="button" id="tableau-enregistrer" class="primary" hidden>Enregistrer le tableau</button>
+          <span class="muted" id="tableau-info">Entrée : cellule du dessous · Coller depuis Excel : remplit à partir de la cellule active. Les références existantes ne se modifient pas.</span>
+        </div>
+        <div class="tableau-scroll"><table class="grille" id="grille"></table></div>
+      </details>
+      <style>
+        .tableau-barre{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+        .tableau-scroll{overflow:auto;max-height:70vh;border:1px solid #d7dbe7;border-radius:6px}
+        table.grille{border-collapse:collapse;font-size:13px;white-space:nowrap}
+        table.grille th{position:sticky;top:0;background:#eef1f8;z-index:1;padding:6px 8px;border:1px solid #d7dbe7;text-align:left}
+        table.grille th.rang{position:sticky;left:0;z-index:2}
+        table.grille td{padding:0;border:1px solid #e3e7f1}
+        table.grille td input{width:150px;border:0;padding:6px 8px;font:inherit;background:transparent}
+        table.grille td input:focus{outline:2px solid #1428a0;background:#fff}
+        table.grille td input[readonly]{color:#6b7280}
+        table.grille tbody th.rang{background:#f7f8fb;font-weight:normal;text-align:center}
+      </style>
       <div class="filters">
         <label>Rechercher<input id="product-search" type="search" placeholder="Référence, désignation ou type" autocomplete="off"></label>
         <label>Catégorie<select id="product-category"><option value="">Toutes les catégories</option></select></label>

@@ -226,6 +226,77 @@ $('formules-form').onsubmit=async e=>{e.preventDefault();try{
 
 /* --- Imports Excel / CSV --- */
 $('paste-form').onsubmit=async e=>{e.preventDefault();if(!confirmScope('Importer ces lignes'))return;try{const result=await api('sessions/'+uid()+'/import-texte/products','POST',{texte:$('paste-text').value,scope:scope()});await details();$('paste-text').value='';notice(result.imported+' produits importés ou mis à jour pour '+scopeText()+'.')}catch(error){notice(error.message,true)}};
+// Tableau éditable : chargement, édition cellule par cellule, collage Excel, enregistrement.
+let tableauColonnes=[];
+const COLONNES_TABLEAU=()=>[...tableauColonnes,'FACILITE 24 MOIS'];
+function ligneTableau(valeurs,nouvelle){
+ return '<tr><th class="rang"></th>'+COLONNES_TABLEAU().map(c=>{const lecture=!nouvelle&&c==='REFERENCE ';return `<td><input data-col="${esc(c)}" value="${esc(valeurs[c]??'')}"${lecture?' readonly title="Référence existante : non modifiable"':''}></td>`}).join('')+'</tr>';
+}
+function majRangs(){[...$('grille').tBodies[0].rows].forEach((tr,i)=>{tr.cells[0].textContent=i+1})}
+function rendreTableau(lignes){
+ $('grille').innerHTML='<thead><tr><th class="rang">#</th>'+COLONNES_TABLEAU().map(c=>`<th>${esc(c.trim())}</th>`).join('')+'</tr></thead><tbody></tbody>';
+ $('grille').tBodies[0].innerHTML=lignes.map(l=>ligneTableau(l,false)).join('');
+ majRangs();
+ for(const id of ['tableau-ajouter','tableau-enregistrer'])$(id).hidden=false;
+}
+async function chargerTableau(){
+ const id=uid();
+ if(!id){notice('Sélectionnez une session.',true);return}
+ try{
+  const data=await api('sessions/'+id+'/tableau');
+  tableauColonnes=data.colonnes;
+  rendreTableau(data.lignes);
+  $('tableau-info').textContent=data.lignes.length+' produit(s) dans la session.';
+ }catch(error){notice(error.message,true)}
+}
+function ajouterLigneTableau(){
+ const tbody=$('grille').tBodies[0];
+ tbody.insertAdjacentHTML('beforeend',ligneTableau({},true));
+ majRangs();
+ tbody.lastElementChild.querySelector('input').focus();
+}
+function lignesTableau(){
+ return [...$('grille').tBodies[0].rows].map(tr=>{const l={};tr.querySelectorAll('input[data-col]').forEach(i=>{l[i.dataset.col]=i.value.trim()});return l});
+}
+async function enregistrerTableau(){
+ if(!confirmScope('Enregistrer le tableau'))return;
+ try{
+  const result=await api('sessions/'+uid()+'/tableau','PUT',{lignes:lignesTableau(),scope:scope()});
+  await details();
+  notice(result.lignes+' ligne(s) enregistrée(s) pour '+scopeText()+'.');
+  await chargerTableau();
+ }catch(error){notice(error.message,true)}
+}
+$('tableau-charger').onclick=chargerTableau;
+$('tableau-ajouter').onclick=ajouterLigneTableau;
+$('tableau-enregistrer').onclick=enregistrerTableau;
+$('grille').addEventListener('keydown',e=>{
+ if(e.key!=='Enter'||!e.target.matches('input[data-col]'))return;
+ e.preventDefault();
+ const td=e.target.closest('td'),tr=td.parentElement,index=[...tr.cells].indexOf(td);
+ const suivante=tr.nextElementSibling;
+ if(suivante)suivante.cells[index].querySelector('input')?.focus();
+});
+$('grille').addEventListener('paste',e=>{
+ const texte=e.clipboardData.getData('text');
+ if(!/[\t\n]/.test(texte)||!e.target.matches('input[data-col]'))return;
+ e.preventDefault();
+ const lignes=texte.replace(/\r\n?/g,'\n').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));
+ const td=e.target.closest('td'),tr=td.parentElement,colonne=[...tr.cells].indexOf(td)-1;
+ const tbody=$('grille').tBodies[0];
+ let courant=tr;
+ lignes.forEach((cellules,k)=>{
+  if(k>0){
+   if(!courant.nextElementSibling){ajouterLigneTableau();}
+   courant=courant.nextElementSibling;
+  }
+  cellules.forEach((valeur,j)=>{
+   const cible=courant.cells[colonne+1+j]?.querySelector('input[data-col]');
+   if(cible&&!cible.readOnly)cible.value=valeur.trim();
+  });
+ });
+ majRangs();
+});
 $('excel-form').onsubmit=async e=>{e.preventDefault();if(!confirmScope('Importer ce fichier produits'))return;const form=new FormData();form.append('fichier',$('excel-file').files[0]);try{const result=await api('sessions/'+uid()+'/import/products','POST',form);await details();$('excel-file').value='';notice(result.imported+' produits importés ou mis à jour pour '+scopeText()+'.')}catch(error){notice(error.message,true)}};
 for(const kind of ['brandshops','specs','discounts']){
  const formElement=$('import-'+kind);
