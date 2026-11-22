@@ -63,6 +63,16 @@
           <span class="muted">Colonnes et ordre identiques à items.csv. Les autres produits restent inchangés.</span>
         </form>
       </details>
+      <details class="tool">
+        <summary>Coller depuis Excel (sans fichier)</summary>
+        <form id="paste-form" class="upload">
+          <label style="flex:1 1 100%">Copiez les lignes dans Excel (en-tête compris), puis collez-les ici
+            <textarea id="paste-text" rows="8" placeholder="REFERENCE&#9;Type&#9;DESIGNATION&#9;...&#10;AR50F12C1QH2DZ&#9;Climatiseur&#9;..."></textarea>
+          </label>
+          <button class="secondary">Importer les lignes collées</button>
+          <span class="muted">Même contrôle que le fichier. Les autres produits restent inchangés.</span>
+        </form>
+      </details>
       <div class="filters">
         <label>Rechercher<input id="product-search" type="search" placeholder="Référence, désignation ou type" autocomplete="off"></label>
         <label>Catégorie<select id="product-category"><option value="">Toutes les catégories</option></select></label>

@@ -225,6 +225,7 @@ $('formules-form').onsubmit=async e=>{e.preventDefault();try{
 }catch(error){notice(error.message,true)}};
 
 /* --- Imports Excel / CSV --- */
+$('paste-form').onsubmit=async e=>{e.preventDefault();if(!confirmScope('Importer ces lignes'))return;try{const result=await api('sessions/'+uid()+'/import-texte/products','POST',{texte:$('paste-text').value,scope:scope()});await details();$('paste-text').value='';notice(result.imported+' produits importés ou mis à jour pour '+scopeText()+'.')}catch(error){notice(error.message,true)}};
 $('excel-form').onsubmit=async e=>{e.preventDefault();if(!confirmScope('Importer ce fichier produits'))return;const form=new FormData();form.append('fichier',$('excel-file').files[0]);try{const result=await api('sessions/'+uid()+'/import/products','POST',form);await details();$('excel-file').value='';notice(result.imported+' produits importés ou mis à jour pour '+scopeText()+'.')}catch(error){notice(error.message,true)}};
 for(const kind of ['brandshops','specs','discounts']){
  const formElement=$('import-'+kind);
