@@ -176,7 +176,8 @@ def product_from_row(row, category=None):
     return {'id':record_key('products',row),'reference':record_key('products',row),'name':str(row['DESIGNATION']).strip(),
             'type':raw_type,'category':category,'marketPrice':parse_number(row['PRIX SHOWROOM']),
             'offerPrice':parse_number(row['PRIX B2B CASH + TIMBRE']),
-            'financing':{'3/6':parse_number(row['FACILITE 6 MOIS']),'12':parse_number(row['FACILITE 12 MOIS']),'18':parse_number(row['FACILITE 18 MOIS'])},
+            'financing':{'3/6':parse_number(row['FACILITE 6 MOIS']),'12':parse_number(row['FACILITE 12 MOIS']),'18':parse_number(row['FACILITE 18 MOIS']),
+                         **({'24':parse_number(row['FACILITE 24 MOIS'])} if str(row.get('FACILITE 24 MOIS') or '').strip() else {})},
             'availability':str(row['Disponibilité']).strip(),'image':photo,'box':None}
 
 
@@ -202,6 +203,7 @@ def apply(catalogue,data):
         product['marketPrice']=parse_number(row['PRIX SHOWROOM'])
         # Mensualités 6/12/18 de la session ; la mensualité 24 mois (non saisie dans la session) est conservée.
         product['financing']={**product.get('financing',{}),'3/6':parse_number(row['FACILITE 6 MOIS']),'12':parse_number(row['FACILITE 12 MOIS']),'18':parse_number(row['FACILITE 18 MOIS'])}
+        if str(row.get('FACILITE 24 MOIS') or '').strip(): product['financing']['24']=parse_number(row['FACILITE 24 MOIS'])
         product['availability']=str(row['Disponibilité']).strip() or product['availability']
         photo=str(row['product photos']).strip().replace('\\','/')
         if photo.startswith('assets/') and '..' not in Path(photo).parts and (os.environ.get('SEPP_CLOUD_MODE') == '1' or (Path(__file__).resolve().parent/photo).is_file()):

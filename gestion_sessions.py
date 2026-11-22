@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 from flask import jsonify, request
 from werkzeug.security import generate_password_hash
 import session_templates
+from prix_saisie import formater_prix
 
 BUNDLED_SITE_PACKAGES = Path.home() / '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/Lib/site-packages'
 if BUNDLED_SITE_PACKAGES.is_dir() and str(BUNDLED_SITE_PACKAGES) not in sys.path:
@@ -410,10 +411,14 @@ def installer(app, srv):
         expected,_=session_templates.source('products')
         # Colonnes anciennes du CSV, absentes du formulaire : laissees vides si non envoyees.
         facultatives={'PRIX B2B CASH','TIMBRE'}
+        # Facilité 24 mois : saisie optionnelle, stockée avec le produit de la session (absente du CSV).
         cles=set(payload)-{'scope'}
-        if not isinstance(payload,dict) or not cles<=set(expected) or not (set(expected)-facultatives)<=cles:
+        if not isinstance(payload,dict) or not cles<=set(expected)|{'FACILITE 24 MOIS'} or not (set(expected)-facultatives)<=cles:
             return jsonify(erreur='Tous les champs de items.csv sont requis.'),400
         row={key:str(payload.get(key,'')) for key in expected}
+        if str(payload.get('FACILITE 24 MOIS') or '').strip():
+            try: row['FACILITE 24 MOIS']=formater_prix(payload['FACILITE 24 MOIS'])
+            except ValueError as exc: return jsonify(erreur=f'Facilité 24 mois : {exc}'),400
         ref=session_templates.record_key('products',row)
         if not ref or len(ref)>120 or (reference is not None and ref!=reference):
             return jsonify(erreur='Référence invalide ou modifiée.'),400
