@@ -377,22 +377,6 @@ def installer(app, srv):
             return jsonify(erreur='Fichier trop volumineux (4 Mo).'),413
         return appliquer_import(uid,kind,scope,contents)
 
-    @app.post('/admin/api/sessions/<int:uid>/import-texte/<kind>')
-    def import_texte(uid,kind):
-        # Lignes copiées depuis Excel (tabulations) : même contrôle que le fichier.
-        if kind not in session_templates.FILES:
-            return jsonify(erreur='Type de fichier inconnu.'),404
-        donnees=request.get_json(silent=True) or {}
-        scope=donnees.get('scope','selected')
-        if scope not in ('selected','all'):
-            return jsonify(erreur='Portée invalide.'),400
-        texte=str(donnees.get('texte') or '')
-        if not texte.strip():
-            return jsonify(erreur='Collez les lignes copiées depuis Excel, avec la ligne d\'en-tête.'),400
-        if len(texte)>4_000_000:
-            return jsonify(erreur='Texte trop volumineux (4 Mo).'),413
-        return appliquer_import(uid,kind,scope,texte.encode('utf-8'))
-
     @app.get('/admin/api/sessions/<int:uid>/tableau')
     def lire_tableau(uid):
         # Tableau des produits de la session : valeurs de la session, sinon valeurs par défaut.

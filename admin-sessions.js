@@ -36,7 +36,8 @@ async function details(){
  const id=uid();
  for(const key of ['edit-session','toggle-session','delete-session'])$(key).disabled=!id;
  $('workspace').hidden=!id;
- if(!id){state.detail=null;state.banners=[];$('session-state').textContent='Sélectionnez une session pour voir ses données.';return}
+ if(!id){state.detail=null;state.banners=[];$('session-state').textContent='Sélectionnez une session pour voir ses données.';chargerTableau();return}
+ chargerTableau();
  state.detail=await api('sessions/'+id+'/details');
  $('session-state').textContent=state.detail.user.actif?'Session active':'Session désactivée';
  $('toggle-session').title=state.detail.user.actif?'Désactiver la session':'Activer la session';
@@ -225,77 +226,89 @@ $('formules-form').onsubmit=async e=>{e.preventDefault();try{
 }catch(error){notice(error.message,true)}};
 
 /* --- Imports Excel / CSV --- */
-$('paste-form').onsubmit=async e=>{e.preventDefault();if(!confirmScope('Importer ces lignes'))return;try{const result=await api('sessions/'+uid()+'/import-texte/products','POST',{texte:$('paste-text').value,scope:scope()});await details();$('paste-text').value='';notice(result.imported+' produits importés ou mis à jour pour '+scopeText()+'.')}catch(error){notice(error.message,true)}};
-// Tableau éditable : chargement, édition cellule par cellule, collage Excel, enregistrement.
+// Tableau des produits : cellules éditables, modifications surlignées, enregistrement groupé.
 let tableauColonnes=[];
+let tableauOriginal=new Map();
 const COLONNES_TABLEAU=()=>[...tableauColonnes,'FACILITE 24 MOIS'];
-function ligneTableau(valeurs,nouvelle){
- return '<tr><th class="rang"></th>'+COLONNES_TABLEAU().map(c=>{const lecture=!nouvelle&&c==='REFERENCE ';return `<td><input data-col="${esc(c)}" value="${esc(valeurs[c]??'')}"${lecture?' readonly title="Référence existante : non modifiable"':''}></td>`}).join('')+'</tr>';
-}
 function majRangs(){[...$('grille').tBodies[0].rows].forEach((tr,i)=>{tr.cells[0].textContent=i+1})}
+function majBarreTableau(){
+ const n=document.querySelectorAll('#grille td.modifie').length;
+ $('tableau-modifs').hidden=!n;
+ $('tableau-modifs').textContent=n+' cellule(s) modifiée(s)';
+ $('tableau-enregistrer').hidden=!n;
+ $('tableau-annuler').hidden=!n;
+}
+function ligneTableau(valeurs){
+ const cellules=COLONNES_TABLEAU().map(c=>{
+  const lecture=c==='REFERENCE ';
+  return `<td><input data-col="${esc(c)}" value="${esc(valeurs[c]??'')}"${lecture?' readonly tabindex="-1" title="Référence : non modifiable"':''}></td>`;
+ }).join('');
+ return `<tr data-ref="${esc(valeurs['REFERENCE '])}"><th></th>${cellules}</tr>`;
+}
 function rendreTableau(lignes){
- $('grille').innerHTML='<thead><tr><th class="rang">#</th>'+COLONNES_TABLEAU().map(c=>`<th>${esc(c.trim())}</th>`).join('')+'</tr></thead><tbody></tbody>';
- $('grille').tBodies[0].innerHTML=lignes.map(l=>ligneTableau(l,false)).join('');
+ tableauOriginal=new Map();
+ $('grille').innerHTML='<thead><tr><th>#</th>'+COLONNES_TABLEAU().map(c=>`<th>${esc(c.trim())}</th>`).join('')+'</tr></thead><tbody></tbody>';
+ $('grille').tBodies[0].innerHTML=lignes.map(l=>{
+  COLONNES_TABLEAU().forEach(c=>tableauOriginal.set(l['REFERENCE ']+'|'+c,String(l[c]??'').trim()));
+  return ligneTableau(l);
+ }).join('');
  majRangs();
- for(const id of ['tableau-ajouter','tableau-enregistrer'])$(id).hidden=false;
+ majBarreTableau();
 }
 async function chargerTableau(){
  const id=uid();
- if(!id){notice('Sélectionnez une session.',true);return}
+ if(!id){
+  $('grille').innerHTML='';
+  tableauOriginal=new Map();
+  $('tableau-info').textContent='';
+  majBarreTableau();
+  return;
+ }
  try{
   const data=await api('sessions/'+id+'/tableau');
   tableauColonnes=data.colonnes;
   rendreTableau(data.lignes);
-  $('tableau-info').textContent=data.lignes.length+' produit(s) dans la session.';
+  $('tableau-info').textContent=data.lignes.length+' produit(s)';
  }catch(error){notice(error.message,true)}
 }
-function ajouterLigneTableau(){
- const tbody=$('grille').tBodies[0];
- tbody.insertAdjacentHTML('beforeend',ligneTableau({},true));
- majRangs();
- tbody.lastElementChild.querySelector('input').focus();
-}
-function lignesTableau(){
- return [...$('grille').tBodies[0].rows].map(tr=>{const l={};tr.querySelectorAll('input[data-col]').forEach(i=>{l[i.dataset.col]=i.value.trim()});return l});
+function lignesModifiees(){
+ return [...$('grille').tBodies[0].rows].filter(tr=>tr.querySelector('td.modifie')).map(tr=>{
+  const l={};
+  tr.querySelectorAll('input[data-col]').forEach(i=>{l[i.dataset.col]=i.value.trim()});
+  return l;
+ });
 }
 async function enregistrerTableau(){
- if(!confirmScope('Enregistrer le tableau'))return;
+ const lignes=lignesModifiees();
+ if(!lignes.length)return;
+ if(!confirmScope('Enregistrer '+lignes.length+' produit(s) modifié(s)'))return;
  try{
-  const result=await api('sessions/'+uid()+'/tableau','PUT',{lignes:lignesTableau(),scope:scope()});
+  const result=await api('sessions/'+uid()+'/tableau','PUT',{lignes,scope:scope()});
+  notice(result.lignes+' produit(s) enregistré(s) pour '+scopeText()+'.');
   await details();
-  notice(result.lignes+' ligne(s) enregistrée(s) pour '+scopeText()+'.');
-  await chargerTableau();
  }catch(error){notice(error.message,true)}
 }
-$('tableau-charger').onclick=chargerTableau;
-$('tableau-ajouter').onclick=ajouterLigneTableau;
 $('tableau-enregistrer').onclick=enregistrerTableau;
+$('tableau-annuler').onclick=chargerTableau;
+$('tableau-recherche').addEventListener('input',()=>{
+ const q=normalize($('tableau-recherche').value.trim());
+ [...$('grille').tBodies[0].rows].forEach(tr=>{
+  const texte=normalize([...tr.querySelectorAll('input')].map(i=>i.value).join(' '));
+  tr.classList.toggle('masquee',!!q&&!texte.includes(q));
+ });
+});
+$('grille').addEventListener('input',e=>{
+ if(!e.target.matches('input[data-col]'))return;
+ const tr=e.target.closest('tr'),cle=tr.dataset.ref+'|'+e.target.dataset.col;
+ e.target.closest('td').classList.toggle('modifie',e.target.value.trim()!==(tableauOriginal.get(cle)??''));
+ majBarreTableau();
+});
 $('grille').addEventListener('keydown',e=>{
  if(e.key!=='Enter'||!e.target.matches('input[data-col]'))return;
  e.preventDefault();
  const td=e.target.closest('td'),tr=td.parentElement,index=[...tr.cells].indexOf(td);
  const suivante=tr.nextElementSibling;
  if(suivante)suivante.cells[index].querySelector('input')?.focus();
-});
-$('grille').addEventListener('paste',e=>{
- const texte=e.clipboardData.getData('text');
- if(!/[\t\n]/.test(texte)||!e.target.matches('input[data-col]'))return;
- e.preventDefault();
- const lignes=texte.replace(/\r\n?/g,'\n').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));
- const td=e.target.closest('td'),tr=td.parentElement,colonne=[...tr.cells].indexOf(td)-1;
- const tbody=$('grille').tBodies[0];
- let courant=tr;
- lignes.forEach((cellules,k)=>{
-  if(k>0){
-   if(!courant.nextElementSibling){ajouterLigneTableau();}
-   courant=courant.nextElementSibling;
-  }
-  cellules.forEach((valeur,j)=>{
-   const cible=courant.cells[colonne+1+j]?.querySelector('input[data-col]');
-   if(cible&&!cible.readOnly)cible.value=valeur.trim();
-  });
- });
- majRangs();
 });
 $('excel-form').onsubmit=async e=>{e.preventDefault();if(!confirmScope('Importer ce fichier produits'))return;const form=new FormData();form.append('fichier',$('excel-file').files[0]);try{const result=await api('sessions/'+uid()+'/import/products','POST',form);await details();$('excel-file').value='';notice(result.imported+' produits importés ou mis à jour pour '+scopeText()+'.')}catch(error){notice(error.message,true)}};
 for(const kind of ['brandshops','specs','discounts']){

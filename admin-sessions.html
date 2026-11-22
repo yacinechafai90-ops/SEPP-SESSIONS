@@ -63,37 +63,36 @@
           <span class="muted">Colonnes et ordre identiques à items.csv. Les autres produits restent inchangés.</span>
         </form>
       </details>
-      <details class="tool">
-        <summary>Coller depuis Excel (sans fichier)</summary>
-        <form id="paste-form" class="upload">
-          <label style="flex:1 1 100%">Copiez les lignes dans Excel (en-tête compris), puis collez-les ici
-            <textarea id="paste-text" rows="8" placeholder="REFERENCE&#9;Type&#9;DESIGNATION&#9;...&#10;AR50F12C1QH2DZ&#9;Climatiseur&#9;..."></textarea>
-          </label>
-          <button class="secondary">Importer les lignes collées</button>
-          <span class="muted">Même contrôle que le fichier. Les autres produits restent inchangés.</span>
-        </form>
-      </details>
-      <details class="tool" id="tableau-details">
-        <summary>Tableau éditable (style Excel)</summary>
-        <div class="tableau-barre">
-          <button type="button" id="tableau-charger" class="secondary">Ouvrir le tableau</button>
-          <button type="button" id="tableau-ajouter" class="secondary" hidden>+ Ajouter une ligne</button>
-          <button type="button" id="tableau-enregistrer" class="primary" hidden>Enregistrer le tableau</button>
-          <span class="muted" id="tableau-info">Entrée : cellule du dessous · Coller depuis Excel : remplit à partir de la cellule active. Les références existantes ne se modifient pas.</span>
+      <details class="tool" id="tableau-details" open>
+        <summary>Tableau des produits (modifier directement les cellules)</summary>
+        <div class="tableau-entete">
+          <input id="tableau-recherche" type="search" placeholder="Filtrer par référence ou désignation" autocomplete="off">
+          <span class="tableau-compte" id="tableau-info"></span>
+          <span class="tableau-modifs" id="tableau-modifs" hidden></span>
+          <button type="button" id="tableau-annuler" class="secondary" hidden>Annuler</button>
+          <button type="button" id="tableau-enregistrer" class="primary" hidden>Enregistrer les modifications</button>
         </div>
         <div class="tableau-scroll"><table class="grille" id="grille"></table></div>
+        <p class="tableau-aide">Cliquez dans une cellule et modifiez-la. Les cellules modifiées sont surlignées ; Entrée passe à la ligne du dessous. Les références ne se modifient pas.</p>
       </details>
       <style>
-        .tableau-barre{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
-        .tableau-scroll{overflow:auto;max-height:70vh;border:1px solid #d7dbe7;border-radius:6px}
-        table.grille{border-collapse:collapse;font-size:13px;white-space:nowrap}
-        table.grille th{position:sticky;top:0;background:#eef1f8;z-index:1;padding:6px 8px;border:1px solid #d7dbe7;text-align:left}
-        table.grille th.rang{position:sticky;left:0;z-index:2}
-        table.grille td{padding:0;border:1px solid #e3e7f1}
-        table.grille td input{width:150px;border:0;padding:6px 8px;font:inherit;background:transparent}
-        table.grille td input:focus{outline:2px solid #1428a0;background:#fff}
-        table.grille td input[readonly]{color:#6b7280}
-        table.grille tbody th.rang{background:#f7f8fb;font-weight:normal;text-align:center}
+        .tableau-entete{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+        .tableau-entete #tableau-recherche{flex:1 1 260px;padding:9px 12px;border:1px solid #d7dbe7;border-radius:10px;font:inherit}
+        .tableau-compte{color:#5b6478;font-size:13px}
+        .tableau-modifs{background:#fff4e0;color:#9a5b00;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:600}
+        .tableau-scroll{overflow:auto;max-height:68vh;border:1px solid #e3e7f1;border-radius:14px;background:#fff;box-shadow:0 6px 18px rgba(20,40,160,.06)}
+        table.grille{border-collapse:separate;border-spacing:0;font-size:13px;white-space:nowrap;width:100%}
+        table.grille thead th{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,#1428a0,#0f1f80);color:#fff;font-weight:600;text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.2px}
+        table.grille tbody th{position:sticky;left:0;z-index:1;background:#f6f8fc;color:#5b6478;font-weight:500;text-align:center;padding:0 10px;min-width:44px;border-bottom:1px solid #eef1f7}
+        table.grille tbody tr:nth-child(even) td{background:#fbfcfe}
+        table.grille td{padding:0;border-bottom:1px solid #eef1f7;border-right:1px solid #f1f3f8}
+        table.grille td input{width:100%;min-width:120px;border:0;border-radius:0;padding:9px 12px;font:inherit;background:transparent;color:#071332}
+        table.grille td input:hover{background:#f0f4ff}
+        table.grille td input:focus{outline:2px solid #1428a0;outline-offset:-2px;background:#fff}
+        table.grille td input[readonly]{color:#6b7280;cursor:not-allowed}
+        table.grille td.modifie input{background:#fff4e0;color:#7a4300;font-weight:600}
+        table.grille tr.masquee{display:none}
+        .tableau-aide{color:#5b6478;font-size:12px;margin:10px 2px 0}
       </style>
       <div class="filters">
         <label>Rechercher<input id="product-search" type="search" placeholder="Référence, désignation ou type" autocomplete="off"></label>
