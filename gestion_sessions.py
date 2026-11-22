@@ -408,7 +408,7 @@ def installer(app, srv):
         lignes = donnees.get('lignes')
         if not isinstance(lignes, list) or not 1 <= len(lignes) <= 2000:
             return jsonify(erreur='Tableau vide ou trop long (2 000 lignes maximum).'), 400
-        rows, actifs = [], []
+        rows, actifs, nouveaux = [], [], []
         for ligne in lignes:
             if not isinstance(ligne, dict):
                 return jsonify(erreur='Ligne invalide.'), 400
@@ -420,6 +420,10 @@ def installer(app, srv):
                 session_templates.validate('products', [row])
             except ValueError as exc:
                 return jsonify(erreur=f"Produit {row['REFERENCE ']} : {exc}"), 400
+            if ligne.get('nouveau') is True:
+                if not row['Type'].strip() or not row['DESIGNATION'].strip():
+                    return jsonify(erreur=f"Produit {row['REFERENCE ']} : type et désignation requis."), 400
+                nouveaux.append(row['REFERENCE '].strip())
             rows.append(row)
             actifs.append(ligne.get('actif') is not False)
         try:
@@ -429,6 +433,10 @@ def installer(app, srv):
         with connexion() as cn:
             ids = scope_ids(cn, uid, scope)
             if not ids: return jsonify(erreur='Session introuvable.'), 404
+            for target in ids:
+                for ref in nouveaux:
+                    if cn.execute('SELECT 1 FROM public.offres_utilisateur WHERE utilisateur_id=%s AND reference=%s', (target, ref)).fetchone():
+                        return jsonify(erreur=f'Le produit {ref} existe déjà dans cette session.'), 409
             for target in ids:
                 session_templates.save_rows(cn, target, 'products', rows)
                 for row, actif in zip(rows, actifs):

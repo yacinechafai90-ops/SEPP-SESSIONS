@@ -20,7 +20,8 @@ const catNames={
   'Micro-ondes':'أفران ميكروويف'
 };
 
-const categories=Object.keys(catNames);
+// Catégories du filtre : les catégories connues, puis toute nouvelle catégorie ou type présent dans le catalogue.
+const categories=[...new Set([...Object.keys(catNames),...((window.CATALOGUE&&window.CATALOGUE.products)||[]).map(p=>p.category).filter(Boolean)])];
 const cat=c=>lang==='ar'?catNames[c]||c:c;
 
 // Prix affichés sans centimes : « 174 000 DA ».

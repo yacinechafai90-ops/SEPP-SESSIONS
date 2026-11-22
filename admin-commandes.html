@@ -7,6 +7,7 @@
   <title>Samsung — Commandes (bons d'enlèvement)</title>
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/admin/commandes/admin-commandes.css">
+  <link rel="stylesheet" href="/admin/commandes/admin-tableau-bord.css">
 </head>
 <body>
   <header class="top">
@@ -22,6 +23,12 @@
   </header>
 
   <main>
+    <nav class="onglets" role="tablist" aria-label="Vues">
+      <button type="button" class="onglet actif" role="tab" aria-selected="true" data-vue="commandes">Commandes</button>
+      <button type="button" class="onglet" role="tab" aria-selected="false" data-vue="tableau">Tableau de bord des ventes</button>
+    </nav>
+
+    <div id="vue-commandes">
     <section class="kpis" aria-label="Indicateurs">
       <article><span>Bons enregistrés</span><strong id="kpi-total">—</strong></article>
       <article><span>En attente</span><strong id="kpi-attente">—</strong></article>
@@ -114,8 +121,52 @@
       </form>
       <ul class="liste-rappels" id="liste-rappels"></ul>
     </section>
+    </div>
+
+    <section id="vue-tableau" hidden aria-label="Tableau de bord des ventes">
+      <div class="tb-bandeau">
+        <label>Période
+          <select id="tb-periode">
+            <option value="7">7 derniers jours</option>
+            <option value="30" selected>30 derniers jours</option>
+            <option value="90">90 derniers jours</option>
+            <option value="tout">Depuis le début</option>
+          </select>
+        </label>
+        <label>BrandShop
+          <select id="tb-boutique"><option value="">Toutes</option></select>
+        </label>
+        <label>Découpage
+          <select id="tb-granularite">
+            <option value="jour" selected>Par jour</option>
+            <option value="semaine">Par semaine</option>
+          </select>
+        </label>
+      </div>
+
+      <section class="kpis" id="tb-kpis" aria-label="Indicateurs des ventes"></section>
+
+      <div class="tb-grille">
+        <div class="tb-carte tb-large"><h2>Évolution des ventes</h2><p>Montant comptant (courbe) et nombre de commandes (barres orange)</p><div id="tb-timeline"></div></div>
+        <div class="tb-carte"><h2>Statut des commandes</h2><p>Récupération en BrandShop</p><div id="tb-donut"></div><div class="tb-legende-statut" id="tb-legende-statut"></div></div>
+
+        <div class="tb-carte tb-large"><h2>Produits vendus dans le temps</h2><p>Unités vendues par produit et par période. Plus la case est foncée, plus il s'est vendu d'unités.</p><p class="tb-pic" id="tb-pic"></p><div id="tb-heatmap"></div></div>
+
+        <div class="tb-carte"><h2>Produits les plus vendus</h2><p>Montant comptant par produit</p><div id="tb-produits"></div></div>
+        <div class="tb-carte"><h2>Quantités par produit</h2><p>Unités, lignes de commande et part du montant</p><div class="tb-defile"><table id="tb-tab-produits"></table></div></div>
+
+        <div class="tb-carte"><h2>Par BrandShop</h2><p>Montant comptant</p><div id="tb-boutiques"></div></div>
+        <div class="tb-carte"><h2>Durée de paiement</h2><p>Nombre de commandes et mensualité moyenne</p><div id="tb-durees"></div></div>
+
+        <div class="tb-carte"><h2>Principales entreprises</h2><p>Cliquez une ligne pour voir le détail</p><div class="tb-defile"><table id="tb-tab-entreprises"></table></div></div>
+        <div class="tb-carte"><h2>Détail par entreprise</h2><p>Produits, quantités et commandes de l'entreprise choisie</p><select id="tb-entreprise" aria-label="Entreprise"></select><div id="tb-detail"></div></div>
+
+        <div class="tb-carte tb-large"><h2>Commandes en attente de récupération</h2><p>Les plus anciennes en premier, en rouge au-delà de 7 jours</p><div class="tb-defile"><table id="tb-tab-attente"></table></div></div>
+      </div>
+    </section>
   </main>
 
+  <script src="/admin/commandes/admin-tableau-bord.js"></script>
   <script src="/admin/commandes/admin-commandes.js"></script>
 </body>
 </html>

@@ -103,6 +103,7 @@
       commandes = donnees.commandes || [];
       remplirBoutiques();
       appliquerFiltres();
+      document.dispatchEvent(new CustomEvent('commandes-chargees', { detail: commandes }));
     } catch (erreur) {
       $('compte').textContent = 'Impossible de charger les commandes (' + erreur.message + ').';
     }
@@ -122,6 +123,7 @@
       const commande = commandes.find((c) => c.id === id);
       if (commande) commande.statut = statut;
       appliquerFiltres();
+      document.dispatchEvent(new CustomEvent('commandes-chargees', { detail: commandes }));
     } catch (erreur) {
       window.alert('Changement de statut impossible : ' + erreur.message);
       ligne.querySelectorAll('button').forEach((b) => { b.disabled = false; });
@@ -239,6 +241,18 @@
       const aujourdhui = new Date().toISOString().slice(0, 10);
       ecrireRappels(lireRappels().map((r) => (r.date <= aujourdhui ? { ...r, vu: true } : r)));
       afficherRappels();
+    });
+
+    document.querySelectorAll('.onglet').forEach((bouton) => {
+      bouton.addEventListener('click', () => {
+        const vue = bouton.dataset.vue;
+        document.querySelectorAll('.onglet').forEach((o) => {
+          o.classList.toggle('actif', o === bouton);
+          o.setAttribute('aria-selected', String(o === bouton));
+        });
+        $('vue-commandes').hidden = vue !== 'commandes';
+        $('vue-tableau').hidden = vue !== 'tableau';
+      });
     });
 
     afficherRappels();

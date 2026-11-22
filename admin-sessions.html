@@ -68,11 +68,12 @@
           <input id="tableau-recherche" type="search" placeholder="Filtrer par référence ou désignation" autocomplete="off">
           <span class="tableau-compte" id="tableau-info"></span>
           <span class="tableau-modifs" id="tableau-modifs" hidden></span>
+          <button type="button" id="tableau-ajouter" class="secondary">+ Ajouter un produit</button>
           <button type="button" id="tableau-annuler" class="secondary" hidden>Annuler</button>
           <button type="button" id="tableau-enregistrer" class="primary" hidden>Valider et enregistrer</button>
         </div>
         <div class="tableau-scroll"><table class="grille" id="grille"></table></div>
-        <p class="tableau-aide">Cliquez dans une cellule et modifiez-la. Les cellules modifiées sont surlignées ; Entrée passe à la ligne du dessous. Les références ne se modifient pas.</p>
+        <p class="tableau-aide">Cliquez dans une cellule et modifiez-la. Les cellules modifiées sont surlignées ; Entrée passe à la ligne du dessous. Pour coller depuis Excel, sélectionnez vos lignes et colonnes, copiez-les, puis cliquez dans la cellule de départ et collez (Ctrl+V) : les lignes sont réparties à partir de cette cellule et les lignes en trop deviennent de nouveaux produits. Les références existantes ne se modifient pas.</p>
       </details>
       <style>
         .tableau-entete{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
@@ -91,6 +92,11 @@
         table.grille td input[readonly]{color:#6b7280;cursor:not-allowed}
         table.grille td.modifie input{background:#fff4e0;color:#7a4300;font-weight:600}
         table.grille tr.masquee{display:none}
+        table.grille thead th[data-col]{cursor:pointer;user-select:none}
+        table.grille thead th[data-col]:hover{background:linear-gradient(180deg,#2238b8,#1428a0)}
+        table.grille thead .tri{color:#ffd166;font-size:11px}
+        table.grille thead tr.filtres th{top:37px;background:#eef2fb;padding:6px 8px;font-weight:400}
+        table.grille tr.filtres input,table.grille tr.filtres select{width:100%;min-width:90px;font:inherit;font-size:12px;padding:5px 7px;border:1px solid #d7dbe7;border-radius:6px;background:#fff;color:#071332}
         .tableau-aide{color:#5b6478;font-size:12px;margin:10px 2px 0}
         table.grille td.photo .photo-cellule{display:flex;align-items:center}
         table.grille td.photo input{min-width:220px}

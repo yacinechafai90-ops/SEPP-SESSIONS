@@ -13,6 +13,8 @@ FICHIERS_ADMIN = {
     'admin-commandes.html': 'text/html; charset=utf-8',
     'admin-commandes.js': 'application/javascript; charset=utf-8',
     'admin-commandes.css': 'text/css; charset=utf-8',
+    'admin-tableau-bord.js': 'application/javascript; charset=utf-8',
+    'admin-tableau-bord.css': 'text/css; charset=utf-8',
 }
 
 
@@ -102,7 +104,7 @@ def installer(app, srv):
                                    FROM public.commandes_bon c LEFT JOIN public.utilisateurs_catalogue u ON u.id = c.utilisateur_id
                                    ORDER BY c.cree_le DESC LIMIT 2000''').fetchall()
         return jsonify(commandes=[{
-            'id': r['id'], 'date': r['cree_le'].strftime('%d/%m/%Y %H:%M'), 'nom': r['nom'], 'entreprise': r['entreprise'],
+            'id': r['id'], 'date': r['cree_le'].strftime('%d/%m/%Y %H:%M'), 'iso': r['cree_le'].isoformat(), 'nom': r['nom'], 'entreprise': r['entreprise'],
             'ville': r['ville'], 'telephone': r['telephone'], 'boutique': r['boutique'], 'duree': r['duree'],
             'lignes': r['lignes'], 'montant': float(r['montant_comptant']), 'mensualite': float(r['mensualite']),
             'statut': r['statut'], 'session': r['session'] or '',
