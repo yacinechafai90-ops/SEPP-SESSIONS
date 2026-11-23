@@ -161,15 +161,29 @@ def snapshot(cn,uid):
     rows=cn.execute('SELECT type_donnee,cle,payload FROM public.donnees_session WHERE utilisateur_id=%s',(uid,)).fetchall()
     result={kind:{} for kind in FILES}
     for row in rows: result[row['type_donnee']][row['cle']]=row['payload']
+    # Anciennes lignes enregistrées avant l'ajout de « category » et « sous categorie ».
+    for produit in result['products'].values():
+        if 'sous categorie' not in produit:
+            produit['sous categorie']=produit.get('Type','')
+        if not str(produit.get('category') or '').strip():
+            produit['category']=categorie_par_defaut(sous_categorie_de(produit))
     return result
 
-def product_from_row(row, category=None):
-    raw_type=str(row['Type']).strip()
+def sous_categorie_de(row):
+    # Colonne « sous categorie » (ex-« Type ») ; les anciennes données enregistrées gardent « Type ».
+    return str(row.get('sous categorie') or row.get('Type') or '').strip()
+
+def categorie_par_defaut(raw_type):
     clean=''.join(c for c in unicodedata.normalize('NFKD',raw_type.lower()) if c.isalnum() and not unicodedata.combining(c))
     categories={'aspirateur':'Aspirateurs','climatiseur':'Climatiseurs','refrigerateur':'Réfrigérateurs',
                 'lavelinge':'Lave-linge','microondes':'Micro-ondes','crystalled':'Téléviseurs',
                 'neoqled':'Téléviseurs','oled':'Téléviseurs','qled':'Téléviseurs','televiseur':'Téléviseurs'}
-    category=category or categories.get(clean,raw_type)
+    return categories.get(clean,raw_type)
+
+def product_from_row(row, category=None):
+    raw_type=sous_categorie_de(row)
+    # Catégorie : colonne « category » du tableau ; sinon déduite de la sous-catégorie.
+    category=category or str(row.get('category') or '').strip() or categorie_par_defaut(raw_type)
     photo=str(row['product photos']).strip().replace('\\','/')
     if not photo.startswith('assets/') or '..' in Path(photo).parts or not (os.environ.get('SEPP_CLOUD_MODE') == '1' or (Path(__file__).resolve().parent/photo).is_file()):
         photo=None

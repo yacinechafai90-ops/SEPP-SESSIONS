@@ -421,8 +421,8 @@ def installer(app, srv):
             except ValueError as exc:
                 return jsonify(erreur=f"Produit {row['REFERENCE ']} : {exc}"), 400
             if ligne.get('nouveau') is True:
-                if not row['Type'].strip() or not row['DESIGNATION'].strip():
-                    return jsonify(erreur=f"Produit {row['REFERENCE ']} : type et désignation requis."), 400
+                if not row['category'].strip() or not row['sous categorie'].strip() or not row['DESIGNATION'].strip():
+                    return jsonify(erreur=f"Produit {row['REFERENCE ']} : catégorie, sous-catégorie et désignation requises."), 400
                 nouveaux.append(row['REFERENCE '].strip())
             rows.append(row)
             actifs.append(ligne.get('actif') is not False)
@@ -492,8 +492,8 @@ def installer(app, srv):
         ref=session_templates.record_key('products',row)
         if not ref or len(ref)>120 or (reference is not None and ref!=reference):
             return jsonify(erreur='Référence invalide ou modifiée.'),400
-        if not str(row['Type']).strip() or not str(row['DESIGNATION']).strip():
-            return jsonify(erreur='Type et désignation requis.'),400
+        if not str(row['category']).strip() or not str(row['sous categorie']).strip() or not str(row['DESIGNATION']).strip():
+            return jsonify(erreur='Catégorie, sous-catégorie et désignation requises.'),400
         try: session_templates.validate('products',[row])
         except Exception as exc: return jsonify(erreur=str(exc)),400
         with connexion() as cn:
