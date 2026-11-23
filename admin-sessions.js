@@ -296,6 +296,23 @@ async function enregistrerTableau(){
 $('tableau-enregistrer').onclick=enregistrerTableau;
 $('tableau-annuler').onclick=chargerTableau;
 $('tableau-ajouter').onclick=ajouterProduit;
+/* Export Excel : lignes affichées (filtre et tri appliqués), valeurs actuelles y compris non enregistrées. */
+function exporterTableau(){
+ const cols=[...COLONNES_TABLEAU(),'actif'];
+ const lignes=[...$('grille').tBodies[0].rows].filter(tr=>!tr.classList.contains('masquee'));
+ if(!lignes.length)return notice('Aucun produit à exporter.',true);
+ const echappe=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const entete=cols.map(c=>`<th>${echappe(c==='actif'?'Actif':c.trim())}</th>`).join('');
+ const corps=lignes.map(tr=>`<tr>${cols.map(c=>{const champ=champDeLigne(tr,c);return `<td>${echappe(champ?valeurCellule(champ):'')}</td>`}).join('')}</tr>`).join('');
+ const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1"><tr>${entete}</tr>${corps}</table></body></html>`;
+ const maintenant=new Date(),p=n=>String(n).padStart(2,'0');
+ const nom=`produits-${maintenant.getFullYear()}-${p(maintenant.getMonth()+1)}-${p(maintenant.getDate())}.xls`;
+ const url=URL.createObjectURL(new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'}));
+ const lien=document.createElement('a');
+ lien.href=url;lien.download=nom;document.body.appendChild(lien);lien.click();lien.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('tableau-exporter').onclick=exporterTableau;
 $('tableau-recherche').addEventListener('input',appliquerFiltres);
 $('grille').addEventListener('click',e=>{const th=e.target.closest('thead th[data-col]');if(th)trierTableau(th.dataset.col)});
 for(const type of ['input','change'])$('grille').addEventListener(type,e=>{if(e.target.matches('[data-filtre]'))appliquerFiltres()});
