@@ -136,6 +136,9 @@
         <label>BrandShop
           <select id="tb-boutique"><option value="">Toutes</option></select>
         </label>
+        <label>Session
+          <select id="tb-session"><option value="">Toutes les sessions</option></select>
+        </label>
         <label>Découpage
           <select id="tb-granularite">
             <option value="jour" selected>Par jour</option>
@@ -149,6 +152,8 @@
       <div class="tb-grille">
         <div class="tb-carte tb-large"><h2>Évolution des ventes</h2><p>Montant comptant (courbe) et nombre de commandes (barres orange)</p><div id="tb-timeline"></div></div>
         <div class="tb-carte"><h2>Statut des commandes</h2><p>Récupération en BrandShop</p><div id="tb-donut"></div><div class="tb-legende-statut" id="tb-legende-statut"></div></div>
+
+        <div class="tb-carte tb-large"><h2>Par session</h2><p>Comparez les sessions sur la même période. Cliquez une ligne pour afficher le tableau de bord de cette session.</p><div class="tb-defile"><table id="tb-tab-sessions"></table></div></div>
 
         <div class="tb-carte tb-large"><h2>Produits vendus dans le temps</h2><p>Unités vendues par produit et par période. Plus la case est foncée, plus il s'est vendu d'unités.</p><p class="tb-pic" id="tb-pic"></p><div id="tb-heatmap"></div></div>
 

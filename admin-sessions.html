@@ -70,6 +70,7 @@
           <span class="tableau-modifs" id="tableau-modifs" hidden></span>
           <button type="button" id="tableau-ajouter" class="secondary">+ Ajouter un produit</button>
           <button type="button" id="tableau-exporter" class="secondary">Exporter Excel (.xls)</button>
+          <button type="button" id="tableau-supprimer" class="secondary danger" hidden>Supprimer la sélection</button>
           <button type="button" id="tableau-annuler" class="secondary" hidden>Annuler</button>
           <button type="button" id="tableau-enregistrer" class="primary" hidden>Valider et enregistrer</button>
         </div>
@@ -79,6 +80,9 @@
       <style>
         .tableau-entete{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
         .tableau-entete #tableau-recherche{flex:1 1 260px;padding:9px 12px;border:1px solid #d7dbe7;border-radius:10px;font:inherit}
+        .sel-rang{display:inline-flex;align-items:center;gap:6px}
+        .supprimer-ligne{font:inherit;font-size:12px;margin-left:8px;padding:3px 9px;border:1px solid #f1c4bd;border-radius:8px;background:#fff;color:#c0392b;cursor:pointer}
+        #tableau-supprimer.danger{color:#c0392b;border-color:#f1c4bd}
         .tableau-compte{color:#5b6478;font-size:13px}
         .tableau-modifs{background:#fff4e0;color:#9a5b00;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:600}
         .tableau-scroll{overflow:auto;max-height:68vh;border:1px solid #e3e7f1;border-radius:14px;background:#fff;box-shadow:0 6px 18px rgba(20,40,160,.06)}

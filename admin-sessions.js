@@ -181,8 +181,9 @@ $('formules-form').onsubmit=async e=>{e.preventDefault();try{
 let tableauColonnes=[];
 let tableauOriginal=new Map();
 const COLONNES_TABLEAU=()=>[...tableauColonnes,'FACILITE 24 MOIS'];
-function majRangs(){[...$('grille').tBodies[0].rows].forEach((tr,i)=>{tr.cells[0].textContent=i+1})}
+function majRangs(){[...$('grille').tBodies[0].rows].forEach((tr,i)=>{tr.querySelector('.rang').textContent=i+1})}
 function majBarreTableau(){
+ majSelection();
  const n=document.querySelectorAll('#grille td.modifie').length;
  $('tableau-modifs').hidden=!n;
  $('tableau-modifs').textContent=n+' cellule(s) modifiée(s)';
@@ -205,7 +206,7 @@ function ligneTableau(valeurs,nouveau=false){
   return `<td><input data-col="${esc(c)}" value="${esc(valeurs[c]??'')}"${lecture?' readonly tabindex="-1" title="Référence : non modifiable"':''}></td>`;
  }).join('');
  const actif=valeurs.actif!==false;
- return `<tr data-ref="${esc(valeurs['REFERENCE '])}"${nouveau?' data-nouveau="1"':''}><th></th>${cellules}<td class="etat"><label class="switch" title="Produit actif sur le site"><input type="checkbox" data-col="actif"${actif?' checked':''}><span></span></label></td></tr>`;
+ return `<tr data-ref="${esc(valeurs['REFERENCE '])}"${nouveau?' data-nouveau="1"':''}><th><label class="sel-rang"><input type="checkbox" class="selection" title="Sélectionner ce produit"><span class="rang"></span></label></th>${cellules}<td class="etat"><label class="switch" title="Produit actif sur le site"><input type="checkbox" data-col="actif"${actif?' checked':''}><span></span></label><button type="button" class="supprimer-ligne" title="Supprimer ce produit">Supprimer</button></td></tr>`;
 }
 function valeurCellule(input){return input.type==='checkbox'?String(input.checked):input.value.trim()}
 function rendreTableau(lignes){
@@ -214,7 +215,7 @@ function rendreTableau(lignes){
  const cols=[...COLONNES_TABLEAU(),'actif'];
  const entetes=cols.map(c=>`<th data-col="${esc(c)}" title="Cliquez pour trier">${esc(c==='actif'?'Actif':c.trim())}<span class="tri"></span></th>`).join('');
  const champsFiltres=cols.map(c=>c==='actif'?'<th><select data-filtre="actif"><option value="">Tous</option><option value="true">Actif</option><option value="false">Inactif</option></select></th>':`<th><input data-filtre="${esc(c)}" placeholder="Filtrer" autocomplete="off"></th>`).join('');
- $('grille').innerHTML='<thead><tr><th>#</th>'+entetes+'</tr><tr class="filtres"><th></th>'+champsFiltres+'</tr></thead><tbody></tbody>';
+ $('grille').innerHTML='<thead><tr><th><input type="checkbox" id="selection-tout" title="Sélectionner les lignes affichées"></th>'+entetes+'</tr><tr class="filtres"><th></th>'+champsFiltres+'</tr></thead><tbody></tbody>';
  $('grille').tBodies[0].innerHTML=lignes.map(l=>{
   COLONNES_TABLEAU().forEach(c=>tableauOriginal.set(l['REFERENCE ']+'|'+c,String(l[c]??'').trim()));
   tableauOriginal.set(l['REFERENCE ']+'|actif',String(l.actif!==false));
@@ -249,7 +250,7 @@ function appliquerFiltres(){
  const lignes=[...$('grille').tBodies[0].rows];
  let visibles=0;
  lignes.forEach(tr=>{
-  const texte=normalize([...tr.querySelectorAll('input')].map(i=>i.value).join(' '));
+  const texte=normalize([...tr.querySelectorAll('input[data-col]:not([type=checkbox])')].map(i=>i.value).join(' '));
   const ok=(!q||texte.includes(q))&&filtres.every(([col,v])=>col==='actif'?valeurTri(tr,'actif')===v:normalize(valeurTri(tr,col)).includes(normalize(v)));
   tr.classList.toggle('masquee',!ok);
   if(ok)visibles++;
@@ -313,6 +314,38 @@ function exporterTableau(){
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 $('tableau-exporter').onclick=exporterTableau;
+
+/* Suppression de produits : une ligne (bouton) ou la sélection (cases). Les produits sont retirés de la session choisie (ou de toutes si la portée le demande). */
+function selectionnees(){return [...$('grille').tBodies[0].rows].filter(tr=>tr.querySelector('.selection')?.checked)}
+function majSelection(){
+ const n=selectionnees().length;
+ $('tableau-supprimer').hidden=!n;
+ $('tableau-supprimer').textContent='Supprimer la sélection ('+n+')';
+}
+async function supprimerProduits(trs){
+ if(!trs.length)return;
+ if(document.querySelectorAll('#grille td.modifie').length)return notice('Enregistrez ou annulez vos modifications avant de supprimer des produits.',true);
+ if(!confirm('Supprimer '+trs.length+' produit(s) de '+scopeText()+' ? Cette action est définitive.'))return;
+ const refs=trs.filter(tr=>tr.dataset.nouveau!=='1').map(tr=>tr.querySelector('input[data-col="REFERENCE "]').value.trim());
+ trs.filter(tr=>tr.dataset.nouveau==='1').forEach(tr=>tr.remove());
+ let supprimes=0;
+ try{
+  for(const ref of refs){
+   await api('sessions/'+uid()+'/products/'+encodeURIComponent(ref),'DELETE');
+   supprimes++;
+  }
+  notice(trs.length+' produit(s) supprimé(s) pour '+scopeText()+'.');
+ }catch(error){notice(error.message+' ('+supprimes+' supprimé(s) avant l’erreur.)',true)}
+ await chargerTableau();
+}
+$('tableau-supprimer').onclick=()=>supprimerProduits(selectionnees());
+$('grille').addEventListener('click',e=>{const b=e.target.closest('.supprimer-ligne');if(b)supprimerProduits([b.closest('tr')])});
+$('grille').addEventListener('change',e=>{
+ if(e.target.id==='selection-tout'){
+  [...$('grille').tBodies[0].rows].filter(tr=>!tr.classList.contains('masquee')).forEach(tr=>{const c=tr.querySelector('.selection');if(c)c.checked=e.target.checked});
+  majSelection();
+ }else if(e.target.matches('.selection'))majSelection();
+});
 $('tableau-recherche').addEventListener('input',appliquerFiltres);
 $('grille').addEventListener('click',e=>{const th=e.target.closest('thead th[data-col]');if(th)trierTableau(th.dataset.col)});
 for(const type of ['input','change'])$('grille').addEventListener(type,e=>{if(e.target.matches('[data-filtre]'))appliquerFiltres()});

@@ -37,9 +37,15 @@
     d.setDate(d.getDate() - Number(p) + 1);
     return d;
   }
-  function filtrees() {
+  // Commandes de la période et du BrandShop choisis, toutes sessions confondues.
+  function base() {
     const debut = debutPeriode(), boutique = $('tb-boutique').value;
     return donnees.filter((c) => dateDe(c) >= debut && (!boutique || c.boutique === boutique));
+  }
+  // Commandes de la session choisie dans le sélecteur (« Toutes » = aucun filtre de session).
+  function filtrees() {
+    const session = $('tb-session').value;
+    return base().filter((c) => !session || (session === '__sans__' ? !c.session : c.session === session));
   }
   // Découpage du temps : par jour, ou par semaine au-delà de 31 jours.
   function periodes() {
@@ -60,6 +66,11 @@
     const noms = [...new Set(donnees.map((c) => c.boutique).filter(Boolean))].sort();
     boutique.innerHTML = '<option value="">Toutes</option>' + noms.map((n) => `<option value="${echapper(n)}">${echapper(n)}</option>`).join('');
     boutique.value = noms.includes(actuelle) ? actuelle : '';
+
+    const selSession = $('tb-session'), sessionChoisie = selSession.value;
+    const sessions = [...new Set(donnees.map((c) => c.session || ''))].sort((a, b) => a.localeCompare(b, 'fr'));
+    selSession.innerHTML = '<option value="">Toutes les sessions</option>' + sessions.map((s) => `<option value="${echapper(s || '__sans__')}">${echapper(s || 'Sans session')}</option>`).join('');
+    selSession.value = sessions.map((s) => s || '__sans__').includes(sessionChoisie) ? sessionChoisie : '';
 
     const entreprise = $('tb-entreprise'), choisie = entreprise.value;
     const entreprises = [...new Set(donnees.map((c) => c.entreprise).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'fr'));
@@ -240,13 +251,31 @@
       || '<tr><td colspan="7">Aucune commande en attente.</td></tr>';
   }
 
+  // Une ligne par session, sur la période et le BrandShop choisis : cliquer ouvre le tableau de bord de cette session.
+  function sessionsTable(B) {
+    const m = {};
+    B.forEach((c) => { const k = c.session || ''; m[k] = m[k] || { k, n: 0, v: 0, att: 0 }; m[k].n++; m[k].v += montantDe(c); if (c.statut === 'attente') m[k].att++; });
+    const liste = Object.values(m).sort((a, b) => b.v - a.v);
+    $('tb-tab-sessions').innerHTML = '<tr><th>Session</th><th class="n">Commandes</th><th class="n">Montant comptant</th><th class="n">En attente</th></tr>'
+      + liste.map((s) => `<tr class="tb-cliquable" data-session="${echapper(s.k || '__sans__')}"><td>${echapper(s.k || 'Sans session')}</td><td class="n">${s.n}</td><td class="n">${nombre(s.v)}</td><td class="n">${s.att}</td></tr>`).join('')
+      || '<tr><td colspan="4">Aucune commande.</td></tr>';
+  }
+
   function rendre() {
     const L = filtrees();
+    sessionsTable(base());
     kpis(L); timeline(L); donut(L); carteChaleur(L); produits(L); boutiques(L); durees(L); entreprises(L); detailEntreprise(L); attente(L);
   }
 
   function init() {
-    ['tb-periode', 'tb-boutique', 'tb-granularite'].forEach((id) => $(id).addEventListener('change', rendre));
+    ['tb-periode', 'tb-boutique', 'tb-granularite', 'tb-session'].forEach((id) => $(id).addEventListener('change', rendre));
+    $('tb-tab-sessions').addEventListener('click', (e) => {
+      const ligne = e.target.closest('tr[data-session]');
+      if (!ligne) return;
+      $('tb-session').value = ligne.dataset.session;
+      rendre();
+      $('tb-kpis').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     $('tb-entreprise').addEventListener('change', () => detailEntreprise(filtrees()));
     $('tb-tab-entreprises').addEventListener('click', (e) => {
       const ligne = e.target.closest('tr[data-e]');
