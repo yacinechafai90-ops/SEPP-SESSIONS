@@ -180,7 +180,12 @@ $('formules-form').onsubmit=async e=>{e.preventDefault();try{
 // Tableau des produits : cellules éditables, modifications surlignées, enregistrement groupé.
 let tableauColonnes=[];
 let tableauOriginal=new Map();
-const COLONNES_TABLEAU=()=>[...tableauColonnes,'FACILITE 24 MOIS'];
+// Ordre affiché : colonnes du CSV, puis les formules de financement côte à côte, puis Disponibilité.
+const COLONNES_TABLEAU=()=>{
+ const facilite=c=>/^FACILITE /.test(c),dispo=c=>c==='Disponibilité';
+ const facilites=[...new Set([...tableauColonnes.filter(facilite),'FACILITE 24 MOIS'])];
+ return [...tableauColonnes.filter(c=>!facilite(c)&&!dispo(c)),...facilites,...tableauColonnes.filter(dispo)];
+};
 function majRangs(){[...$('grille').tBodies[0].rows].forEach((tr,i)=>{tr.querySelector('.rang').textContent=i+1})}
 function majBarreTableau(){
  majSelection();
@@ -213,7 +218,7 @@ function rendreTableau(lignes){
  tableauOriginal=new Map();
  tableauTri={col:null,sens:1};
  const cols=[...COLONNES_TABLEAU(),'actif'];
- const entetes=cols.map(c=>`<th data-col="${esc(c)}" title="Cliquez pour trier">${esc(c==='actif'?'Actif':c.trim())}<span class="tri"></span></th>`).join('');
+ const entetes=cols.map(c=>`<th data-col="${esc(c)}" title="Cliquez pour trier">${esc(c==='actif'?'status':c.trim())}<span class="tri"></span></th>`).join('');
  const champsFiltres=cols.map(c=>c==='actif'?'<th><select data-filtre="actif"><option value="">Tous</option><option value="true">Actif</option><option value="false">Inactif</option></select></th>':`<th><input data-filtre="${esc(c)}" placeholder="Filtrer" autocomplete="off"></th>`).join('');
  $('grille').innerHTML='<thead><tr><th><input type="checkbox" id="selection-tout" title="Sélectionner les lignes affichées"></th>'+entetes+'</tr><tr class="filtres"><th></th>'+champsFiltres+'</tr></thead><tbody></tbody>';
  $('grille').tBodies[0].innerHTML=lignes.map(l=>{
@@ -303,7 +308,7 @@ function exporterTableau(){
  const lignes=[...$('grille').tBodies[0].rows].filter(tr=>!tr.classList.contains('masquee'));
  if(!lignes.length)return notice('Aucun produit à exporter.',true);
  const echappe=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const entete=cols.map(c=>`<th>${echappe(c==='actif'?'Actif':c.trim())}</th>`).join('');
+ const entete=cols.map(c=>`<th>${echappe(c==='actif'?'status':c.trim())}</th>`).join('');
  const corps=lignes.map(tr=>`<tr>${cols.map(c=>{const champ=champDeLigne(tr,c);return `<td>${echappe(champ?valeurCellule(champ):'')}</td>`}).join('')}</tr>`).join('');
  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1"><tr>${entete}</tr>${corps}</table></body></html>`;
  const maintenant=new Date(),p=n=>String(n).padStart(2,'0');
