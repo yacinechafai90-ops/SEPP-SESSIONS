@@ -14,7 +14,8 @@
   // Montants après remise arrondis à la centaine (total de la formule et mensualité).
   const financedTotal = (months) => Math.round(rawFinancedTotal(months) * (1 - discountRate(months)) / 100) * 100;
   const paymentAmount = (months) => Math.round(financedTotal(months) / months / 100) * 100;
-  const cashAmount = () => bucketItems.reduce((sum, item) => sum + item.p.offerPrice * item.qty, 0);
+  // Prix comptant affiché, arrondi à la centaine (le serveur recalcule le montant exact à la commande).
+  const cashAmount = () => Math.round(bucketItems.reduce((sum, item) => sum + item.p.offerPrice * item.qty, 0) / 100) * 100;
   // Formules proposees : celles que l'administration n'a pas desactivees pour TOUS les produits du panier.
   // Une formule n'apparait que si l'administration l'a activee ET si le produit a un montant pour cette duree (sinon carte a 0,00).
   // Source unique : les formules cochées dans l'administration pour cette session (CATALOGUE.formules_autorisees, null = toutes).
