@@ -10,7 +10,8 @@
     const months = [6, 12, 18, 24].includes(Number(rawDuration)) ? Number(rawDuration) : 6;
     let totalLine, monthlyLine;
     if (isCash) {
-      const cashText = money(bucketItems.reduce((sum, item) => sum + item.p.offerPrice * item.qty, 0));
+      // Total comptant arrondi à la centaine, comme sur le site et dans l'administration.
+      const cashText = money(Math.round(bucketItems.reduce((sum, item) => sum + item.p.offerPrice * item.qty, 0) / 100) * 100);
       totalLine = `Total comptant : ${cashText}`;
       monthlyLine = '';
     } else {

@@ -1,6 +1,6 @@
 """Bons d'enlevement : enregistrement par le client, liste et statut dans l'administration."""
 import json
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 
 from flask import jsonify, request, send_from_directory, session, abort
@@ -87,6 +87,9 @@ def installer(app, srv):
                 lignes.append({'reference': reference, 'nom': offres[reference]['name'], 'qty': quantite, 'prix': float(prix)})
         except (ValueError, TypeError) as exc:
             return jsonify(erreur=str(exc)), 400
+        # Montants arrondis à la centaine, comme sur le bon imprimé.
+        comptant = (comptant / 100).to_integral_value(rounding=ROUND_HALF_UP) * 100
+        mensualite = (mensualite / 100).to_integral_value(rounding=ROUND_HALF_UP) * 100
         with connexion() as cn:
             preparer_table(cn)
             row = cn.execute(
